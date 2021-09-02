@@ -1,0 +1,57 @@
+{
+    "scopeName": "source.dasm",
+    "fileTypes": "asm",
+    "name": "dasm",
+    "patterns": [ {
+        "include": "#singleLineComment"
+    }, {
+        "include": "#numericConstants"
+    }, {
+        "include": "#stringConstant"
+    }, {
+        "include": "#label"
+    }, {
+        "include": "#directives"
+    }, {
+        "include": "#instructions"
+    } ],
+    "repository": {
+        "singleLineComment": {
+            "begin": ";",
+            "end": "$",
+            "name": "comment.line.semicolon.dasm"
+        },
+        "numericConstants": {
+            "patterns": [ {
+                "match": "%[0-1]+",
+                "name": "constant.numeric.binary.dasm" 
+            }, {
+                "match": "0[0-7]+",
+                "name": "constant.numeric.octal.dasm"
+            }, {
+                "match": "[1-9][0-9]+",
+                "name": "constant.numeric.decimal.dasm"
+            }, {
+                "match": "\\$[0-9a-fA-F]+",
+                "name": "constant.numeric.hexadecimal.dasm"
+            } ]
+        },
+        "stringConstant": {
+            "begin": "\"",
+            "end": "\"",
+            "name": "string.quoted.double.dasm"
+        },
+        "instructions": {
+            "match": "\\b(?i:ADC|AND|ASL|BCC|BCS|BEQ|BIT|BMI|BNE|BPL|BRK|BVC|BVS|CLC|CLD|CLI|CLV|CMP|CPX|CPY|DEC|DEX|DEY|EOR|INC|INX|INY|JMP|JSR|LDA|LDX|LDY|LSR|NOP|ORA|PHA|PHP|PLA|PLP|ROL|ROR|RTI|RTS|SBC|SEC|SED|SEI|STA|STX|STY|TAX|TAY|TSX|TXA|TXS|TYA)\\b",
+            "name": "keyword.other.instructions.dasm"
+        },
+        "directives": {
+            "match": "\\b(?i:INCBIN|INCDIR|INCLUDE|EQU|=|EQM|SET|SETSTR|DC(\\.[BWLS])?|BYTE|WORD|LONG|(D[SV]|RES)(\\.[BWL])?|HEX|IFCONST|IFNCONST|IF|ENDIF|EIF|ELSE|REPEAT|REPEND|ORG|RORG|REND|SEG(\\.U)?|ALIGN|PROCESSOR|ECHO|SUBROUTINE|ERR|LIST|MAC(RO)?|ENDM|MEXIT)\\b",
+            "name": "keyword.operator.dasm"
+        },
+        "label": {
+            "match": "^\\w+:?",
+            "name": "variable.other.label.dasm"
+        }
+    }
+}
