@@ -3,6 +3,7 @@ import { ExtensionContext } from 'vscode';
 
 import {
     LanguageClient,
+	LanguageClientOptions,
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient/node';
@@ -22,7 +23,10 @@ export function activate(context: ExtensionContext) {
 			options: debugOptions
 		}
 	};
-    client = new LanguageClient('dasmLS', 'dasm Language Server', serverOptions, {});
+	const clientOptions: LanguageClientOptions = {
+		documentSelector: [{language: "dasm"}]
+	};
+    client = new LanguageClient('dasmLS', 'dasm Language Server', serverOptions, clientOptions);
 	client.start();
 }
 
