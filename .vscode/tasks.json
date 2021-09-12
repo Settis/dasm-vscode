@@ -28,6 +28,11 @@
 			"problemMatcher": [
 				"$tsc-watch"
 			]
+		},
+		{
+			"label": "prepareFixture",
+			"type": "shell",
+			"command": "node client/out/test/prepareFixture"
 		}
 	]
 }

@@ -6,15 +6,18 @@
     "engines": {
         "vscode": "^1.52.0"
     },
-	"repository": {
-		"type": "git",
+    "repository": {
+        "type": "git",
         "url": "https://github.com/Settis/dasm-vscode"
-	},
+    },
     "dependencies": {
+        "@types/node": "^16.9.1",
         "vscode-languageclient": "^7.0.0"
     },
     "devDependencies": {
-		"@types/vscode": "^1.52.0",
-		"@vscode/test-electron": "^1.6.1"
-	}
+        "@types/js-yaml": "^4.0.3",
+        "@types/vscode": "^1.52.0",
+        "@vscode/test-electron": "^1.6.1",
+        "js-yaml": "4.1.0"
+    }
 }
