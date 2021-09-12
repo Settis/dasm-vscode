@@ -33,9 +33,8 @@ for (const useCase of useCases) {
         });
 
         test("check errors", async () => {
-            await sleep(2000);
             const expectedErrors = annotations.filter((it) => { return it.action.type == 'Error'; });
-            const actualErrors = getErrors(mainUri);
+            const actualErrors = await getErrors(mainUri, expectedErrors.length);
             assert.strictEqual(actualErrors.length, expectedErrors.length, 'Errors count are not the same');
             expectedErrors.forEach((expectedError, i) => {
                 const actualError = actualErrors[i];

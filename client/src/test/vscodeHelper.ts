@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
 
+const waitTime = 100;
+const waitAttempts = 20;
+
 export function getDocUri(file: string) {
     return vscode.Uri.file(file);
 }
@@ -19,8 +22,15 @@ export async function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function getErrors(uri: vscode.Uri) {
-    return vscode.languages.getDiagnostics(uri);
+export async function getErrors(uri: vscode.Uri, expectedCount: number) {
+    let attemptsCount = 0;
+    let errors: vscode.Diagnostic[] = [];
+    do {
+        await sleep(waitTime);
+        errors = vscode.languages.getDiagnostics(uri);
+        attemptsCount++;
+    } while (attemptsCount < waitAttempts && errors.length != expectedCount);
+    return errors;
 }
 
 export function getSeverityFor(name?: string) {
