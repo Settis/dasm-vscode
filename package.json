@@ -42,7 +42,7 @@
         "compile": "tsc -b",
         "watch": "tsc -b -w",
         "lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
-        "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+        "postinstall": "cd client && npm ci && cd ../server && npm ci && cd ..",
         "test": "sh ./e2eTests/e2e.sh"
     },
     "devDependencies": {
