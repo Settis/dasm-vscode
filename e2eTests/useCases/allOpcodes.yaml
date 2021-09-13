@@ -1,0 +1,519 @@
+text: |2
+    {AAA|unknownOpcode}
+    ADC 
+    ADC #$44
+    ADC $44
+    ADC $44,X
+    ADC $4400
+    ADC $4400,X
+    ADC $4400,Y
+    ADC ($44,X)
+    ADC ($44),Y
+    AND 
+    AND #$44
+    AND $44
+    AND $44,X
+    AND $4400
+    AND $4400,X
+    AND $4400,Y
+    AND ($44,X)
+    AND ($44),Y
+    ASL 
+    ASL #$44
+    ASL $44
+    ASL $44,X
+    ASL $4400
+    ASL $4400,X
+    ASL $4400,Y
+    ASL ($44,X)
+    ASL ($44),Y
+    BCC 
+    BCC #$44
+    BCC $44
+    BCC $44,X
+    BCC $4400
+    BCC $4400,X
+    BCC $4400,Y
+    BCC ($44,X)
+    BCC ($44),Y
+    BCS 
+    BCS #$44
+    BCS $44
+    BCS $44,X
+    BCS $4400
+    BCS $4400,X
+    BCS $4400,Y
+    BCS ($44,X)
+    BCS ($44),Y
+    BEQ 
+    BEQ #$44
+    BEQ $44
+    BEQ $44,X
+    BEQ $4400
+    BEQ $4400,X
+    BEQ $4400,Y
+    BEQ ($44,X)
+    BEQ ($44),Y
+    BIT 
+    BIT #$44
+    BIT $44
+    BIT $44,X
+    BIT $4400
+    BIT $4400,X
+    BIT $4400,Y
+    BIT ($44,X)
+    BIT ($44),Y
+    BMI 
+    BMI #$44
+    BMI $44
+    BMI $44,X
+    BMI $4400
+    BMI $4400,X
+    BMI $4400,Y
+    BMI ($44,X)
+    BMI ($44),Y
+    BNE 
+    BNE #$44
+    BNE $44
+    BNE $44,X
+    BNE $4400
+    BNE $4400,X
+    BNE $4400,Y
+    BNE ($44,X)
+    BNE ($44),Y
+    BPL 
+    BPL #$44
+    BPL $44
+    BPL $44,X
+    BPL $4400
+    BPL $4400,X
+    BPL $4400,Y
+    BPL ($44,X)
+    BPL ($44),Y
+    BRK 
+    BRK #$44
+    BRK $44
+    BRK $44,X
+    BRK $4400
+    BRK $4400,X
+    BRK $4400,Y
+    BRK ($44,X)
+    BRK ($44),Y
+    BVC 
+    BVC #$44
+    BVC $44
+    BVC $44,X
+    BVC $4400
+    BVC $4400,X
+    BVC $4400,Y
+    BVC ($44,X)
+    BVC ($44),Y
+    BVS 
+    BVS #$44
+    BVS $44
+    BVS $44,X
+    BVS $4400
+    BVS $4400,X
+    BVS $4400,Y
+    BVS ($44,X)
+    BVS ($44),Y
+    CLC 
+    CLC #$44
+    CLC $44
+    CLC $44,X
+    CLC $4400
+    CLC $4400,X
+    CLC $4400,Y
+    CLC ($44,X)
+    CLC ($44),Y
+    CLD 
+    CLD #$44
+    CLD $44
+    CLD $44,X
+    CLD $4400
+    CLD $4400,X
+    CLD $4400,Y
+    CLD ($44,X)
+    CLD ($44),Y
+    CLI 
+    CLI #$44
+    CLI $44
+    CLI $44,X
+    CLI $4400
+    CLI $4400,X
+    CLI $4400,Y
+    CLI ($44,X)
+    CLI ($44),Y
+    CLV 
+    CLV #$44
+    CLV $44
+    CLV $44,X
+    CLV $4400
+    CLV $4400,X
+    CLV $4400,Y
+    CLV ($44,X)
+    CLV ($44),Y
+    CMP 
+    CMP #$44
+    CMP $44
+    CMP $44,X
+    CMP $4400
+    CMP $4400,X
+    CMP $4400,Y
+    CMP ($44,X)
+    CMP ($44),Y
+    CPX 
+    CPX #$44
+    CPX $44
+    CPX $44,X
+    CPX $4400
+    CPX $4400,X
+    CPX $4400,Y
+    CPX ($44,X)
+    CPX ($44),Y
+    CPY 
+    CPY #$44
+    CPY $44
+    CPY $44,X
+    CPY $4400
+    CPY $4400,X
+    CPY $4400,Y
+    CPY ($44,X)
+    CPY ($44),Y
+    DEC 
+    DEC #$44
+    DEC $44
+    DEC $44,X
+    DEC $4400
+    DEC $4400,X
+    DEC $4400,Y
+    DEC ($44,X)
+    DEC ($44),Y
+    DEX 
+    DEX #$44
+    DEX $44
+    DEX $44,X
+    DEX $4400
+    DEX $4400,X
+    DEX $4400,Y
+    DEX ($44,X)
+    DEX ($44),Y
+    DEY 
+    DEY #$44
+    DEY $44
+    DEY $44,X
+    DEY $4400
+    DEY $4400,X
+    DEY $4400,Y
+    DEY ($44,X)
+    DEY ($44),Y
+    EOR 
+    EOR #$44
+    EOR $44
+    EOR $44,X
+    EOR $4400
+    EOR $4400,X
+    EOR $4400,Y
+    EOR ($44,X)
+    EOR ($44),Y
+    INC 
+    INC #$44
+    INC $44
+    INC $44,X
+    INC $4400
+    INC $4400,X
+    INC $4400,Y
+    INC ($44,X)
+    INC ($44),Y
+    INX 
+    INX #$44
+    INX $44
+    INX $44,X
+    INX $4400
+    INX $4400,X
+    INX $4400,Y
+    INX ($44,X)
+    INX ($44),Y
+    INY 
+    INY #$44
+    INY $44
+    INY $44,X
+    INY $4400
+    INY $4400,X
+    INY $4400,Y
+    INY ($44,X)
+    INY ($44),Y
+    JMP 
+    JMP #$44
+    JMP $44
+    JMP $44,X
+    JMP $4400
+    JMP $4400,X
+    JMP $4400,Y
+    JMP ($44,X)
+    JMP ($44),Y
+    JSR 
+    JSR #$44
+    JSR $44
+    JSR $44,X
+    JSR $4400
+    JSR $4400,X
+    JSR $4400,Y
+    JSR ($44,X)
+    JSR ($44),Y
+    LDA 
+    LDA #$44
+    LDA $44
+    LDA $44,X
+    LDA $4400
+    LDA $4400,X
+    LDA $4400,Y
+    LDA ($44,X)
+    LDA ($44),Y
+    LDX 
+    LDX #$44
+    LDX $44
+    LDX $44,X
+    LDX $4400
+    LDX $4400,X
+    LDX $4400,Y
+    LDX ($44,X)
+    LDX ($44),Y
+    LDY 
+    LDY #$44
+    LDY $44
+    LDY $44,X
+    LDY $4400
+    LDY $4400,X
+    LDY $4400,Y
+    LDY ($44,X)
+    LDY ($44),Y
+    LSR 
+    LSR #$44
+    LSR $44
+    LSR $44,X
+    LSR $4400
+    LSR $4400,X
+    LSR $4400,Y
+    LSR ($44,X)
+    LSR ($44),Y
+    NOP 
+    NOP #$44
+    NOP $44
+    NOP $44,X
+    NOP $4400
+    NOP $4400,X
+    NOP $4400,Y
+    NOP ($44,X)
+    NOP ($44),Y
+    ORA 
+    ORA #$44
+    ORA $44
+    ORA $44,X
+    ORA $4400
+    ORA $4400,X
+    ORA $4400,Y
+    ORA ($44,X)
+    ORA ($44),Y
+    PHA 
+    PHA #$44
+    PHA $44
+    PHA $44,X
+    PHA $4400
+    PHA $4400,X
+    PHA $4400,Y
+    PHA ($44,X)
+    PHA ($44),Y
+    PHP 
+    PHP #$44
+    PHP $44
+    PHP $44,X
+    PHP $4400
+    PHP $4400,X
+    PHP $4400,Y
+    PHP ($44,X)
+    PHP ($44),Y
+    PLA 
+    PLA #$44
+    PLA $44
+    PLA $44,X
+    PLA $4400
+    PLA $4400,X
+    PLA $4400,Y
+    PLA ($44,X)
+    PLA ($44),Y
+    PLP 
+    PLP #$44
+    PLP $44
+    PLP $44,X
+    PLP $4400
+    PLP $4400,X
+    PLP $4400,Y
+    PLP ($44,X)
+    PLP ($44),Y
+    ROL 
+    ROL #$44
+    ROL $44
+    ROL $44,X
+    ROL $4400
+    ROL $4400,X
+    ROL $4400,Y
+    ROL ($44,X)
+    ROL ($44),Y
+    ROR 
+    ROR #$44
+    ROR $44
+    ROR $44,X
+    ROR $4400
+    ROR $4400,X
+    ROR $4400,Y
+    ROR ($44,X)
+    ROR ($44),Y
+    RTI 
+    RTI #$44
+    RTI $44
+    RTI $44,X
+    RTI $4400
+    RTI $4400,X
+    RTI $4400,Y
+    RTI ($44,X)
+    RTI ($44),Y
+    RTS 
+    RTS #$44
+    RTS $44
+    RTS $44,X
+    RTS $4400
+    RTS $4400,X
+    RTS $4400,Y
+    RTS ($44,X)
+    RTS ($44),Y
+    SBC 
+    SBC #$44
+    SBC $44
+    SBC $44,X
+    SBC $4400
+    SBC $4400,X
+    SBC $4400,Y
+    SBC ($44,X)
+    SBC ($44),Y
+    SEC 
+    SEC #$44
+    SEC $44
+    SEC $44,X
+    SEC $4400
+    SEC $4400,X
+    SEC $4400,Y
+    SEC ($44,X)
+    SEC ($44),Y
+    SED 
+    SED #$44
+    SED $44
+    SED $44,X
+    SED $4400
+    SED $4400,X
+    SED $4400,Y
+    SED ($44,X)
+    SED ($44),Y
+    SEI 
+    SEI #$44
+    SEI $44
+    SEI $44,X
+    SEI $4400
+    SEI $4400,X
+    SEI $4400,Y
+    SEI ($44,X)
+    SEI ($44),Y
+    STA 
+    STA #$44
+    STA $44
+    STA $44,X
+    STA $4400
+    STA $4400,X
+    STA $4400,Y
+    STA ($44,X)
+    STA ($44),Y
+    STX 
+    STX #$44
+    STX $44
+    STX $44,X
+    STX $4400
+    STX $4400,X
+    STX $4400,Y
+    STX ($44,X)
+    STX ($44),Y
+    STY 
+    STY #$44
+    STY $44
+    STY $44,X
+    STY $4400
+    STY $4400,X
+    STY $4400,Y
+    STY ($44,X)
+    STY ($44),Y
+    TAX 
+    TAX #$44
+    TAX $44
+    TAX $44,X
+    TAX $4400
+    TAX $4400,X
+    TAX $4400,Y
+    TAX ($44,X)
+    TAX ($44),Y
+    TAY 
+    TAY #$44
+    TAY $44
+    TAY $44,X
+    TAY $4400
+    TAY $4400,X
+    TAY $4400,Y
+    TAY ($44,X)
+    TAY ($44),Y
+    TSX 
+    TSX #$44
+    TSX $44
+    TSX $44,X
+    TSX $4400
+    TSX $4400,X
+    TSX $4400,Y
+    TSX ($44,X)
+    TSX ($44),Y
+    TXA 
+    TXA #$44
+    TXA $44
+    TXA $44,X
+    TXA $4400
+    TXA $4400,X
+    TXA $4400,Y
+    TXA ($44,X)
+    TXA ($44),Y
+    TXS 
+    TXS #$44
+    TXS $44
+    TXS $44,X
+    TXS $4400
+    TXS $4400,X
+    TXS $4400,Y
+    TXS ($44,X)
+    TXS ($44),Y
+    TYA 
+    TYA #$44
+    TYA $44
+    TYA $44,X
+    TYA $4400
+    TYA $4400,X
+    TYA $4400,Y
+    TYA ($44,X)
+    TYA ($44),Y
+actions:
+  unknownOpcode:
+    type: Error
+    message: Unknown opcode
+  wrongAddressMode:
+    type: Error
+    message: Wrong address mode
+  wrongImpliedMode:
+    type: Error
+    message: Only implied mode is possible
+  impliedModeNotAvailable:
+    type: Error
+    message: Implied mode is not available
