@@ -1,0 +1,8 @@
+text: |2
+    STA $56
+    STA $7894 {$45|arg}
+    STA $1 {$67 $78|arg} ; Comment
+actions:
+  arg:
+    type: Error
+    message: Too many arguments
