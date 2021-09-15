@@ -1,6 +1,6 @@
 text: |2
     {AAA|unknownOpcode}
-    ADC 
+    {ADC|impliedModeNotAvailable}
     ADC #$44
     ADC $44
     ADC $44,X
@@ -9,7 +9,7 @@ text: |2
     ADC $4400,Y
     ADC ($44,X)
     ADC ($44),Y
-    AND 
+    {AND|impliedModeNotAvailable}
     AND #$44
     AND $44
     AND $44,X
@@ -18,142 +18,143 @@ text: |2
     AND $4400,Y
     AND ($44,X)
     AND ($44),Y
-    ASL 
-    ASL #$44
+    {ASL|impliedModeNotAvailable}
+    ASL A
+    ASL {#$44|wrongImmediate}
     ASL $44
     ASL $44,X
     ASL $4400
     ASL $4400,X
-    ASL $4400,Y
-    ASL ($44,X)
-    ASL ($44),Y
-    BCC 
-    BCC #$44
+    ASL {$4400,Y|wrongAddressMode}
+    ASL {($44,X)|wrongAddressMode}
+    ASL {($44),Y|wrongAddressMode}
+    {BCC|impliedModeNotAvailable}
+    BCC {#$44|wrongImmediate}
     BCC $44
-    BCC $44,X
+    BCC {$44,X|wrongAddressMode}
     BCC $4400
-    BCC $4400,X
-    BCC $4400,Y
-    BCC ($44,X)
-    BCC ($44),Y
-    BCS 
-    BCS #$44
+    BCC {$4400,X|wrongAddressMode}
+    BCC {$4400,Y|wrongAddressMode}
+    BCC {($44,X)|wrongAddressMode}
+    BCC {($44),Y|wrongAddressMode}
+    {BCS|impliedModeNotAvailable}
+    BCS {#$44|wrongImmediate}
     BCS $44
-    BCS $44,X
+    BCS {$44,X|wrongAddressMode}
     BCS $4400
-    BCS $4400,X
-    BCS $4400,Y
-    BCS ($44,X)
-    BCS ($44),Y
-    BEQ 
-    BEQ #$44
+    BCS {$4400,X|wrongAddressMode}
+    BCS {$4400,Y|wrongAddressMode}
+    BCS {($44,X)|wrongAddressMode}
+    BCS {($44),Y|wrongAddressMode}
+    {BEQ|impliedModeNotAvailable}
+    BEQ {#$44|wrongImmediate}
     BEQ $44
-    BEQ $44,X
+    BEQ {$44,X|wrongAddressMode}
     BEQ $4400
-    BEQ $4400,X
-    BEQ $4400,Y
-    BEQ ($44,X)
-    BEQ ($44),Y
-    BIT 
-    BIT #$44
+    BEQ {$4400,X|wrongAddressMode}
+    BEQ {$4400,Y|wrongAddressMode}
+    BEQ {($44,X)|wrongAddressMode}
+    BEQ {($44),Y|wrongAddressMode}
+    {BIT|impliedModeNotAvailable}
+    BIT {#$44|wrongImmediate}
     BIT $44
-    BIT $44,X
+    BIT {$44,X|wrongAddressMode}
     BIT $4400
-    BIT $4400,X
-    BIT $4400,Y
-    BIT ($44,X)
-    BIT ($44),Y
-    BMI 
-    BMI #$44
+    BIT {$4400,X|wrongAddressMode}
+    BIT {$4400,Y|wrongAddressMode}
+    BIT {($44,X)|wrongAddressMode}
+    BIT {($44),Y|wrongAddressMode}
+    {BMI|impliedModeNotAvailable}
+    BMI {#$44|wrongImmediate}
     BMI $44
-    BMI $44,X
+    BMI {$44,X|wrongAddressMode}
     BMI $4400
-    BMI $4400,X
-    BMI $4400,Y
-    BMI ($44,X)
-    BMI ($44),Y
-    BNE 
-    BNE #$44
+    BMI {$4400,X|wrongAddressMode}
+    BMI {$4400,Y|wrongAddressMode}
+    BMI {($44,X)|wrongAddressMode}
+    BMI {($44),Y|wrongAddressMode}
+    {BNE|impliedModeNotAvailable} 
+    BNE {#$44|wrongImmediate}
     BNE $44
-    BNE $44,X
+    BNE {$44,X|wrongAddressMode}
     BNE $4400
-    BNE $4400,X
-    BNE $4400,Y
-    BNE ($44,X)
-    BNE ($44),Y
-    BPL 
-    BPL #$44
+    BNE {$4400,X|wrongAddressMode}
+    BNE {$4400,Y|wrongAddressMode}
+    BNE {($44,X)|wrongAddressMode}
+    BNE {($44),Y|wrongAddressMode}
+    {BPL|impliedModeNotAvailable}  
+    BPL {#$44|wrongImmediate}
     BPL $44
-    BPL $44,X
+    BPL {$44,X|wrongAddressMode}
     BPL $4400
-    BPL $4400,X
-    BPL $4400,Y
-    BPL ($44,X)
-    BPL ($44),Y
+    BPL {$4400,X|wrongAddressMode}
+    BPL {$4400,Y|wrongAddressMode}
+    BPL {($44,X)|wrongAddressMode}
+    BPL {($44),Y|wrongAddressMode}
     BRK 
-    BRK #$44
-    BRK $44
-    BRK $44,X
-    BRK $4400
-    BRK $4400,X
-    BRK $4400,Y
-    BRK ($44,X)
-    BRK ($44),Y
-    BVC 
-    BVC #$44
+    BRK {#$44|wrongImpliedMode}
+    BRK {$44|wrongImpliedMode}
+    BRK {$44,X|wrongImpliedMode}
+    BRK {$4400|wrongImpliedMode}
+    BRK {$4400,X|wrongImpliedMode}
+    BRK {$4400,Y|wrongImpliedMode}
+    BRK {($44,X)|wrongImpliedMode}
+    BRK {($44),Y|wrongImpliedMode}
+    {BVC|impliedModeNotAvailable}  
+    BVC {#$44|wrongImmediate}
     BVC $44
-    BVC $44,X
+    BVC {$44,X|wrongAddressMode}
     BVC $4400
-    BVC $4400,X
-    BVC $4400,Y
-    BVC ($44,X)
-    BVC ($44),Y
-    BVS 
-    BVS #$44
+    BVC {$4400,X|wrongAddressMode}
+    BVC {$4400,Y|wrongAddressMode}
+    BVC {($44,X)|wrongAddressMode}
+    BVC {($44),Y|wrongAddressMode}
+    {BVS|impliedModeNotAvailable} 
+    BVS {#$44|wrongImmediate}
     BVS $44
-    BVS $44,X
+    BVS {$44,X|wrongAddressMode}
     BVS $4400
-    BVS $4400,X
-    BVS $4400,Y
-    BVS ($44,X)
-    BVS ($44),Y
+    BVS {$4400,X|wrongAddressMode}
+    BVS {$4400,Y|wrongAddressMode}
+    BVS {($44,X)|wrongAddressMode}
+    BVS {($44),Y|wrongAddressMode}
     CLC 
-    CLC #$44
-    CLC $44
-    CLC $44,X
-    CLC $4400
-    CLC $4400,X
-    CLC $4400,Y
-    CLC ($44,X)
-    CLC ($44),Y
+    CLC {#$44|wrongImpliedMode}
+    CLC {$44|wrongImpliedMode}
+    CLC {$44,X|wrongImpliedMode}
+    CLC {$4400|wrongImpliedMode}
+    CLC {$4400,X|wrongImpliedMode}
+    CLC {$4400,Y|wrongImpliedMode}
+    CLC {($44,X)|wrongImpliedMode}
+    CLC {($44),Y|wrongImpliedMode}
     CLD 
-    CLD #$44
-    CLD $44
-    CLD $44,X
-    CLD $4400
-    CLD $4400,X
-    CLD $4400,Y
-    CLD ($44,X)
-    CLD ($44),Y
+    CLD {#$44|wrongImpliedMode}
+    CLD {$44|wrongImpliedMode}
+    CLD {$44,X|wrongImpliedMode}
+    CLD {$4400|wrongImpliedMode}
+    CLD {$4400,X|wrongImpliedMode}
+    CLD {$4400,Y|wrongImpliedMode}
+    CLD {($44,X)|wrongImpliedMode}
+    CLD {($44),Y|wrongImpliedMode}
     CLI 
-    CLI #$44
-    CLI $44
-    CLI $44,X
-    CLI $4400
-    CLI $4400,X
-    CLI $4400,Y
-    CLI ($44,X)
-    CLI ($44),Y
+    CLI {#$44|wrongImpliedMode}
+    CLI {$44|wrongImpliedMode}
+    CLI {$44,X|wrongImpliedMode}
+    CLI {$4400|wrongImpliedMode}
+    CLI {$4400,X|wrongImpliedMode}
+    CLI {$4400,Y|wrongImpliedMode}
+    CLI {($44,X)|wrongImpliedMode}
+    CLI {($44),Y|wrongImpliedMode}
     CLV 
-    CLV #$44
-    CLV $44
-    CLV $44,X
-    CLV $4400
-    CLV $4400,X
-    CLV $4400,Y
-    CLV ($44,X)
-    CLV ($44),Y
-    CMP 
+    CLV {#$44|wrongImpliedMode}
+    CLV {$44|wrongImpliedMode}
+    CLV {$44,X|wrongImpliedMode}
+    CLV {$4400|wrongImpliedMode}
+    CLV {$4400,X|wrongImpliedMode}
+    CLV {$4400,Y|wrongImpliedMode}
+    CLV {($44,X)|wrongImpliedMode}
+    CLV {($44),Y|wrongImpliedMode}
+    {CMP|impliedModeNotAvailable} 
     CMP #$44
     CMP $44
     CMP $44,X
@@ -162,52 +163,52 @@ text: |2
     CMP $4400,Y
     CMP ($44,X)
     CMP ($44),Y
-    CPX 
+    {CPX|impliedModeNotAvailable}
     CPX #$44
     CPX $44
-    CPX $44,X
+    CPX {$44,X|wrongAddressMode}
     CPX $4400
-    CPX $4400,X
-    CPX $4400,Y
-    CPX ($44,X)
-    CPX ($44),Y
-    CPY 
+    CPX {$4400,X|wrongAddressMode}
+    CPX {$4400,Y|wrongAddressMode}
+    CPX {($44,X)|wrongAddressMode}
+    CPX {($44),Y|wrongAddressMode}
+    {CPY|impliedModeNotAvailable} 
     CPY #$44
     CPY $44
-    CPY $44,X
+    CPY {$44,X|wrongAddressMode}
     CPY $4400
-    CPY $4400,X
-    CPY $4400,Y
-    CPY ($44,X)
-    CPY ($44),Y
-    DEC 
-    DEC #$44
+    CPY {$4400,X|wrongAddressMode}
+    CPY {$4400,Y|wrongAddressMode}
+    CPY {($44,X)|wrongAddressMode}
+    CPY {($44),Y|wrongAddressMode}
+    {DEC|impliedModeNotAvailable}  
+    DEC {#$44|wrongImmediate}
     DEC $44
     DEC $44,X
     DEC $4400
     DEC $4400,X
-    DEC $4400,Y
-    DEC ($44,X)
-    DEC ($44),Y
+    DEC {$4400,Y|wrongAddressMode}
+    DEC {($44,X)|wrongAddressMode}
+    DEC {($44),Y|wrongAddressMode}
     DEX 
-    DEX #$44
-    DEX $44
-    DEX $44,X
-    DEX $4400
-    DEX $4400,X
-    DEX $4400,Y
-    DEX ($44,X)
-    DEX ($44),Y
+    DEX {#$44|wrongImpliedMode}
+    DEX {$44|wrongImpliedMode}
+    DEX {$44,X|wrongImpliedMode}
+    DEX {$4400|wrongImpliedMode}
+    DEX {$4400,X|wrongImpliedMode}
+    DEX {$4400,Y|wrongImpliedMode}
+    DEX {($44,X)|wrongImpliedMode}
+    DEX {($44),Y|wrongImpliedMode}
     DEY 
-    DEY #$44
-    DEY $44
-    DEY $44,X
-    DEY $4400
-    DEY $4400,X
-    DEY $4400,Y
-    DEY ($44,X)
-    DEY ($44),Y
-    EOR 
+    DEY {#$44|wrongImpliedMode}
+    DEY {$44|wrongImpliedMode}
+    DEY {$44,X|wrongImpliedMode}
+    DEY {$4400|wrongImpliedMode}
+    DEY {$4400,X|wrongImpliedMode}
+    DEY {$4400,Y|wrongImpliedMode}
+    DEY {($44,X)|wrongImpliedMode}
+    DEY {($44),Y|wrongImpliedMode}
+    {EOR|impliedModeNotAvailable}
     EOR #$44
     EOR $44
     EOR $44,X
@@ -216,52 +217,53 @@ text: |2
     EOR $4400,Y
     EOR ($44,X)
     EOR ($44),Y
-    INC 
-    INC #$44
+    {INC|impliedModeNotAvailable}
+    INC {#$44|wrongImmediate}
     INC $44
     INC $44,X
     INC $4400
     INC $4400,X
-    INC $4400,Y
-    INC ($44,X)
-    INC ($44),Y
+    INC {$4400,Y|wrongAddressMode}
+    INC {($44,X)|wrongAddressMode}
+    INC {($44),Y|wrongAddressMode}
     INX 
-    INX #$44
-    INX $44
-    INX $44,X
-    INX $4400
-    INX $4400,X
-    INX $4400,Y
-    INX ($44,X)
-    INX ($44),Y
+    INX {#$44|wrongImpliedMode}
+    INX {$44|wrongImpliedMode}
+    INX {$44,X|wrongImpliedMode}
+    INX {$4400|wrongImpliedMode}
+    INX {$4400,X|wrongImpliedMode}
+    INX {$4400,Y|wrongImpliedMode}
+    INX {($44,X)|wrongImpliedMode}
+    INX {($44),Y|wrongImpliedMode}
     INY 
-    INY #$44
-    INY $44
-    INY $44,X
-    INY $4400
-    INY $4400,X
-    INY $4400,Y
-    INY ($44,X)
-    INY ($44),Y
-    JMP 
-    JMP #$44
-    JMP $44
-    JMP $44,X
+    INY {#$44|wrongImpliedMode}
+    INY {$44|wrongImpliedMode}
+    INY {$44,X|wrongImpliedMode}
+    INY {$4400|wrongImpliedMode}
+    INY {$4400,X|wrongImpliedMode}
+    INY {$4400,Y|wrongImpliedMode}
+    INY {($44,X)|wrongImpliedMode}
+    INY {($44),Y|wrongImpliedMode}
+    {JMP|impliedModeNotAvailable}
+    JMP {#$44|wrongImmediate}
+    JMP {$44|wrongAddressMode}
+    JMP {$44,X|wrongAddressMode}
     JMP $4400
-    JMP $4400,X
-    JMP $4400,Y
-    JMP ($44,X)
-    JMP ($44),Y
-    JSR 
-    JSR #$44
-    JSR $44
-    JSR $44,X
+    JMP ($5597)
+    JMP {$4400,X|wrongAddressMode}
+    JMP {$4400,Y|wrongAddressMode}
+    JMP {($44,X)|wrongAddressMode}
+    JMP {($44),Y|wrongAddressMode}
+    {JSR|impliedModeNotAvailable}
+    JSR {#$44|wrongImmediate}
+    JSR {$44|wrongAddressMode}
+    JSR {$44,X|wrongAddressMode}
     JSR $4400
-    JSR $4400,X
-    JSR $4400,Y
-    JSR ($44,X)
-    JSR ($44),Y
-    LDA 
+    JSR {$4400,X|wrongAddressMode}
+    JSR {$4400,Y|wrongAddressMode}
+    JSR {($44,X)|wrongAddressMode}
+    JSR {($44),Y|wrongAddressMode}
+    {LDA|impliedModeNotAvailable} 
     LDA #$44
     LDA $44
     LDA $44,X
@@ -270,43 +272,45 @@ text: |2
     LDA $4400,Y
     LDA ($44,X)
     LDA ($44),Y
-    LDX 
+    {LDX|impliedModeNotAvailable} 
     LDX #$44
     LDX $44
-    LDX $44,X
+    LDX {$44,X|wrongAddressMode}
+    LDX $44,Y
     LDX $4400
-    LDX $4400,X
+    LDX {$4400,X|wrongAddressMode}
     LDX $4400,Y
-    LDX ($44,X)
-    LDX ($44),Y
-    LDY 
+    LDX {($44,X)|wrongAddressMode}
+    LDX {($44),Y|wrongAddressMode}
+    {LDY|impliedModeNotAvailable}  
     LDY #$44
     LDY $44
     LDY $44,X
     LDY $4400
     LDY $4400,X
-    LDY $4400,Y
-    LDY ($44,X)
-    LDY ($44),Y
-    LSR 
-    LSR #$44
+    LDY {$4400,Y|wrongAddressMode}
+    LDY {($44,X)|wrongAddressMode}
+    LDY {($44),Y|wrongAddressMode}
+    {LSR|impliedModeNotAvailable} 
+    LSR A
+    LSR {#$44|wrongImmediate}
     LSR $44
     LSR $44,X
     LSR $4400
     LSR $4400,X
-    LSR $4400,Y
-    LSR ($44,X)
-    LSR ($44),Y
+    LSR {$4400,Y|wrongAddressMode}
+    LSR {($44,X)|wrongAddressMode}
+    LSR {($44),Y|wrongAddressMode}
     NOP 
-    NOP #$44
-    NOP $44
-    NOP $44,X
-    NOP $4400
-    NOP $4400,X
-    NOP $4400,Y
-    NOP ($44,X)
-    NOP ($44),Y
-    ORA 
+    NOP {#$44|wrongImpliedMode}
+    NOP {$44|wrongImpliedMode}
+    NOP {$44,X|wrongImpliedMode}
+    NOP {$4400|wrongImpliedMode}
+    NOP {$4400,X|wrongImpliedMode}
+    NOP {$4400,Y|wrongImpliedMode}
+    NOP {($44,X)|wrongImpliedMode}
+    NOP {($44),Y|wrongImpliedMode}
+    {ORA|impliedModeNotAvailable}  
     ORA #$44
     ORA $44
     ORA $44,X
@@ -316,78 +320,80 @@ text: |2
     ORA ($44,X)
     ORA ($44),Y
     PHA 
-    PHA #$44
-    PHA $44
-    PHA $44,X
-    PHA $4400
-    PHA $4400,X
-    PHA $4400,Y
-    PHA ($44,X)
-    PHA ($44),Y
+    PHA {#$44|wrongImpliedMode}
+    PHA {$44|wrongImpliedMode}
+    PHA {$44,X|wrongImpliedMode}
+    PHA {$4400|wrongImpliedMode}
+    PHA {$4400,X|wrongImpliedMode}
+    PHA {$4400,Y|wrongImpliedMode}
+    PHA {($44,X)|wrongImpliedMode}
+    PHA {($44),Y|wrongImpliedMode}
     PHP 
-    PHP #$44
-    PHP $44
-    PHP $44,X
-    PHP $4400
-    PHP $4400,X
-    PHP $4400,Y
-    PHP ($44,X)
-    PHP ($44),Y
+    PHP {#$44|wrongImpliedMode}
+    PHP {$44|wrongImpliedMode}
+    PHP {$44,X|wrongImpliedMode}
+    PHP {$4400|wrongImpliedMode}
+    PHP {$4400,X|wrongImpliedMode}
+    PHP {$4400,Y|wrongImpliedMode}
+    PHP {($44,X)|wrongImpliedMode}
+    PHP {($44),Y|wrongImpliedMode}
     PLA 
-    PLA #$44
-    PLA $44
-    PLA $44,X
-    PLA $4400
-    PLA $4400,X
-    PLA $4400,Y
-    PLA ($44,X)
-    PLA ($44),Y
+    PLA {#$44|wrongImpliedMode}
+    PLA {$44|wrongImpliedMode}
+    PLA {$44,X|wrongImpliedMode}
+    PLA {$4400|wrongImpliedMode}
+    PLA {$4400,X|wrongImpliedMode}
+    PLA {$4400,Y|wrongImpliedMode}
+    PLA {($44,X)|wrongImpliedMode}
+    PLA {($44),Y|wrongImpliedMode}
     PLP 
-    PLP #$44
-    PLP $44
-    PLP $44,X
-    PLP $4400
-    PLP $4400,X
-    PLP $4400,Y
-    PLP ($44,X)
-    PLP ($44),Y
-    ROL 
-    ROL #$44
+    PLP {#$44|wrongImpliedMode}
+    PLP {$44|wrongImpliedMode}
+    PLP {$44,X|wrongImpliedMode}
+    PLP {$4400|wrongImpliedMode}
+    PLP {$4400,X|wrongImpliedMode}
+    PLP {$4400,Y|wrongImpliedMode}
+    PLP {($44,X)|wrongImpliedMode}
+    PLP {($44),Y|wrongImpliedMode}
+    {ROL|impliedModeNotAvailable}
+    ROL A
+    ROL {#$44|wrongImmediate}
     ROL $44
     ROL $44,X
     ROL $4400
     ROL $4400,X
-    ROL $4400,Y
-    ROL ($44,X)
-    ROL ($44),Y
-    ROR 
-    ROR #$44
+    ROL {$4400,Y|wrongAddressMode}
+    ROL {($44,X)|wrongAddressMode}
+    ROL {($44),Y|wrongAddressMode}
+    {ROR|impliedModeNotAvailable} 
+    ROR A
+    ROR {#$44|wrongImmediate}
     ROR $44
     ROR $44,X
     ROR $4400
     ROR $4400,X
-    ROR $4400,Y
-    ROR ($44,X)
-    ROR ($44),Y
+    ROR {$4400,Y|wrongAddressMode}
+    ROR {($44,X)|wrongAddressMode}
+    ROR {($44),Y|wrongAddressMode}
     RTI 
-    RTI #$44
-    RTI $44
-    RTI $44,X
-    RTI $4400
-    RTI $4400,X
-    RTI $4400,Y
-    RTI ($44,X)
-    RTI ($44),Y
+    RTI {#$44|wrongImpliedMode}
+    RTI {$44|wrongImpliedMode}
+    RTI {$44,X|wrongImpliedMode}
+    RTI {$4400|wrongImpliedMode}
+    RTI {$4400,X|wrongImpliedMode}
+    RTI {$4400,Y|wrongImpliedMode}
+    RTI {($44,X)|wrongImpliedMode}
+    RTI {($44),Y|wrongImpliedMode}
     RTS 
-    RTS #$44
-    RTS $44
-    RTS $44,X
-    RTS $4400
-    RTS $4400,X
-    RTS $4400,Y
-    RTS ($44,X)
-    RTS ($44),Y
-    SBC 
+    RTS {#$44|wrongImpliedMode}
+    RTS {$44|wrongImpliedMode}
+    RTS {$44,X|wrongImpliedMode}
+    RTS {$4400|wrongImpliedMode}
+    RTS {$4400,X|wrongImpliedMode}
+    RTS {$4400,Y|wrongImpliedMode}
+    RTS {($44,X)|wrongImpliedMode}
+    RTS {($44),Y|wrongImpliedMode}
+    {SBC|impliedModeNotAvailable} 
     SBC #$44
     SBC $44
     SBC $44,X
@@ -397,34 +403,34 @@ text: |2
     SBC ($44,X)
     SBC ($44),Y
     SEC 
-    SEC #$44
-    SEC $44
-    SEC $44,X
-    SEC $4400
-    SEC $4400,X
-    SEC $4400,Y
-    SEC ($44,X)
-    SEC ($44),Y
+    SEC {#$44|wrongImpliedMode}
+    SEC {$44|wrongImpliedMode}
+    SEC {$44,X|wrongImpliedMode}
+    SEC {$4400|wrongImpliedMode}
+    SEC {$4400,X|wrongImpliedMode}
+    SEC {$4400,Y|wrongImpliedMode}
+    SEC {($44,X)|wrongImpliedMode}
+    SEC {($44),Y|wrongImpliedMode}
     SED 
-    SED #$44
-    SED $44
-    SED $44,X
-    SED $4400
-    SED $4400,X
-    SED $4400,Y
-    SED ($44,X)
-    SED ($44),Y
+    SED {#$44|wrongImpliedMode}
+    SED {$44|wrongImpliedMode}
+    SED {$44,X|wrongImpliedMode}
+    SED {$4400|wrongImpliedMode}
+    SED {$4400,X|wrongImpliedMode}
+    SED {$4400,Y|wrongImpliedMode}
+    SED {($44,X)|wrongImpliedMode}
+    SED {($44),Y|wrongImpliedMode}
     SEI 
-    SEI #$44
-    SEI $44
-    SEI $44,X
-    SEI $4400
-    SEI $4400,X
-    SEI $4400,Y
-    SEI ($44,X)
-    SEI ($44),Y
-    STA 
-    STA #$44
+    SEI {#$44|wrongImpliedMode}
+    SEI {$44|wrongImpliedMode}
+    SEI {$44,X|wrongImpliedMode}
+    SEI {$4400|wrongImpliedMode}
+    SEI {$4400,X|wrongImpliedMode}
+    SEI {$4400,Y|wrongImpliedMode}
+    SEI {($44,X)|wrongImpliedMode}
+    SEI {($44),Y|wrongImpliedMode}
+    {STA|impliedModeNotAvailable} 
+    STA {#$44|wrongImmediate}
     STA $44
     STA $44,X
     STA $4400
@@ -432,78 +438,79 @@ text: |2
     STA $4400,Y
     STA ($44,X)
     STA ($44),Y
-    STX 
-    STX #$44
+    {STX|impliedModeNotAvailable}
+    STX {#$44|wrongImmediate}
     STX $44
-    STX $44,X
+    STX {$44,X|wrongAddressMode}
+    STX $44,Y
     STX $4400
-    STX $4400,X
-    STX $4400,Y
-    STX ($44,X)
-    STX ($44),Y
-    STY 
-    STY #$44
+    STX {$4400,X|wrongAddressMode}
+    STX {$4400,Y|wrongAddressMode}
+    STX {($44,X)|wrongAddressMode}
+    STX {($44),Y|wrongAddressMode}
+    {STY|impliedModeNotAvailable} 
+    STY {#$44|wrongImmediate}
     STY $44
     STY $44,X
     STY $4400
-    STY $4400,X
-    STY $4400,Y
-    STY ($44,X)
-    STY ($44),Y
+    STY {$4400,X|wrongAddressMode}
+    STY {$4400,Y|wrongAddressMode}
+    STY {($44,X)|wrongAddressMode}
+    STY {($44),Y|wrongAddressMode}
     TAX 
-    TAX #$44
-    TAX $44
-    TAX $44,X
-    TAX $4400
-    TAX $4400,X
-    TAX $4400,Y
-    TAX ($44,X)
-    TAX ($44),Y
+    TAX {#$44|wrongImpliedMode}
+    TAX {$44|wrongImpliedMode}
+    TAX {$44,X|wrongImpliedMode}
+    TAX {$4400|wrongImpliedMode}
+    TAX {$4400,X|wrongImpliedMode}
+    TAX {$4400,Y|wrongImpliedMode}
+    TAX {($44,X)|wrongImpliedMode}
+    TAX {($44),Y|wrongImpliedMode}
     TAY 
-    TAY #$44
-    TAY $44
-    TAY $44,X
-    TAY $4400
-    TAY $4400,X
-    TAY $4400,Y
-    TAY ($44,X)
-    TAY ($44),Y
+    TAY {#$44|wrongImpliedMode}
+    TAY {$44|wrongImpliedMode}
+    TAY {$44,X|wrongImpliedMode}
+    TAY {$4400|wrongImpliedMode}
+    TAY {$4400,X|wrongImpliedMode}
+    TAY {$4400,Y|wrongImpliedMode}
+    TAY {($44,X)|wrongImpliedMode}
+    TAY {($44),Y|wrongImpliedMode}
     TSX 
-    TSX #$44
-    TSX $44
-    TSX $44,X
-    TSX $4400
-    TSX $4400,X
-    TSX $4400,Y
-    TSX ($44,X)
-    TSX ($44),Y
+    TSX {#$44|wrongImpliedMode}
+    TSX {$44|wrongImpliedMode}
+    TSX {$44,X|wrongImpliedMode}
+    TSX {$4400|wrongImpliedMode}
+    TSX {$4400,X|wrongImpliedMode}
+    TSX {$4400,Y|wrongImpliedMode}
+    TSX {($44,X)|wrongImpliedMode}
+    TSX {($44),Y|wrongImpliedMode}
     TXA 
-    TXA #$44
-    TXA $44
-    TXA $44,X
-    TXA $4400
-    TXA $4400,X
-    TXA $4400,Y
-    TXA ($44,X)
-    TXA ($44),Y
+    TXA {#$44|wrongImpliedMode}
+    TXA {$44|wrongImpliedMode}
+    TXA {$44,X|wrongImpliedMode}
+    TXA {$4400|wrongImpliedMode}
+    TXA {$4400,X|wrongImpliedMode}
+    TXA {$4400,Y|wrongImpliedMode}
+    TXA {($44,X)|wrongImpliedMode}
+    TXA {($44),Y|wrongImpliedMode}
     TXS 
-    TXS #$44
-    TXS $44
-    TXS $44,X
-    TXS $4400
-    TXS $4400,X
-    TXS $4400,Y
-    TXS ($44,X)
-    TXS ($44),Y
+    TXS {#$44|wrongImpliedMode}
+    TXS {$44|wrongImpliedMode}
+    TXS {$44,X|wrongImpliedMode}
+    TXS {$4400|wrongImpliedMode}
+    TXS {$4400,X|wrongImpliedMode}
+    TXS {$4400,Y|wrongImpliedMode}
+    TXS {($44,X)|wrongImpliedMode}
+    TXS {($44),Y|wrongImpliedMode}
     TYA 
-    TYA #$44
-    TYA $44
-    TYA $44,X
-    TYA $4400
-    TYA $4400,X
-    TYA $4400,Y
-    TYA ($44,X)
-    TYA ($44),Y
+    TYA {#$44|wrongImpliedMode}
+    TYA {$44|wrongImpliedMode}
+    TYA {$44,X|wrongImpliedMode}
+    TYA {$4400|wrongImpliedMode}
+    TYA {$4400,X|wrongImpliedMode}
+    TYA {$4400,Y|wrongImpliedMode}
+    TYA {($44,X)|wrongImpliedMode}
+    TYA {($44),Y|wrongImpliedMode}
 actions:
   unknownOpcode:
     type: Error
@@ -517,3 +524,6 @@ actions:
   impliedModeNotAvailable:
     type: Error
     message: Implied mode is not available
+  wrongImmediate:
+    type: Error
+    message: Immediate mode is not available
