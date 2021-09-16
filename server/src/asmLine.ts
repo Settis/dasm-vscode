@@ -1,26 +1,38 @@
-export default class AsmLine {
+type AsmLine = {
     readonly label?: Context;
     readonly command?: Context;
     readonly comment?: Context;
-    readonly arguments: Context[] = [];
+    readonly arguments: Context[];
+}
 
-    constructor(line: string) {
-        const commentReg = /^(?<code>[^;]*)?(;\s*(?<comment>.*?)\s*)?$/;
-        const commentRegResult = commentReg.exec(line)!.groups;
-        this.comment = constructContext(line, commentRegResult?.comment, line.indexOf(';'));
-        const codeString = commentRegResult?.code;
-        if (!codeString) return;
-        const words = codeString.split(/\s+/);
-        this.label = constructContext(codeString, words[0]);
-        this.command = constructContext(codeString, words[1], this.label?.range?.end);
-        let lastIndex = this.command?.range?.end;
-        for (let index = 2 ;index < words.length ;index++) {
-            const argContext = constructContext(codeString, words[index], lastIndex);
-            lastIndex = argContext?.range?.end;
-            if (argContext)
-                this.arguments.push(argContext);
-        }
+export default function parseAsmLine(line: string): AsmLine  {
+    const commentReg = /^(?<code>[^;]*)?(;\s*(?<comment>.*?)\s*)?$/;
+    const commentRegResult = commentReg.exec(line)!.groups;
+    const comment = constructContext(line, commentRegResult?.comment, line.indexOf(';'));
+    const codeString = commentRegResult?.code;
+    const args: Context[] = [];
+    if (!codeString) return {
+        comment: comment,
+        arguments: args,
+        command: undefined,
+        label: undefined
+    };
+    const words = codeString.split(/\s+/);
+    const label = constructContext(codeString, words[0]);
+    const command = constructContext(codeString, words[1], label?.range?.end);
+    let lastIndex = command?.range?.end;
+    for (let index = 2 ;index < words.length ;index++) {
+        const argContext = constructContext(codeString, words[index], lastIndex);
+        lastIndex = argContext?.range?.end;
+        if (argContext)
+            args.push(argContext);
     }
+    return {
+        label: label,
+        command: command,
+        comment: comment,
+        arguments: args
+    };
 }
 
 function constructContext(line: string, foundText?: string, position?: number) {
@@ -38,12 +50,12 @@ function constructContext(line: string, foundText?: string, position?: number) {
     }
 }
 
-type Context = {
-    text: string,
-    range: Range
+export type Context = {
+    readonly text: string,
+    readonly range: Range
 }
 
-type Range = {
-    start: number,
-    end: number
+export type Range = {
+    readonly start: number,
+    readonly end: number
 }
