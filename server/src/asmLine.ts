@@ -7,9 +7,9 @@ type AsmLine = {
 
 export default function parseAsmLine(line: string): AsmLine  {
     const commentReg = /^(?<code>[^;]*)?(;\s*(?<comment>.*?)\s*)?$/;
-    const commentRegResult = commentReg.exec(line)!.groups;
-    const comment = constructContext(line, commentRegResult?.comment, line.indexOf(';'));
-    const codeString = commentRegResult?.code;
+    const commentRegResult = commentReg.exec(line)!.groups!;
+    const comment = constructContext(line, commentRegResult.comment, line.indexOf(';'));
+    const codeString = commentRegResult.code;
     const args: Context[] = [];
     if (!codeString) return {
         comment: comment,

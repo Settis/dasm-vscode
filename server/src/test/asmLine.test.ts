@@ -32,6 +32,40 @@ describe('AsmLine can parse line:', () => {
 			comment: undefined
 		});
 	});
+	it('START', () => {
+		assert.deepStrictEqual(parseAsmLine('START'), {
+			label: {
+				text: 'START',
+				range: {
+					start: 0,
+					end: 5
+				}
+			},
+			command: undefined,
+			arguments: [],
+			comment: undefined
+		});
+	});
+	it('END   ; The end', () => {
+		assert.deepStrictEqual(parseAsmLine('END   ; The end'), {
+			label: {
+				text: 'END',
+				range: {
+					start: 0,
+					end: 3
+				}
+			},
+			command: undefined,
+			arguments: [],
+			comment: {
+				text: 'The end',
+				range: {
+					start: 8,
+					end: 15
+				}
+			}
+		});
+	});
 	it('	    processor	6502', () => {
 		assert.deepStrictEqual(parseAsmLine('	    processor	6502'), {
 			label: undefined,
