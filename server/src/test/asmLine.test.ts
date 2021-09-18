@@ -266,4 +266,32 @@ describe('AsmLine can parse line:', () => {
 			}
 		});
 	});
+	it('label: equ $34', () => {
+		assert.deepStrictEqual(parseAsmLine('label: equ $34'), {
+			label: {
+				text: 'label',
+				range: {
+					start: 0,
+					end: 5
+				}
+			},
+			command: {
+				text: 'equ',
+				range: {
+					start: 7,
+					end: 10
+				}
+			},
+			arguments: [
+				{
+					text: '$34',
+					range: {
+						start: 11,
+						end: 14
+					}
+				}
+			],
+			comment: undefined
+		});
+	});
 });

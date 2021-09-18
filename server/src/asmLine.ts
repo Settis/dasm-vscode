@@ -1,4 +1,4 @@
-type AsmLine = {
+export type AsmLine = {
     readonly label?: Context;
     readonly command?: Context;
     readonly comment?: Context;
@@ -18,7 +18,7 @@ export default function parseAsmLine(line: string): AsmLine  {
         label: undefined
     };
     const words = codeString.split(/\s+/);
-    const label = constructContext(codeString, words[0]);
+    const label = constructContext(codeString, words[0].replace(/:$/, ""));
     const command = constructContext(codeString, words[1], label?.range?.end);
     let lastIndex = command?.range?.end;
     for (let index = 2 ;index < words.length ;index++) {

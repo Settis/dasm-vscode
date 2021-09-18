@@ -1,7 +1,7 @@
 import { Context } from "./asmLine";
 
 export const enum OpMode {
-    Implied, 
+    Implied,
     Accumulator, 
     Immediate, 
     ZeroPage, 
