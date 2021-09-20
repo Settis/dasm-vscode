@@ -1276,14 +1276,14 @@ type OperationsSet = {
     [name: string]: OperationDescription
 }
 
-type OperationDescription = {
+export type OperationDescription = {
     title: string,
     description?: string,
     affectsFlags: string[],
     modes: ModesSet
 }
 
-type ModesSet = {
+export type ModesSet = {
     [key in OpMode]?: ModeDescription;
 }
 
