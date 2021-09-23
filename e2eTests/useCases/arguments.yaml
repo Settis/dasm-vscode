@@ -6,3 +6,4 @@ actions:
   arg:
     type: Error
     message: Too many arguments
+    severity: Error

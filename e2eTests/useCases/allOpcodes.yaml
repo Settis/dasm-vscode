@@ -516,15 +516,20 @@ actions:
   unknownOpcode:
     type: Error
     message: Unknown opcode
+    severity: Error
   wrongAddressMode:
     type: Error
     message: Wrong address mode
+    severity: Error
   wrongImpliedMode:
     type: Error
     message: Only implied mode is possible
+    severity: Error
   impliedModeNotAvailable:
     type: Error
     message: Implied mode is not available
+    severity: Error
   wrongImmediate:
     type: Error
     message: Immediate mode is not available
+    severity: Error

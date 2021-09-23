@@ -51,10 +51,3 @@ function checkModeIsPresent(mode: OpMode, modeSet: ModesSet): boolean {
         return OpMode.ZeroPageY in modeSet || OpMode.AbsoluteY in modeSet;
     return mode in modeSet;
 }
-
-function convertMode(mode: OpMode): OpMode {
-    if (mode == OpMode.Address) return OpMode.Absolute;
-    if (mode == OpMode.AddressX) return OpMode.AbsoluteX;
-    if (mode == OpMode.AddressY) return OpMode.AbsoluteY;
-    return mode;
-}
