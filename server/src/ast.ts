@@ -57,15 +57,15 @@ export interface NumberNode extends BasicNode {
 }
 
 export enum NodeType {
-    Label,
-    Command,
-    CommandName,
-    Arguments,
-    OprationModeArg,
-    Literal,
-    Comment,
-    Program,
-    Number
+    Label = 'Label',
+    Command = 'Command',
+    CommandName = 'CommandName',
+    Arguments = 'Arguments',
+    OprationModeArg = 'OprationModeArg',
+    Literal = 'Literal',
+    Comment = 'Comment',
+    Program = 'Program',
+    Number = 'Number',
 }
 
 type DocumentLine = {
@@ -76,9 +76,9 @@ type DocumentLine = {
 
 export function parseProgram(document: TextDocument): ProgramNode {
     const nodes = paseDocument(document);
-    return {
+    const program: ProgramNode = {
         type: NodeType.Program,
-        children: nodes,
+        children: [],
         location: {
             uri: document.uri,
             range: {
@@ -93,6 +93,8 @@ export function parseProgram(document: TextDocument): ProgramNode {
             }
         }
     };
+    nodes.forEach(it => joinNodes(program, it));
+    return program;
 }
 
 export function paseDocument(document: TextDocument): Node[] {

@@ -1,23 +1,23 @@
 import { Context } from "./asmLine";
 
 export const enum OpMode {
-    Implied,
-    Accumulator, 
-    Immediate, 
-    ZeroPage, 
-    ZeroPageX, 
-    ZeroPageY, 
-    Absolute, 
-    AbsoluteX, 
-    AbsoluteY, 
-    Indirect,
-    IndirectX, 
-    IndirectY,
-    Displacement, // for branch instructions
+    Implied = 'Implied',
+    Accumulator = 'Accumulator', 
+    Immediate = 'Immediate', 
+    ZeroPage = 'ZeroPage', 
+    ZeroPageX = 'ZeroPageX', 
+    ZeroPageY = 'ZeroPageY', 
+    Absolute = 'Absolute', 
+    AbsoluteX = 'AbsoluteX', 
+    AbsoluteY = 'AbsoluteY', 
+    Indirect = 'Indirect',
+    IndirectX = 'IndirectX', 
+    IndirectY = 'IndirectY',
+    Displacement = 'Displacement', // for branch instructions
     // Address mode is used when it's not clear is it ZP or Absolute
-    Address,  
-    AddressX,
-    AddressY,
+    Address = 'Address',  
+    AddressX = 'AddressX',
+    AddressY = 'AddressY',
 }
 
 type OpModeArg = {
