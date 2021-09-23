@@ -1,9 +1,10 @@
 import { Location } from 'vscode-languageserver';
 import { DocumentUri, TextDocument } from 'vscode-languageserver-textdocument';
 import parseAsmLine, { Context, AsmLine } from "./asmLine";
+import { isNumber, parseNumber } from './number';
 import { OpMode, parseOpMode } from './opMode';
 
-export type Node = LabelNode | CommandNode | CommandNameNode | CommentNode | ProgramNode | ArgumentsNode | OperationModeArgNode | LiteralNode;
+export type Node = LabelNode | CommandNode | CommandNameNode | CommentNode | ProgramNode | ArgumentsNode | OperationModeArgNode | LiteralNode | NumberNode;
 
 interface BasicNode {
     type: NodeType
@@ -49,6 +50,12 @@ export interface LiteralNode extends BasicNode {
     text: string
 }
 
+export interface NumberNode extends BasicNode {
+    type: NodeType.Number
+    text: string
+    value: number
+}
+
 export enum NodeType {
     Label,
     Command,
@@ -57,7 +64,8 @@ export enum NodeType {
     OprationModeArg,
     Literal,
     Comment,
-    Program
+    Program,
+    Number
 }
 
 type DocumentLine = {
@@ -190,14 +198,26 @@ function constructOperationModeArg(documentLine: DocumentLine, arg: Context): Op
     };
     const opModeArg = parsedOpMode.arg;
     if (opModeArg) {
-        joinNodes(opModeNode, {
-            type: NodeType.Literal,
-            location: constructLocation(documentLine, opModeArg),
-            text: opModeArg.text,
-            children: []
-        });
+        joinNodes(opModeNode, contructExpressionNode(documentLine, opModeArg));
     }
     return opModeNode;
+}
+
+function contructExpressionNode(documentLine: DocumentLine, expression: Context): Node {
+    if (isNumber(expression.text))
+        return {
+            type: NodeType.Number,
+            location: constructLocation(documentLine, expression),
+            text: expression.text,
+            value: parseNumber(expression.text),
+            children: []
+        };
+    return {
+        type: NodeType.Literal,
+        location: constructLocation(documentLine, expression),
+        text: expression.text,
+        children: []
+    };
 }
 
 function constructLocation(documentLine: DocumentLine, contextFrom: Context, contextTo?: Context): Location {

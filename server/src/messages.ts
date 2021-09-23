@@ -6,6 +6,7 @@ export enum MSG {
     WRONG_IMMEDIATE,
     TOO_MANY_ARGUMENTS,
     NO_COMMAND_NAME,
+    INVALID_NUMBER,
 }
 
 const EN: { [key in MSG]: string } = {
@@ -16,6 +17,7 @@ const EN: { [key in MSG]: string } = {
     [MSG.WRONG_IMMEDIATE]: 'Immediate mode is not available',
     [MSG.TOO_MANY_ARGUMENTS]: 'Too many arguments',
     [MSG.NO_COMMAND_NAME]: "Can't find command name",
+    [MSG.INVALID_NUMBER]: "Invalid number",
 };
 
 export function getMessage(template: MSG): string {
