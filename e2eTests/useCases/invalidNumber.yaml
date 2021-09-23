@@ -1,0 +1,9 @@
+text: |2
+    STA $56
+    STA {%56|invalid}
+    STA ({095|invalid},X)
+actions:
+  invalid:
+    type: Error
+    message: Invalid number
+    severity: Error
