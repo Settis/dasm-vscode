@@ -24,6 +24,8 @@ jobs:
       run: npm run lint
     - name: Compile
       run: npm run compile
+    - name: Test compile
+      run: npm run test-compile
     - name: Server unit tests
       run: npm test
       working-directory: server
