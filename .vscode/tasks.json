@@ -30,9 +30,87 @@
 			]
 		},
 		{
+			"type": "npm",
+			"script": "esbuild-client",
+			"group": "build",
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "never"
+			},
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "client-watch",
+			"type": "npm",
+			"script": "esbuild-client-watch",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "never"
+			},
+			"problemMatcher": [
+				"$tsc-watch"
+			]
+		},
+		{
+			"type": "npm",
+			"script": "esbuild-server",
+			"group": "build",
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "never"
+			},
+			"problemMatcher": [
+				"$tsc"
+			]
+		},
+		{
+			"label": "server-watch",
+			"type": "npm",
+			"script": "esbuild-server-watch",
+			"isBackground": true,
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"panel": "dedicated",
+				"reveal": "never"
+			},
+			"problemMatcher": [
+				"$tsc-watch"
+			]
+		},
+		{
+			"label": "build",
+			"dependsOn": [
+				{
+					"type": "npm",
+					"script": "esbuild-server"
+				},
+				{
+					"type": "npm",
+					"script": "esbuild-client"
+				}
+			]
+		},
+		{
+			"label": "watch",
+			"isBackground": true,
+			"problemMatcher": "$tsc-watch",
+			"dependsOn": [ "server-watch", "client-watch" ]
+		},
+		{
 			"label": "prepareFixture",
 			"type": "shell",
-			"command": "node client/out/test/prepareFixture"
+			"command": "node client/out/test/prepareFixture",
+			"dependsOn": ["build"]
 		}
 	]
 }

@@ -37,17 +37,19 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run esbuild-client -- --minify && npm run esbuild-server -- --minify",
+        "vscode:prepublish": "npm run esbuild-client-base -- --minify && npm run esbuild-server-base -- --minify",
         "package": "npx vsce package",
         "compile": "tsc -b",
         "watch": "tsc -b -w",
         "lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
         "postinstall": "cd client && npm ci && cd ../server && npm ci && cd ..",
         "test": "sh ./e2eTests/e2e.sh",
-        "esbuild-client": "esbuild ./client/src/extension.ts --bundle --outfile=out/client.js --external:vscode --format=cjs --platform=node",
-        "esbuild-server": "esbuild ./server/src/server.ts --bundle --outfile=out/server.js --external:vscode --format=cjs --platform=node",
-        "esbuild": "npm run esbuild-base -- --sourcemap",
-        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "esbuild-client-base": "esbuild ./client/src/extension.ts --bundle --outfile=out/client.js --external:vscode --format=cjs --platform=node",
+        "esbuild-server-base": "esbuild ./server/src/server.ts --bundle --outfile=out/server.js --external:vscode --format=cjs --platform=node",
+        "esbuild-client": "npm run esbuild-client-base -- --sourcemap",
+        "esbuild-client-watch": "npm run esbuild-client-base -- --sourcemap --watch",
+        "esbuild-server": "npm run esbuild-server-base -- --sourcemap",
+        "esbuild-server-watch": "npm run esbuild-server-base -- --sourcemap --watch",
         "test-compile": "tsc -p ./"
     },
     "devDependencies": {
