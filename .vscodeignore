@@ -4,3 +4,12 @@
 .gitignore
 **/tsconfig.json
 **/tsconfig.base.json
+coverage
+e2eTests
+.github
+**/test
+**/.nyc_output
+client
+server
+.eslintignore
+.gitpod.yml
