@@ -39,7 +39,7 @@
     "scripts": {
         "vscode:prepublish": "npm run esbuild-client-base -- --minify && npm run esbuild-server-base -- --minify",
         "package": "npx vsce package",
-        "compile": "tsc -b",
+        "compile": "npm run esbuild-client && npm run esbuild-server",
         "watch": "tsc -b -w",
         "lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
         "postinstall": "cd client && npm ci && cd ../server && npm ci && cd ..",
