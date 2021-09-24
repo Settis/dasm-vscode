@@ -67,8 +67,8 @@ function printLineWithRange(useCase: UseCase, range: Range): string {
     const linePrefix = ' ' + (range.start.line + 1) + ' : ';
     const sourceLine = useCase.getFixtureContent().split('\n')[range.start.line];
     const spaces = ' '.repeat(linePrefix.length + range.start.character);
-    const underscore = '_'.repeat(range.end.character - range.start.character - 2);
-    return "Source position: \n" + linePrefix + sourceLine + "\n" + spaces + "^" + underscore + "^";
+    const underscore = '~'.repeat(range.end.character - range.start.character);
+    return "Source position: \n" + linePrefix + sourceLine + "\n" + spaces + underscore;
 }
 
 function getRange(useCaseAnnotation: UseCaseAnnotation) {
