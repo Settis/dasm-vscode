@@ -16,7 +16,7 @@ export function validateCommand(node: CommandNode): DiagnosticWithURI[] {
 }
 
 function validateCommandName(node: CommandNode, commandName: CommandNameNode): DiagnosticWithURI[] {
-    const operation = operations[commandName.name];
+    const operation = operations[commandName.name.toUpperCase()];
     const result: DiagnosticWithURI[] = [];
     if (operation) {
         const args = node.children.find(it => it.type === NodeType.Arguments)?.children || [];
