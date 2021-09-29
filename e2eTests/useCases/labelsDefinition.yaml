@@ -1,0 +1,27 @@
+test: |2
+  {FOO|fooDef}:
+        LDA {|fooGetDef}F{|fooGetDef}OO{|fooGetDef}
+        STA {|fooGetDef}FO{|fooGetDef}O{|fooGetDef},{|noGetDef}Y{|noGetDef}
+  {FO{|fooGetDef}O|defined}:
+  {|barGetUsages}B{|barGetUsages}AR{|barGetUsages}:
+        LDA {BA{|barGetUsages}R|barUsed}
+        STA {BAR|barUsed},X
+  {BAR|defined|barUsed}
+  .lo{|loopGetUsages}op
+        JMP {.loop|loopUsed}
+        subroutine
+  .loop: JMP .loop
+actions:
+  defined:
+    type: Error
+    message: Label is already defined
+    severity: Error
+  fooDef:
+    type: DefinitionResult
+  fooGetDef:
+    type: GetDefinition
+    result: fooDef
+  noGetDef:
+    type: GetDefinition
+    result: null
+  
