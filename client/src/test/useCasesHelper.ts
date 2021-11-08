@@ -17,18 +17,11 @@ export function recreateFixtureFolder() {
 export function readUseCases() {
     return fs.readdirSync(useCasesFolder)
         .filter((name) => { return name.endsWith('.yaml'); })
-        .map((name) => { return new UseCase(name); });
+        .map((name) => { return constructUseCase(name); });
 }
 
 export class UseCase {
-    readonly name: string;
-    readonly description: UseCaseDescription;
-
-    constructor(readonly fileName: string) {
-        this.name = fileName.substr(0, fileName.length - 5);
-        const caseFileContent = fs.readFileSync(path.resolve(useCasesFolder, fileName), 'utf8');
-        this.description = yaml.load(caseFileContent) as UseCaseDescription;
-    }
+    constructor(readonly name: string, readonly description: UseCaseDescription) {}
 
     getFixtureContent() {
         return this.description.text.replace(annotationPattern, '$1');
@@ -52,7 +45,11 @@ export class UseCase {
                 const actionName = annotationMatch[2];
                 result.push({
                     name: actionName,
-                    range: new AnnotationRange(lineNumber, annotationMatch.index - offset, annotationMatch[1].length),
+                    range: {
+                        line: lineNumber, 
+                        startChar: annotationMatch.index - offset, 
+                        length: annotationMatch[1].length
+                    },
                     action: this.description.actions[actionName]
                 });
                 // offset for "{" "|" "}" and annotation name
@@ -64,16 +61,23 @@ export class UseCase {
     }
 }
 
+export function constructUseCase(fileName: string) {
+    const name = fileName.substr(0, fileName.length - 5);
+    const caseFileContent = fs.readFileSync(path.resolve(useCasesFolder, fileName), 'utf8');
+    const description = yaml.load(caseFileContent) as UseCaseDescription;
+    return new UseCase(name, description);
+}
+
 export type UseCaseAnnotation = {
     name: string,
     range: AnnotationRange,
     action: UseCaseAction
 }
 
-class AnnotationRange {
-    constructor(readonly line: number,
-        readonly startChar: number,
-        readonly length: number) {}
+type AnnotationRange  = {
+    line: number,
+    startChar: number,
+    length: number
 }
 
 type UseCaseDescription = {
