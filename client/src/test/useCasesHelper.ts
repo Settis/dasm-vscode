@@ -24,7 +24,13 @@ export class UseCase {
     constructor(readonly name: string, readonly description: UseCaseDescription) {}
 
     getFixtureContent() {
-        return this.description.text.replace(annotationPattern, '$1');
+        let prev = this.description.text;
+        let current = prev;
+        do {
+            prev = current;
+            current = prev.replace(annotationPattern, '$1');
+        } while (prev !== current);
+        return current;
     }
 
     getUseCaseFolder() {
