@@ -7,7 +7,7 @@ export const e2eTestsFolder = path.resolve(projectRootFolder, 'e2eTests');
 export const useCasesFolder = path.resolve(e2eTestsFolder, 'useCases');
 export const fixturesFolder = path.resolve(e2eTestsFolder, 'testFixture');
 
-const annotationPattern = /\{(.*?)\|(.*?)\}/g;
+const annotationPattern = /\{([^{]*?)\|(.*?)\}/g;
 
 export function recreateFixtureFolder() {
     fs.rmSync(fixturesFolder, { force: true, recursive: true });
@@ -44,26 +44,66 @@ export class UseCase {
     getAnnotations() {
         const result: UseCaseAnnotation[] = [];
         let lineNumber = 0;
-        let annotationMatch: RegExpExecArray | null;
         for (const textLine of this.description.text.split('\n')) {
-            let offset = 0;
-            while ((annotationMatch = annotationPattern.exec(textLine))) {
-                const actionName = annotationMatch[2];
-                result.push({
-                    name: actionName,
-                    range: {
-                        line: lineNumber, 
-                        startChar: annotationMatch.index - offset, 
-                        length: annotationMatch[1].length
-                    },
-                    action: this.description.actions[actionName]
-                });
-                // offset for "{" "|" "}" and annotation name
-                offset += 3 + actionName.length;
-            }
+            const useCaseLine = new UseCaseLine(textLine, lineNumber, this.description);
+            result.push(...useCaseLine.getAnnotations());
             lineNumber++;
         }
         return result;
+    }
+}
+
+class UseCaseLine {
+    offset = 0;
+    position = 0;
+
+    constructor(readonly line: string, readonly lineNumber: number, readonly description: UseCaseDescription) { }
+
+    getAnnotations() {
+        const result: UseCaseAnnotation[] = [];
+        do {
+            if (this.getCurrentChar() === '{')
+                result.push(...this.extractTags());
+            this.position++;
+        } while (this.position < this.line.length);
+        return result;
+    }
+
+    extractTags() {
+        const result: UseCaseAnnotation[] = [];
+        const start = this.position - this.offset;
+        let pipe = -1;
+        do {
+            this.position++;
+            const char = this.getCurrentChar();
+            if (char === '{')
+                result.push(...this.extractTags());
+            if (char === '|')
+                pipe = this.position;
+            if (char === '}') {
+                if (pipe !== -1) {
+                    const actionName = this.line.substring(pipe + 1, this.position);
+                    result.forEach(annotation => annotation.range.startChar--);
+                    result.push({
+                        name: actionName,
+                        range: {
+                            line: this.lineNumber,
+                            startChar: start,
+                            length: pipe - start - this.offset - 1
+                        },
+                        action: this.description.actions[actionName]
+                    });
+                    // offset for "{" "|" "}" and annotation name
+                    this.offset += 3 + actionName.length;
+                }
+                return result;
+            }
+        } while (this.position < this.line.length);
+        return result;
+    }
+
+    getCurrentChar() {
+        return this.line.charAt(this.position);
     }
 }
 

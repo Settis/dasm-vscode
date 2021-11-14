@@ -45,22 +45,51 @@ qwer`);
             message: 'Some'
         } as const;
         const useCase = new UseCase("name", {
-            text: '{fo{o|asd}|asd} {bar|asd}',
-            actions: {asd: action}
+            text: '{fo{o|a}|b} {bar|c}',
+            actions: {
+                a: action,
+                b: action,
+                c: action
+            }
         });
         assert.strictEqual(useCase.getFixtureContent(), 'foo bar');
         assert.deepStrictEqual(useCase.getAnnotations(), [{
                 action: action,
-                name: 'asd',
-                range: {line: 0, startChar: 0, length: 3}
-            }, {
-                action: action,
-                name: 'asd',
+                name: 'a',
                 range: {line: 0, startChar: 2, length: 1}
             }, {
                 action: action,
-                name: 'asd',
+                name: 'b',
+                range: {line: 0, startChar: 0, length: 3}
+            }, {
+                action: action,
+                name: 'c',
                 range: {line: 0, startChar: 4, length: 3}
+            }
+        ]);
+    });
+
+    it("Works with brackets", () => {
+        const action = {
+            type: 'Error',
+            message: 'Some'
+        } as const;
+        const useCase = new UseCase("name", {
+            text: '{fo{o|a}} {bar|c}',
+            actions: {
+                a: action,
+                c: action
+            }
+        });
+        assert.strictEqual(useCase.getFixtureContent(), '{foo} bar');
+        assert.deepStrictEqual(useCase.getAnnotations(), [{
+                action: action,
+                name: 'a',
+                range: {line: 0, startChar: 3, length: 1}
+            }, {
+                action: action,
+                name: 'c',
+                range: {line: 0, startChar: 6, length: 3}
             }
         ]);
     });
