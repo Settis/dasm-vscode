@@ -82,19 +82,20 @@ class UseCaseLine {
                 pipe = this.position;
             if (char === '}') {
                 if (pipe !== -1) {
-                    const actionName = this.line.substring(pipe + 1, this.position);
+                    const actionNames = this.line.substring(pipe + 1, this.position);
                     result.forEach(annotation => annotation.range.startChar--);
-                    result.push({
-                        name: actionName,
-                        range: {
-                            line: this.lineNumber,
-                            startChar: start,
-                            length: pipe - start - this.offset - 1
-                        },
-                        action: this.description.actions[actionName]
-                    });
+                    for (const actionName of actionNames.split(','))
+                        result.push({
+                            name: actionName,
+                            range: {
+                                line: this.lineNumber,
+                                startChar: start,
+                                length: pipe - start - this.offset - 1
+                            },
+                            action: this.description.actions[actionName]
+                        });
                     // offset for "{" "|" "}" and annotation name
-                    this.offset += 3 + actionName.length;
+                    this.offset += 3 + actionNames.length;
                 }
                 return result;
             }

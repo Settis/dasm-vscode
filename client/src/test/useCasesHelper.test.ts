@@ -93,4 +93,29 @@ qwer`);
             }
         ]);
     });
+
+    it("several tags on the same text", () => {
+        const action = {
+            type: 'Error',
+            message: 'Some'
+        } as const;
+        const useCase = new UseCase("name", {
+            text: '{foo|a,b} bar',
+            actions: {
+                a: action,
+                b: action
+            }
+        });
+        assert.strictEqual(useCase.getFixtureContent(), 'foo bar');
+        assert.deepStrictEqual(useCase.getAnnotations(), [{
+                action: action,
+                name: 'a',
+                range: {line: 0, startChar: 0, length: 3}
+            }, {
+                action: action,
+                name: 'b',
+                range: {line: 0, startChar: 0, length: 3}
+            }
+        ]);
+    });
 });

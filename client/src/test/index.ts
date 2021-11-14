@@ -17,7 +17,7 @@ export function run(): Promise<void> {
 	const testsRoot = __dirname;
 
 	return new Promise((resolve, reject) => {
-		glob('**.test.js', { cwd: testsRoot }, (err, files) => {
+		glob('e2e.test.js', { cwd: testsRoot }, (err, files) => {
 			if (err) {
 				return reject(err);
 			}
@@ -34,9 +34,9 @@ export function run(): Promise<void> {
 						resolve();
 					}
 				});
-			} catch (err) {
-				console.error(err);
-				reject(err);
+			} catch (error) {
+				console.error(error);
+				reject(error);
 			}
 		});
 	});
