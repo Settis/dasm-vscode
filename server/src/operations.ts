@@ -118,7 +118,7 @@ export const operations: OperationsSet = {
         description: 'ASL shifts all bits left one position. 0 is shifted into bit 0 and the original bit 7 is shifted into the Carry.',
         affectsFlags: ['N', 'Z', 'C'],
         modes: {
-            [OpMode.Accumulator]: {
+            [OpMode.Implied]: {
                 hex: 0x0A,
                 len: 1,
                 tim: 2,
@@ -752,7 +752,7 @@ export const operations: OperationsSet = {
         description: 'LSR shifts all bits right one position. 0 is shifted into bit 7 and the original bit 0 is shifted into the Carry.',
         affectsFlags: ['N', 'Z', 'C'],
         modes: {
-            [OpMode.Accumulator]: {
+            [OpMode.Implied]: {
                 hex: 0x4A,
                 len: 1,
                 tim: 2,
@@ -952,7 +952,7 @@ export const operations: OperationsSet = {
         description: 'ROL shifts all bits left one position. The Carry is shifted into bit 0 and the original bit 7 is shifted into the Carry.',
         affectsFlags: ['N', 'Z', 'C'],
         modes: {
-            [OpMode.Accumulator]: {
+            [OpMode.Implied]: {
                 hex: 0x2A,
                 len: 1,
                 tim: 2,
@@ -989,7 +989,7 @@ export const operations: OperationsSet = {
         description: 'ROR shifts all bits right one position. The Carry is shifted into bit 7 and the original bit 0 is shifted into the Carry.',
         affectsFlags: ['N', 'Z', 'C'],
         modes: {
-            [OpMode.Accumulator]: {
+            [OpMode.Implied]: {
                 hex: 0x6A,
                 len: 1,
                 tim: 2,

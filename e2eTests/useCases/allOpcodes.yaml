@@ -19,8 +19,7 @@ text: |2
     AND $4400,Y
     AND ($44,X)
     AND ($44),Y
-    {ASL|impliedModeNotAvailable}
-    ASL A
+    ASL
     ASL {#$44|wrongImmediate}
     ASL $44
     ASL $44,X
@@ -93,14 +92,14 @@ text: |2
     BPL {($44,X)|wrongAddressMode}
     BPL {($44),Y|wrongAddressMode}
     BRK 
-    BRK {#$44|wrongImpliedMode}
-    BRK {$44|wrongImpliedMode}
-    BRK {$44,X|wrongImpliedMode}
-    BRK {$4400|wrongImpliedMode}
-    BRK {$4400,X|wrongImpliedMode}
-    BRK {$4400,Y|wrongImpliedMode}
-    BRK {($44,X)|wrongImpliedMode}
-    BRK {($44),Y|wrongImpliedMode}
+    BRK {#$44|wrongImmediate}
+    BRK {$44|wrongAddressMode}
+    BRK {$44,X|wrongAddressMode}
+    BRK {$4400|wrongAddressMode}
+    BRK {$4400,X|wrongAddressMode}
+    BRK {$4400,Y|wrongAddressMode}
+    BRK {($44,X)|wrongAddressMode}
+    BRK {($44),Y|wrongAddressMode}
     {BVC|impliedModeNotAvailable}  
     BVC {#$44|wrongImmediate}
     BVC $44
@@ -120,41 +119,41 @@ text: |2
     BVS {($44,X)|wrongAddressMode}
     BVS {($44),Y|wrongAddressMode}
     CLC 
-    CLC {#$44|wrongImpliedMode}
-    CLC {$44|wrongImpliedMode}
-    CLC {$44,X|wrongImpliedMode}
-    CLC {$4400|wrongImpliedMode}
-    CLC {$4400,X|wrongImpliedMode}
-    CLC {$4400,Y|wrongImpliedMode}
-    CLC {($44,X)|wrongImpliedMode}
-    CLC {($44),Y|wrongImpliedMode}
+    CLC {#$44|wrongImmediate}
+    CLC {$44|wrongAddressMode}
+    CLC {$44,X|wrongAddressMode}
+    CLC {$4400|wrongAddressMode}
+    CLC {$4400,X|wrongAddressMode}
+    CLC {$4400,Y|wrongAddressMode}
+    CLC {($44,X)|wrongAddressMode}
+    CLC {($44),Y|wrongAddressMode}
     CLD 
-    CLD {#$44|wrongImpliedMode}
-    CLD {$44|wrongImpliedMode}
-    CLD {$44,X|wrongImpliedMode}
-    CLD {$4400|wrongImpliedMode}
-    CLD {$4400,X|wrongImpliedMode}
-    CLD {$4400,Y|wrongImpliedMode}
-    CLD {($44,X)|wrongImpliedMode}
-    CLD {($44),Y|wrongImpliedMode}
+    CLD {#$44|wrongImmediate}
+    CLD {$44|wrongAddressMode}
+    CLD {$44,X|wrongAddressMode}
+    CLD {$4400|wrongAddressMode}
+    CLD {$4400,X|wrongAddressMode}
+    CLD {$4400,Y|wrongAddressMode}
+    CLD {($44,X)|wrongAddressMode}
+    CLD {($44),Y|wrongAddressMode}
     CLI 
-    CLI {#$44|wrongImpliedMode}
-    CLI {$44|wrongImpliedMode}
-    CLI {$44,X|wrongImpliedMode}
-    CLI {$4400|wrongImpliedMode}
-    CLI {$4400,X|wrongImpliedMode}
-    CLI {$4400,Y|wrongImpliedMode}
-    CLI {($44,X)|wrongImpliedMode}
-    CLI {($44),Y|wrongImpliedMode}
+    CLI {#$44|wrongImmediate}
+    CLI {$44|wrongAddressMode}
+    CLI {$44,X|wrongAddressMode}
+    CLI {$4400|wrongAddressMode}
+    CLI {$4400,X|wrongAddressMode}
+    CLI {$4400,Y|wrongAddressMode}
+    CLI {($44,X)|wrongAddressMode}
+    CLI {($44),Y|wrongAddressMode}
     CLV 
-    CLV {#$44|wrongImpliedMode}
-    CLV {$44|wrongImpliedMode}
-    CLV {$44,X|wrongImpliedMode}
-    CLV {$4400|wrongImpliedMode}
-    CLV {$4400,X|wrongImpliedMode}
-    CLV {$4400,Y|wrongImpliedMode}
-    CLV {($44,X)|wrongImpliedMode}
-    CLV {($44),Y|wrongImpliedMode}
+    CLV {#$44|wrongImmediate}
+    CLV {$44|wrongAddressMode}
+    CLV {$44,X|wrongAddressMode}
+    CLV {$4400|wrongAddressMode}
+    CLV {$4400,X|wrongAddressMode}
+    CLV {$4400,Y|wrongAddressMode}
+    CLV {($44,X)|wrongAddressMode}
+    CLV {($44),Y|wrongAddressMode}
     {CMP|impliedModeNotAvailable} 
     CMP #$44
     CMP $44
@@ -192,23 +191,23 @@ text: |2
     DEC {($44,X)|wrongAddressMode}
     DEC {($44),Y|wrongAddressMode}
     DEX 
-    DEX {#$44|wrongImpliedMode}
-    DEX {$44|wrongImpliedMode}
-    DEX {$44,X|wrongImpliedMode}
-    DEX {$4400|wrongImpliedMode}
-    DEX {$4400,X|wrongImpliedMode}
-    DEX {$4400,Y|wrongImpliedMode}
-    DEX {($44,X)|wrongImpliedMode}
-    DEX {($44),Y|wrongImpliedMode}
+    DEX {#$44|wrongImmediate}
+    DEX {$44|wrongAddressMode}
+    DEX {$44,X|wrongAddressMode}
+    DEX {$4400|wrongAddressMode}
+    DEX {$4400,X|wrongAddressMode}
+    DEX {$4400,Y|wrongAddressMode}
+    DEX {($44,X)|wrongAddressMode}
+    DEX {($44),Y|wrongAddressMode}
     DEY 
-    DEY {#$44|wrongImpliedMode}
-    DEY {$44|wrongImpliedMode}
-    DEY {$44,X|wrongImpliedMode}
-    DEY {$4400|wrongImpliedMode}
-    DEY {$4400,X|wrongImpliedMode}
-    DEY {$4400,Y|wrongImpliedMode}
-    DEY {($44,X)|wrongImpliedMode}
-    DEY {($44),Y|wrongImpliedMode}
+    DEY {#$44|wrongImmediate}
+    DEY {$44|wrongAddressMode}
+    DEY {$44,X|wrongAddressMode}
+    DEY {$4400|wrongAddressMode}
+    DEY {$4400,X|wrongAddressMode}
+    DEY {$4400,Y|wrongAddressMode}
+    DEY {($44,X)|wrongAddressMode}
+    DEY {($44),Y|wrongAddressMode}
     {EOR|impliedModeNotAvailable}
     EOR #$44
     EOR $44
@@ -228,23 +227,23 @@ text: |2
     INC {($44,X)|wrongAddressMode}
     INC {($44),Y|wrongAddressMode}
     INX 
-    INX {#$44|wrongImpliedMode}
-    INX {$44|wrongImpliedMode}
-    INX {$44,X|wrongImpliedMode}
-    INX {$4400|wrongImpliedMode}
-    INX {$4400,X|wrongImpliedMode}
-    INX {$4400,Y|wrongImpliedMode}
-    INX {($44,X)|wrongImpliedMode}
-    INX {($44),Y|wrongImpliedMode}
+    INX {#$44|wrongImmediate}
+    INX {$44|wrongAddressMode}
+    INX {$44,X|wrongAddressMode}
+    INX {$4400|wrongAddressMode}
+    INX {$4400,X|wrongAddressMode}
+    INX {$4400,Y|wrongAddressMode}
+    INX {($44,X)|wrongAddressMode}
+    INX {($44),Y|wrongAddressMode}
     INY 
-    INY {#$44|wrongImpliedMode}
-    INY {$44|wrongImpliedMode}
-    INY {$44,X|wrongImpliedMode}
-    INY {$4400|wrongImpliedMode}
-    INY {$4400,X|wrongImpliedMode}
-    INY {$4400,Y|wrongImpliedMode}
-    INY {($44,X)|wrongImpliedMode}
-    INY {($44),Y|wrongImpliedMode}
+    INY {#$44|wrongImmediate}
+    INY {$44|wrongAddressMode}
+    INY {$44,X|wrongAddressMode}
+    INY {$4400|wrongAddressMode}
+    INY {$4400,X|wrongAddressMode}
+    INY {$4400,Y|wrongAddressMode}
+    INY {($44,X)|wrongAddressMode}
+    INY {($44),Y|wrongAddressMode}
     {JMP|impliedModeNotAvailable}
     JMP {#$44|wrongImmediate}
     JMP {$44|wrongAddressMode}
@@ -292,8 +291,7 @@ text: |2
     LDY {$4400,Y|wrongAddressMode}
     LDY {($44,X)|wrongAddressMode}
     LDY {($44),Y|wrongAddressMode}
-    {LSR|impliedModeNotAvailable} 
-    LSR A
+    LSR
     LSR {#$44|wrongImmediate}
     LSR $44
     LSR $44,X
@@ -303,14 +301,14 @@ text: |2
     LSR {($44,X)|wrongAddressMode}
     LSR {($44),Y|wrongAddressMode}
     NOP 
-    NOP {#$44|wrongImpliedMode}
-    NOP {$44|wrongImpliedMode}
-    NOP {$44,X|wrongImpliedMode}
-    NOP {$4400|wrongImpliedMode}
-    NOP {$4400,X|wrongImpliedMode}
-    NOP {$4400,Y|wrongImpliedMode}
-    NOP {($44,X)|wrongImpliedMode}
-    NOP {($44),Y|wrongImpliedMode}
+    NOP {#$44|wrongImmediate}
+    NOP {$44|wrongAddressMode}
+    NOP {$44,X|wrongAddressMode}
+    NOP {$4400|wrongAddressMode}
+    NOP {$4400,X|wrongAddressMode}
+    NOP {$4400,Y|wrongAddressMode}
+    NOP {($44,X)|wrongAddressMode}
+    NOP {($44),Y|wrongAddressMode}
     {ORA|impliedModeNotAvailable}  
     ORA #$44
     ORA $44
@@ -321,43 +319,42 @@ text: |2
     ORA ($44,X)
     ORA ($44),Y
     PHA 
-    PHA {#$44|wrongImpliedMode}
-    PHA {$44|wrongImpliedMode}
-    PHA {$44,X|wrongImpliedMode}
-    PHA {$4400|wrongImpliedMode}
-    PHA {$4400,X|wrongImpliedMode}
-    PHA {$4400,Y|wrongImpliedMode}
-    PHA {($44,X)|wrongImpliedMode}
-    PHA {($44),Y|wrongImpliedMode}
+    PHA {#$44|wrongImmediate}
+    PHA {$44|wrongAddressMode}
+    PHA {$44,X|wrongAddressMode}
+    PHA {$4400|wrongAddressMode}
+    PHA {$4400,X|wrongAddressMode}
+    PHA {$4400,Y|wrongAddressMode}
+    PHA {($44,X)|wrongAddressMode}
+    PHA {($44),Y|wrongAddressMode}
     PHP 
-    PHP {#$44|wrongImpliedMode}
-    PHP {$44|wrongImpliedMode}
-    PHP {$44,X|wrongImpliedMode}
-    PHP {$4400|wrongImpliedMode}
-    PHP {$4400,X|wrongImpliedMode}
-    PHP {$4400,Y|wrongImpliedMode}
-    PHP {($44,X)|wrongImpliedMode}
-    PHP {($44),Y|wrongImpliedMode}
+    PHP {#$44|wrongImmediate}
+    PHP {$44|wrongAddressMode}
+    PHP {$44,X|wrongAddressMode}
+    PHP {$4400|wrongAddressMode}
+    PHP {$4400,X|wrongAddressMode}
+    PHP {$4400,Y|wrongAddressMode}
+    PHP {($44,X)|wrongAddressMode}
+    PHP {($44),Y|wrongAddressMode}
     PLA 
-    PLA {#$44|wrongImpliedMode}
-    PLA {$44|wrongImpliedMode}
-    PLA {$44,X|wrongImpliedMode}
-    PLA {$4400|wrongImpliedMode}
-    PLA {$4400,X|wrongImpliedMode}
-    PLA {$4400,Y|wrongImpliedMode}
-    PLA {($44,X)|wrongImpliedMode}
-    PLA {($44),Y|wrongImpliedMode}
+    PLA {#$44|wrongImmediate}
+    PLA {$44|wrongAddressMode}
+    PLA {$44,X|wrongAddressMode}
+    PLA {$4400|wrongAddressMode}
+    PLA {$4400,X|wrongAddressMode}
+    PLA {$4400,Y|wrongAddressMode}
+    PLA {($44,X)|wrongAddressMode}
+    PLA {($44),Y|wrongAddressMode}
     PLP 
-    PLP {#$44|wrongImpliedMode}
-    PLP {$44|wrongImpliedMode}
-    PLP {$44,X|wrongImpliedMode}
-    PLP {$4400|wrongImpliedMode}
-    PLP {$4400,X|wrongImpliedMode}
-    PLP {$4400,Y|wrongImpliedMode}
-    PLP {($44,X)|wrongImpliedMode}
-    PLP {($44),Y|wrongImpliedMode}
-    {ROL|impliedModeNotAvailable}
-    ROL A
+    PLP {#$44|wrongImmediate}
+    PLP {$44|wrongAddressMode}
+    PLP {$44,X|wrongAddressMode}
+    PLP {$4400|wrongAddressMode}
+    PLP {$4400,X|wrongAddressMode}
+    PLP {$4400,Y|wrongAddressMode}
+    PLP {($44,X)|wrongAddressMode}
+    PLP {($44),Y|wrongAddressMode}
+    ROL
     ROL {#$44|wrongImmediate}
     ROL $44
     ROL $44,X
@@ -366,8 +363,7 @@ text: |2
     ROL {$4400,Y|wrongAddressMode}
     ROL {($44,X)|wrongAddressMode}
     ROL {($44),Y|wrongAddressMode}
-    {ROR|impliedModeNotAvailable} 
-    ROR A
+    ROR
     ROR {#$44|wrongImmediate}
     ROR $44
     ROR $44,X
@@ -377,23 +373,23 @@ text: |2
     ROR {($44,X)|wrongAddressMode}
     ROR {($44),Y|wrongAddressMode}
     RTI 
-    RTI {#$44|wrongImpliedMode}
-    RTI {$44|wrongImpliedMode}
-    RTI {$44,X|wrongImpliedMode}
-    RTI {$4400|wrongImpliedMode}
-    RTI {$4400,X|wrongImpliedMode}
-    RTI {$4400,Y|wrongImpliedMode}
-    RTI {($44,X)|wrongImpliedMode}
-    RTI {($44),Y|wrongImpliedMode}
+    RTI {#$44|wrongImmediate}
+    RTI {$44|wrongAddressMode}
+    RTI {$44,X|wrongAddressMode}
+    RTI {$4400|wrongAddressMode}
+    RTI {$4400,X|wrongAddressMode}
+    RTI {$4400,Y|wrongAddressMode}
+    RTI {($44,X)|wrongAddressMode}
+    RTI {($44),Y|wrongAddressMode}
     RTS 
-    RTS {#$44|wrongImpliedMode}
-    RTS {$44|wrongImpliedMode}
-    RTS {$44,X|wrongImpliedMode}
-    RTS {$4400|wrongImpliedMode}
-    RTS {$4400,X|wrongImpliedMode}
-    RTS {$4400,Y|wrongImpliedMode}
-    RTS {($44,X)|wrongImpliedMode}
-    RTS {($44),Y|wrongImpliedMode}
+    RTS {#$44|wrongImmediate}
+    RTS {$44|wrongAddressMode}
+    RTS {$44,X|wrongAddressMode}
+    RTS {$4400|wrongAddressMode}
+    RTS {$4400,X|wrongAddressMode}
+    RTS {$4400,Y|wrongAddressMode}
+    RTS {($44,X)|wrongAddressMode}
+    RTS {($44),Y|wrongAddressMode}
     {SBC|impliedModeNotAvailable} 
     SBC #$44
     SBC $44
@@ -404,32 +400,32 @@ text: |2
     SBC ($44,X)
     SBC ($44),Y
     SEC 
-    SEC {#$44|wrongImpliedMode}
-    SEC {$44|wrongImpliedMode}
-    SEC {$44,X|wrongImpliedMode}
-    SEC {$4400|wrongImpliedMode}
-    SEC {$4400,X|wrongImpliedMode}
-    SEC {$4400,Y|wrongImpliedMode}
-    SEC {($44,X)|wrongImpliedMode}
-    SEC {($44),Y|wrongImpliedMode}
+    SEC {#$44|wrongImmediate}
+    SEC {$44|wrongAddressMode}
+    SEC {$44,X|wrongAddressMode}
+    SEC {$4400|wrongAddressMode}
+    SEC {$4400,X|wrongAddressMode}
+    SEC {$4400,Y|wrongAddressMode}
+    SEC {($44,X)|wrongAddressMode}
+    SEC {($44),Y|wrongAddressMode}
     SED 
-    SED {#$44|wrongImpliedMode}
-    SED {$44|wrongImpliedMode}
-    SED {$44,X|wrongImpliedMode}
-    SED {$4400|wrongImpliedMode}
-    SED {$4400,X|wrongImpliedMode}
-    SED {$4400,Y|wrongImpliedMode}
-    SED {($44,X)|wrongImpliedMode}
-    SED {($44),Y|wrongImpliedMode}
+    SED {#$44|wrongImmediate}
+    SED {$44|wrongAddressMode}
+    SED {$44,X|wrongAddressMode}
+    SED {$4400|wrongAddressMode}
+    SED {$4400,X|wrongAddressMode}
+    SED {$4400,Y|wrongAddressMode}
+    SED {($44,X)|wrongAddressMode}
+    SED {($44),Y|wrongAddressMode}
     SEI 
-    SEI {#$44|wrongImpliedMode}
-    SEI {$44|wrongImpliedMode}
-    SEI {$44,X|wrongImpliedMode}
-    SEI {$4400|wrongImpliedMode}
-    SEI {$4400,X|wrongImpliedMode}
-    SEI {$4400,Y|wrongImpliedMode}
-    SEI {($44,X)|wrongImpliedMode}
-    SEI {($44),Y|wrongImpliedMode}
+    SEI {#$44|wrongImmediate}
+    SEI {$44|wrongAddressMode}
+    SEI {$44,X|wrongAddressMode}
+    SEI {$4400|wrongAddressMode}
+    SEI {$4400,X|wrongAddressMode}
+    SEI {$4400,Y|wrongAddressMode}
+    SEI {($44,X)|wrongAddressMode}
+    SEI {($44),Y|wrongAddressMode}
     {STA|impliedModeNotAvailable} 
     STA {#$44|wrongImmediate}
     STA $44
@@ -459,59 +455,59 @@ text: |2
     STY {($44,X)|wrongAddressMode}
     STY {($44),Y|wrongAddressMode}
     TAX 
-    TAX {#$44|wrongImpliedMode}
-    TAX {$44|wrongImpliedMode}
-    TAX {$44,X|wrongImpliedMode}
-    TAX {$4400|wrongImpliedMode}
-    TAX {$4400,X|wrongImpliedMode}
-    TAX {$4400,Y|wrongImpliedMode}
-    TAX {($44,X)|wrongImpliedMode}
-    TAX {($44),Y|wrongImpliedMode}
+    TAX {#$44|wrongImmediate}
+    TAX {$44|wrongAddressMode}
+    TAX {$44,X|wrongAddressMode}
+    TAX {$4400|wrongAddressMode}
+    TAX {$4400,X|wrongAddressMode}
+    TAX {$4400,Y|wrongAddressMode}
+    TAX {($44,X)|wrongAddressMode}
+    TAX {($44),Y|wrongAddressMode}
     TAY 
-    TAY {#$44|wrongImpliedMode}
-    TAY {$44|wrongImpliedMode}
-    TAY {$44,X|wrongImpliedMode}
-    TAY {$4400|wrongImpliedMode}
-    TAY {$4400,X|wrongImpliedMode}
-    TAY {$4400,Y|wrongImpliedMode}
-    TAY {($44,X)|wrongImpliedMode}
-    TAY {($44),Y|wrongImpliedMode}
+    TAY {#$44|wrongImmediate}
+    TAY {$44|wrongAddressMode}
+    TAY {$44,X|wrongAddressMode}
+    TAY {$4400|wrongAddressMode}
+    TAY {$4400,X|wrongAddressMode}
+    TAY {$4400,Y|wrongAddressMode}
+    TAY {($44,X)|wrongAddressMode}
+    TAY {($44),Y|wrongAddressMode}
     TSX 
-    TSX {#$44|wrongImpliedMode}
-    TSX {$44|wrongImpliedMode}
-    TSX {$44,X|wrongImpliedMode}
-    TSX {$4400|wrongImpliedMode}
-    TSX {$4400,X|wrongImpliedMode}
-    TSX {$4400,Y|wrongImpliedMode}
-    TSX {($44,X)|wrongImpliedMode}
-    TSX {($44),Y|wrongImpliedMode}
+    TSX {#$44|wrongImmediate}
+    TSX {$44|wrongAddressMode}
+    TSX {$44,X|wrongAddressMode}
+    TSX {$4400|wrongAddressMode}
+    TSX {$4400,X|wrongAddressMode}
+    TSX {$4400,Y|wrongAddressMode}
+    TSX {($44,X)|wrongAddressMode}
+    TSX {($44),Y|wrongAddressMode}
     TXA 
-    TXA {#$44|wrongImpliedMode}
-    TXA {$44|wrongImpliedMode}
-    TXA {$44,X|wrongImpliedMode}
-    TXA {$4400|wrongImpliedMode}
-    TXA {$4400,X|wrongImpliedMode}
-    TXA {$4400,Y|wrongImpliedMode}
-    TXA {($44,X)|wrongImpliedMode}
-    TXA {($44),Y|wrongImpliedMode}
+    TXA {#$44|wrongImmediate}
+    TXA {$44|wrongAddressMode}
+    TXA {$44,X|wrongAddressMode}
+    TXA {$4400|wrongAddressMode}
+    TXA {$4400,X|wrongAddressMode}
+    TXA {$4400,Y|wrongAddressMode}
+    TXA {($44,X)|wrongAddressMode}
+    TXA {($44),Y|wrongAddressMode}
     TXS 
-    TXS {#$44|wrongImpliedMode}
-    TXS {$44|wrongImpliedMode}
-    TXS {$44,X|wrongImpliedMode}
-    TXS {$4400|wrongImpliedMode}
-    TXS {$4400,X|wrongImpliedMode}
-    TXS {$4400,Y|wrongImpliedMode}
-    TXS {($44,X)|wrongImpliedMode}
-    TXS {($44),Y|wrongImpliedMode}
+    TXS {#$44|wrongImmediate}
+    TXS {$44|wrongAddressMode}
+    TXS {$44,X|wrongAddressMode}
+    TXS {$4400|wrongAddressMode}
+    TXS {$4400,X|wrongAddressMode}
+    TXS {$4400,Y|wrongAddressMode}
+    TXS {($44,X)|wrongAddressMode}
+    TXS {($44),Y|wrongAddressMode}
     TYA 
-    TYA {#$44|wrongImpliedMode}
-    TYA {$44|wrongImpliedMode}
-    TYA {$44,X|wrongImpliedMode}
-    TYA {$4400|wrongImpliedMode}
-    TYA {$4400,X|wrongImpliedMode}
-    TYA {$4400,Y|wrongImpliedMode}
-    TYA {($44,X)|wrongImpliedMode}
-    TYA {($44),Y|wrongImpliedMode}
+    TYA {#$44|wrongImmediate}
+    TYA {$44|wrongAddressMode}
+    TYA {$44,X|wrongAddressMode}
+    TYA {$4400|wrongAddressMode}
+    TYA {$4400,X|wrongAddressMode}
+    TYA {$4400,Y|wrongAddressMode}
+    TYA {($44,X)|wrongAddressMode}
+    TYA {($44),Y|wrongAddressMode}
 actions:
   unknownOpcode:
     type: Error
@@ -520,10 +516,6 @@ actions:
   wrongAddressMode:
     type: Error
     message: Wrong address mode
-    severity: Error
-  wrongImpliedMode:
-    type: Error
-    message: Only implied mode is possible
     severity: Error
   impliedModeNotAvailable:
     type: Error

@@ -2,7 +2,6 @@ import { Context } from "./asmLine";
 
 export const enum OpMode {
     Implied = 'Implied',
-    Accumulator = 'Accumulator', 
     Immediate = 'Immediate', 
     ZeroPage = 'ZeroPage', 
     ZeroPageX = 'ZeroPageX', 
@@ -27,7 +26,6 @@ type OpModeArg = {
 
 export function parseOpMode(context: Context): OpModeArg {
     if (context.text === '') return { mode: OpMode.Implied };
-    if (context.text === 'A') return { mode: OpMode.Accumulator };
     if (context.text.startsWith('#'))
         return {
             mode: OpMode.Immediate,
