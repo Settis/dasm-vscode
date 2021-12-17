@@ -132,10 +132,28 @@ type UseCaseDescription = {
     actions: { [actions: string]: UseCaseAction }
 }
 
-type UseCaseAction = ErrorAction
+type UseCaseAction = ErrorAction | GetDefinitionAction | DefinitionResultAction | GetUsagesAction | UsagesResultAction
 
-type ErrorAction = {
+export type ErrorAction = {
     type: 'Error',
     message: string,
     severity?: 'Error' | 'Warning' | 'Information' | 'Hint'
+}
+
+type GetDefinitionAction = {
+    type: 'GetDefinition',
+    result: string,
+}
+
+type DefinitionResultAction = {
+    type: 'DefinitionResult'
+}
+
+type GetUsagesAction = {
+    type: 'GetUsages',
+    result: string,
+}
+
+type UsagesResultAction = {
+    type: 'UsagesResult'
 }

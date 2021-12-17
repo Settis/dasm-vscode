@@ -6,11 +6,6 @@ text: |2
   {|barGetUsages}B{|barGetUsages}AR{|barGetUsages}:
         LDA {BA{|barGetUsages}R|barUsed}
         STA {BAR|barUsed},X
-  {BAR|defined,barUsed}
-  .lo{|loopGetUsages}op
-        JMP {.loop|loopUsed}
-        subroutine
-  {.loop|loopDef}: JMP .lo{|loopGetDef}op
 actions:
   defined:
     type: Error
@@ -29,14 +24,4 @@ actions:
     result: barUsed
   barUsed:
     type: UsagesResult
-  loopGetUsages:
-    type: GetUsages
-    result: loopUsed
-  loopUsed:
-    type: UsagesResult
-  loopGetDef:
-    type: GetDefinition
-    result: loopDef
-  loopDef:
-    type: DefinitionResult
   

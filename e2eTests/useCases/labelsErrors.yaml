@@ -19,5 +19,5 @@ actions:
     severity: Error
   undefined:
     type: Error
-    message: The label is not defined
+    message: Label is not defined
     severity: Error
