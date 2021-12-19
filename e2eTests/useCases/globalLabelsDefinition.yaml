@@ -1,0 +1,27 @@
+text: |2
+  {FOO|fooDef}:
+        LDA {|fooGetDef}F{|fooGetDef}OO{|fooGetDef}
+        STA {|fooGetDef}FO{|fooGetDef}O{|fooGetDef},{|noGetDef}Y{|noGetDef}
+  {FO{|fooGetDef}O|defined,fooDef}:
+  {|barGetUsages}B{|barGetUsages}AR{|barGetUsages}:
+        LDA {BA{|barGetUsages}R|barUsed}
+        STA {BAR|barUsed},X
+actions:
+  defined:
+    type: Error
+    message: Label is already defined
+    severity: Error
+  fooDef:
+    type: DefinitionResult
+  fooGetDef:
+    type: GetDefinition
+    result: fooDef
+  noGetDef:
+    type: GetDefinition
+    result: null
+  barGetUsages:
+    type: GetUsages
+    result: barUsed
+  barUsed:
+    type: UsagesResult
+  

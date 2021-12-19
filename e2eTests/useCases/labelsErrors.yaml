@@ -1,0 +1,23 @@
+text: |2
+  FOO: LDA FOO
+  FOO2 LDA FOO2
+  FOO3:
+        LDA FOO3
+  FOO4
+        LDA FOO4
+  {FOO|defined}: LDA {Foo|undefined}
+  .loop JMP .loop
+  {.loop|defined} JMP FOO
+        SUBROUTINE
+  .loop JMP .loop
+        SUBROUTINE
+        JMP {.loop|undefined}
+actions:
+  defined:
+    type: Error
+    message: Label is already defined
+    severity: Error
+  undefined:
+    type: Error
+    message: Label is not defined
+    severity: Error

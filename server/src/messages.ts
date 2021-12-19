@@ -6,6 +6,8 @@ export enum MSG {
     TOO_MANY_ARGUMENTS,
     NO_COMMAND_NAME,
     INVALID_NUMBER,
+    LABEL_NOT_DEFINED,
+    TOO_MANY_DEFINITIONS,
 }
 
 const EN: { [key in MSG]: string } = {
@@ -16,6 +18,8 @@ const EN: { [key in MSG]: string } = {
     [MSG.TOO_MANY_ARGUMENTS]: 'Too many arguments',
     [MSG.NO_COMMAND_NAME]: "Can't find command name",
     [MSG.INVALID_NUMBER]: "Invalid number",
+    [MSG.LABEL_NOT_DEFINED]: "Label is not defined",
+    [MSG.TOO_MANY_DEFINITIONS]: "Label is already defined",
 };
 
 export function getMessage(template: MSG): string {

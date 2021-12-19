@@ -3,6 +3,7 @@ import { MSG } from "../messages";
 import { ModesSet, OperationDescription, operations } from "../operations";
 import { OpMode } from "../opMode";
 import { constructError, DiagnosticWithURI } from "./util";
+import { NAMES } from "../directives";
 
 export function validateCommand(node: CommandNode): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
@@ -21,7 +22,7 @@ function validateCommandName(node: CommandNode, commandName: CommandNameNode): D
     if (operation) {
         const args = node.children.find(it => it.type === NodeType.Arguments)?.children || [];
         result.push(...validateCommandArgs(commandName, operation, args as OperationModeArgNode[]));
-    } else {
+    } else if (!NAMES.has(commandName.name.toUpperCase())) {
         result.push(constructError(MSG.UNKNOWN_COMMAND, commandName));
     }
     return result;

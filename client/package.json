@@ -10,6 +10,9 @@
         "type": "git",
         "url": "https://github.com/Settis/dasm-vscode"
     },
+	"scripts": {
+		"test": "mocha out/test/useCasesHelper.test.js"
+	},
     "dependencies": {
         "@types/node": "^16.9.1",
         "vscode-languageclient": "^7.0.0"

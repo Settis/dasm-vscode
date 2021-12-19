@@ -101,6 +101,10 @@
 			]
 		},
 		{
+			"label": "build-test",
+			"dependsOn": [{"type": "npm", "script": "test-compile"}]
+		},
+		{
 			"label": "watch",
 			"isBackground": true,
 			"problemMatcher": "$tsc-watch",
@@ -110,7 +114,7 @@
 			"label": "prepareFixture",
 			"type": "shell",
 			"command": "node client/out/test/prepareFixture",
-			"dependsOn": ["build"]
+			"dependsOn": ["build-test", "build"]
 		}
 	]
 }

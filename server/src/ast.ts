@@ -16,6 +16,7 @@ interface BasicNode {
 export interface LabelNode extends BasicNode {
     type: NodeType.Label
     name: string
+    relatedObject?: RelatedObject
 }
 
 export interface CommandNode extends BasicNode {
@@ -34,6 +35,15 @@ export interface CommentNode extends BasicNode {
 
 export interface ProgramNode extends BasicNode {
     type: NodeType.Program
+    labels: RelatedContext
+    localLabels: RelatedContext[]
+}
+
+export type RelatedContext = { [key: string]: RelatedObject }
+
+export type RelatedObject = {
+    definitions: LabelNode[],
+    usages: LiteralNode[]
 }
 
 export interface ArgumentsNode extends BasicNode {
@@ -48,6 +58,7 @@ export interface OperationModeArgNode extends BasicNode {
 export interface LiteralNode extends BasicNode {
     type: NodeType.Literal
     text: string
+    relatedObject?: RelatedObject
 }
 
 export interface NumberNode extends BasicNode {
@@ -79,6 +90,8 @@ export function parseProgram(document: TextDocument): ProgramNode {
     const program: ProgramNode = {
         type: NodeType.Program,
         children: [],
+        labels: {},
+        localLabels: [],
         location: {
             uri: document.uri,
             range: {
@@ -133,7 +146,7 @@ function constructLabelNode(documentLine: DocumentLine): LabelNode | undefined {
             type: NodeType.Label,
             location: constructLocation(documentLine, labelContext),
             name: labelContext.text,
-            children: []
+            children: [],
         };
     }
 }
