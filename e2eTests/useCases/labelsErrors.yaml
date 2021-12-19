@@ -5,9 +5,9 @@ text: |2
         LDA FOO3
   FOO4
         LDA FOO4
-  {FOO|defined}: LDA Foo
+  {FOO|defined}: LDA {Foo|undefined}
   .loop JMP .loop
-  {.loop|defined} FOO
+  {.loop|defined} JMP FOO
         SUBROUTINE
   .loop JMP .loop
         SUBROUTINE

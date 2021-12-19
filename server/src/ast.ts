@@ -35,8 +35,11 @@ export interface CommentNode extends BasicNode {
 
 export interface ProgramNode extends BasicNode {
     type: NodeType.Program
-    labels: { [key: string]: RelatedObject }
+    labels: RelatedContext
+    localLabels: RelatedContext[]
 }
+
+export type RelatedContext = { [key: string]: RelatedObject }
 
 export type RelatedObject = {
     definitions: LabelNode[],
@@ -88,6 +91,7 @@ export function parseProgram(document: TextDocument): ProgramNode {
         type: NodeType.Program,
         children: [],
         labels: {},
+        localLabels: [],
         location: {
             uri: document.uri,
             range: {

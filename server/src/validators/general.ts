@@ -1,4 +1,4 @@
-import { Node, NodeType, ProgramNode } from "../ast";
+import { Node, NodeType, ProgramNode, RelatedContext } from "../ast";
 import { MSG } from "../messages";
 import { validateCommand } from "./asmCommandValidator";
 import { constructError, DiagnosticWithURI } from "./util";
@@ -17,8 +17,16 @@ function validateNode(node: Node): DiagnosticWithURI[] {
 
 function validateLabels(program: ProgramNode): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
-    for (const labelName in program.labels) {
-        const relatedLabel = program.labels[labelName];
+    result.push(...validateLabelsInContext(program.labels));
+    for (const context of program.localLabels)
+        result.push(...validateLabelsInContext(context));
+    return result;
+}
+
+function validateLabelsInContext(context: RelatedContext): DiagnosticWithURI[] {
+    const result: DiagnosticWithURI[] = [];
+    for (const labelName in context) {
+        const relatedLabel = context[labelName];
         if (relatedLabel.definitions.length == 0)
             for (const usage of relatedLabel.usages)
                 result.push(constructError(MSG.LABEL_NOT_DEFINED, usage));
