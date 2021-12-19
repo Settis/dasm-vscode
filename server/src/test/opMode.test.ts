@@ -16,20 +16,6 @@ describe('Operation mode parser', () => {
             }
         );
     });
-    it('Accumulator', () => {
-        assert.deepStrictEqual(
-            parseOpMode({
-                text: 'A',
-                range: {
-                    start: 4,
-                    end: 5
-                }
-            }),
-            {
-                mode: OpMode.Accumulator
-            }
-        );
-    });
     it('Immediate', () => {
         assert.deepStrictEqual(
             parseOpMode({

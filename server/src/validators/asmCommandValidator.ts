@@ -30,9 +30,7 @@ function validateCommandName(node: CommandNode, commandName: CommandNameNode): D
 
 function validateCommandArgs(commandName: CommandNameNode, operation: OperationDescription, args: OperationModeArgNode[]): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
-    if (OpMode.Implied in operation.modes && args.length > 0)
-        result.push(constructError(MSG.ONLY_IMPLIED_MODE, args[0], args[args.length-1]));
-    else if (args.length == 0 && ! (OpMode.Implied in operation.modes))
+    if (args.length == 0 && ! (OpMode.Implied in operation.modes))
         result.push(constructError(MSG.NOT_IMPLIED_MODE, commandName));
     else if (args[0]?.mode === OpMode.Immediate && ! (OpMode.Immediate in operation.modes))
         result.push(constructError(MSG.WRONG_IMMEDIATE, args[0]));

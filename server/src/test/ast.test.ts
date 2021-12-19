@@ -71,8 +71,8 @@ describe('AST tests', () => {
         checkArgXNode(args.children[0]);
         checkCommentNode(program.children[1]);
     });
-    it('        CMD A     ARG2  ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('        CMD A     ARG2  ; Comment'));
+    it('        CMD ARG   ARG2  ; Comment', () => {
+        const program = parseProgram(new TestTextDocument('        CMD ARG   ARG2  ; Comment'));
         assert.strictEqual(program.children.length, 2);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 8, 22);
@@ -81,7 +81,7 @@ describe('AST tests', () => {
         const args = commandNode.children[1];
         basicNodeCheck(args, NodeType.Arguments, 12, 22);
         assert.strictEqual(args.children.length, 2);
-        checkArgANode(args.children[0]);
+        checkArgNode(args.children[0]);
         checkArg2Node(args.children[1]);
         checkCommentNode(program.children[1]);
     });
@@ -117,6 +117,14 @@ function checkCommentNode(node: Node) {
     assert.strictEqual((node as CommentNode).comment, 'Comment');
 }
 
+function checkArgNode(node:Node) {
+    basicNodeCheck(node, NodeType.OprationModeArg, 12, 15);
+    assert.strictEqual((node as OperationModeArgNode).mode, OpMode.Address);
+    const literal = node.children[0];
+    basicNodeCheck(literal, NodeType.Literal, 12, 15);
+    assert.strictEqual((literal as LiteralNode).text, 'ARG');
+}
+
 function checkArgXNode(node: Node) {
     basicNodeCheck(node, NodeType.OprationModeArg, 12, 17);
     assert.strictEqual((node as OperationModeArgNode).mode, OpMode.AddressX);
@@ -131,12 +139,6 @@ function checkArg2Node(node: Node) {
     const literal = node.children[0];
     basicNodeCheck(literal, NodeType.Literal, 18, 22);
     assert.strictEqual((literal as LiteralNode).text, 'ARG2');
-}
-
-function checkArgANode(node: Node) {
-    basicNodeCheck(node, NodeType.OprationModeArg, 12, 13);
-    assert.strictEqual((node as OperationModeArgNode).mode, OpMode.Accumulator);
-    assert.strictEqual(node.children.length, 0);
 }
 
 function basicNodeCheck(node: Node, type: NodeType, from: number, to: number) {

@@ -50,7 +50,8 @@
         "esbuild-client-watch": "npm run esbuild-client-base -- --sourcemap --watch",
         "esbuild-server": "npm run esbuild-server-base -- --sourcemap",
         "esbuild-server-watch": "npm run esbuild-server-base -- --sourcemap --watch",
-        "test-compile": "tsc -b"
+        "test-compile": "tsc -b",
+        "clean": "rm -rf out && rm -rf client/out && rm -rf server/out"
     },
     "devDependencies": {
         "@types/glob": "^7.1.4",

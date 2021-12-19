@@ -52,5 +52,9 @@ function validateTextDocument(textDocument: TextDocument) {
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
+documents.onDidClose(change => {
+	connection.sendDiagnostics({ uri: change.document.uri, diagnostics: []});
+});
+
 documents.listen(connection);
 connection.listen();
