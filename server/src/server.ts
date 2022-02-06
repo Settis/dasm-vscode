@@ -2,8 +2,8 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection, DefinitionParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
 import { assembleProgram } from './assemblers/assemble';
-import { parseProgram, ProgramNode } from './ast';
-import { getNodeByPosition } from './astUtil';
+import { parseProgram, ProgramNode } from './ast/ast';
+import { getNodeByPosition } from './ast/astUtil';
 import { validateProgram } from './validators/general';
 
 const connection = createConnection();

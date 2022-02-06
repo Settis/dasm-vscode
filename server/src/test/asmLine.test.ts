@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import parseAsmLine from '../asmLine';
+import parseAsmLine from '../dasm/asmLine';
 
 describe('AsmLine can parse line:', () => {
 	it(';   EXAMPLE.ASM', () => {

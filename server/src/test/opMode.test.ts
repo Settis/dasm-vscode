@@ -1,4 +1,4 @@
-import { OpMode, parseOpMode } from "../opMode";
+import { OpMode, parseOpMode } from "../dasm/opMode";
 import * as assert from 'assert';
 
 describe('Operation mode parser', () => {

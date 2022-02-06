@@ -1,4 +1,4 @@
-import { Node, NodeType, ProgramNode, RelatedContext } from "../ast";
+import { Node, NodeType, ProgramNode, RelatedContext } from "../ast/ast";
 import { MSG } from "../messages";
 import { validateCommand } from "./asmCommandValidator";
 import { constructError, DiagnosticWithURI } from "./util";

@@ -1,5 +1,5 @@
-import { CommandNameNode, LabelNode, LiteralNode, Node, ProgramNode, RelatedContext, RelatedObject } from "../ast";
-import { SUBROUTINE } from "../directives";
+import { CommandNameNode, LabelNode, LiteralNode, Node, ProgramNode, RelatedContext, RelatedObject } from "../ast/ast";
+import { SUBROUTINE } from "../dasm/directives";
 
 export function assembleProgram(program: ProgramNode) {
     new Assembler(program).processIt();

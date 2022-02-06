@@ -1,8 +1,8 @@
 import { Location } from 'vscode-languageserver';
 import { DocumentUri, TextDocument } from 'vscode-languageserver-textdocument';
-import parseAsmLine, { Context, AsmLine } from "./asmLine";
-import { isNumber, parseNumber } from './number';
-import { OpMode, parseOpMode } from './opMode';
+import parseAsmLine, { Context, AsmLine } from "../dasm/asmLine";
+import { isNumber, parseNumber } from '../number';
+import { OpMode, parseOpMode } from '../dasm/opMode';
 
 export type Node = LabelNode | CommandNode | CommandNameNode | CommentNode | ProgramNode | ArgumentsNode | OperationModeArgNode | LiteralNode | NumberNode;
 

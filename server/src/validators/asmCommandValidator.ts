@@ -1,9 +1,9 @@
-import { CommandNameNode, CommandNode, NodeType, NumberNode, OperationModeArgNode } from "../ast";
+import { CommandNameNode, CommandNode, NodeType, NumberNode, OperationModeArgNode } from "../ast/ast";
 import { MSG } from "../messages";
-import { ModesSet, OperationDescription, operations } from "../operations";
-import { OpMode } from "../opMode";
+import { ModesSet, OperationDescription, operations } from "../dasm/operations";
+import { OpMode } from "../dasm/opMode";
 import { constructError, DiagnosticWithURI } from "./util";
-import { NAMES } from "../directives";
+import { NAMES } from "../dasm/directives";
 
 export function validateCommand(node: CommandNode): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];

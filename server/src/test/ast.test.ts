@@ -1,8 +1,8 @@
 import * as assert from 'assert';
 import { Location } from 'vscode-languageserver';
 import { Position, Range, TextDocument } from 'vscode-languageserver-textdocument';
-import { CommandNameNode, CommentNode, LabelNode, LiteralNode, Node, NodeType, OperationModeArgNode, parseProgram } from '../ast';
-import { OpMode } from '../opMode';
+import { CommandNameNode, CommentNode, LabelNode, LiteralNode, Node, NodeType, OperationModeArgNode, parseProgram } from '../ast/ast';
+import { OpMode } from '../dasm/opMode';
 
 describe('AST tests', () => {
     it('zero line', () => {
