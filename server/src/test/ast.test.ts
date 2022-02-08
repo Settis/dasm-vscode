@@ -1,41 +1,41 @@
 import * as assert from 'assert';
 import { Location } from 'vscode-languageserver';
 import { Position, Range, TextDocument } from 'vscode-languageserver-textdocument';
-import { CommandNameNode, CommentNode, LabelNode, LiteralNode, Node, NodeType, OperationModeArgNode, parseProgram } from '../ast/ast';
+import { CommandNameNode, CommentNode, LabelNode, LiteralNode, Node, NodeType, OperationModeArgNode, parseFile } from '../ast/ast';
 import { OpMode } from '../dasm/opMode';
 
 describe('AST tests', () => {
     it('zero line', () => {
-        const program = parseProgram(new TestTextDocument(''));
+        const program = parseFile(new TestTextDocument(''));
         assert.strictEqual(program.children.length, 0);
     });
     it('long line', () => {
-        const program = parseProgram(new TestTextDocument('                                 '));
-        assert.strictEqual(program.type, NodeType.Program);
+        const program = parseFile(new TestTextDocument('                                 '));
+        assert.strictEqual(program.type, NodeType.File);
         assert.strictEqual(program.children.length, 0);
     });
     it('Two empty lines', () => {
-        const program = parseProgram(new TestTextDocument('   \n    '));
+        const program = parseFile(new TestTextDocument('   \n    '));
         assert.strictEqual(program.children.length, 0);
     });
     it('LABEL                            ', () => {
-        const program = parseProgram(new TestTextDocument('LABEL                            '));
+        const program = parseFile(new TestTextDocument('LABEL                            '));
         assert.strictEqual(program.children.length, 1);
         checkLabel(program.children[0]);
     });
     it('                        ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('                        ; Comment'));
+        const program = parseFile(new TestTextDocument('                        ; Comment'));
         assert.strictEqual(program.children.length, 1);
         checkCommentNode(program.children[0]);
     });
     it('LABEL                   ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('LABEL                   ; Comment'));
+        const program = parseFile(new TestTextDocument('LABEL                   ; Comment'));
         assert.strictEqual(program.children.length, 2);
         checkLabel(program.children[0]);
         checkCommentNode(program.children[1]);
     });
     it('        CMD ARG,X ARG2           ', () => {
-        const program = parseProgram(new TestTextDocument('        CMD ARG,X ARG2           '));
+        const program = parseFile(new TestTextDocument('        CMD ARG,X ARG2           '));
         assert.strictEqual(program.children.length, 1);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 8, 22);
@@ -48,7 +48,7 @@ describe('AST tests', () => {
         checkArg2Node(args.children[1]);
     });
     it('LABEL   CMD             ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('LABEL   CMD             ; Comment'));
+        const program = parseFile(new TestTextDocument('LABEL   CMD             ; Comment'));
         assert.strictEqual(program.children.length, 2);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 0, 11);
@@ -58,7 +58,7 @@ describe('AST tests', () => {
         checkCommentNode(program.children[1]);
     });
     it('LABEL   CMD ARG,X       ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('LABEL   CMD ARG,X       ; Comment'));
+        const program = parseFile(new TestTextDocument('LABEL   CMD ARG,X       ; Comment'));
         assert.strictEqual(program.children.length, 2);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 0, 17);
@@ -72,7 +72,7 @@ describe('AST tests', () => {
         checkCommentNode(program.children[1]);
     });
     it('        CMD ARG   ARG2  ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('        CMD ARG   ARG2  ; Comment'));
+        const program = parseFile(new TestTextDocument('        CMD ARG   ARG2  ; Comment'));
         assert.strictEqual(program.children.length, 2);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 8, 22);
@@ -86,7 +86,7 @@ describe('AST tests', () => {
         checkCommentNode(program.children[1]);
     });
     it('LABEL   CMD ARG,X ARG2  ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('LABEL   CMD ARG,X ARG2  ; Comment'));
+        const program = parseFile(new TestTextDocument('LABEL   CMD ARG,X ARG2  ; Comment'));
         assert.strictEqual(program.children.length, 2);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 0, 22);

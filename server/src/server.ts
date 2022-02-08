@@ -1,14 +1,14 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection, DefinitionParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
-import { assembleProgram } from './assemblers/assemble';
-import { parseProgram, ProgramNode } from './ast/ast';
 import { getNodeByPosition } from './ast/astUtil';
-import { validateProgram } from './validators/general';
+import { ParsedFiles } from './parsedFiles';
+import { Program } from './program';
+import { validateLabels } from './validators/general';
 
 const connection = createConnection();
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
-const programs: { [key: string]: ProgramNode } = {};
+const parsedFiles = new ParsedFiles(documents);
 
 connection.onInitialize((params: InitializeParams) => {
 	return {
@@ -29,7 +29,7 @@ connection.onReferences((params: ReferenceParams) => {
 });
 
 function getRelatedObject(params: TextDocumentPositionParams) {
-	const programNode = programs[params.textDocument.uri];
+	const programNode = parsedFiles.getFileAst(params.textDocument.uri);
 	if (programNode === undefined) return;
 	const nodeByPosition = getNodeByPosition(programNode, {
 		...params.position,
@@ -45,10 +45,11 @@ documents.onDidChangeContent(change => {
 });
 
 function validateTextDocument(textDocument: TextDocument) {
-	const programNode = parseProgram(textDocument);
-	assembleProgram(programNode);
-	programs[textDocument.uri] = programNode;
-	const diagnostics = validateProgram(programNode);
+	const program = new Program(parsedFiles, textDocument.uri);
+	program.assemble();
+	const diagnostics = [];
+	diagnostics.push(...parsedFiles.getFileDiagnostics(textDocument.uri));
+	diagnostics.push(...validateLabels(program));
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 

@@ -4,7 +4,7 @@ import parseAsmLine, { Context, AsmLine } from "../dasm/asmLine";
 import { isNumber, parseNumber } from '../number';
 import { OpMode, parseOpMode } from '../dasm/opMode';
 
-export type Node = LabelNode | CommandNode | CommandNameNode | CommentNode | ProgramNode | ArgumentsNode | OperationModeArgNode | LiteralNode | NumberNode;
+export type Node = LabelNode | CommandNode | CommandNameNode | CommentNode | ArgumentsNode | OperationModeArgNode | LiteralNode | NumberNode | FileNode;
 
 interface BasicNode {
     type: NodeType
@@ -31,12 +31,6 @@ export interface CommandNameNode extends BasicNode {
 export interface CommentNode extends BasicNode {
     type: NodeType.Comment
     comment: string
-}
-
-export interface ProgramNode extends BasicNode {
-    type: NodeType.Program
-    labels: RelatedContext
-    localLabels: RelatedContext[]
 }
 
 export type RelatedContext = { [key: string]: RelatedObject }
@@ -67,6 +61,10 @@ export interface NumberNode extends BasicNode {
     value: number
 }
 
+export interface FileNode extends BasicNode {
+    type: NodeType.File
+}
+
 export enum NodeType {
     Label = 'Label',
     Command = 'Command',
@@ -75,8 +73,8 @@ export enum NodeType {
     OprationModeArg = 'OprationModeArg',
     Literal = 'Literal',
     Comment = 'Comment',
-    Program = 'Program',
     Number = 'Number',
+    File = 'File',
 }
 
 type DocumentLine = {
@@ -85,13 +83,11 @@ type DocumentLine = {
     asmLine: AsmLine
 }
 
-export function parseProgram(document: TextDocument): ProgramNode {
-    const nodes = paseDocument(document);
-    const program: ProgramNode = {
-        type: NodeType.Program,
+export function parseFile(document: TextDocument): FileNode {
+    const nodes = parseDocument(document);
+    const fileRoot: FileNode = {
+        type: NodeType.File,
         children: [],
-        labels: {},
-        localLabels: [],
         location: {
             uri: document.uri,
             range: {
@@ -106,11 +102,11 @@ export function parseProgram(document: TextDocument): ProgramNode {
             }
         }
     };
-    nodes.forEach(it => joinNodes(program, it));
-    return program;
+    nodes.forEach(it => joinNodes(fileRoot, it));
+    return fileRoot;
 }
 
-export function paseDocument(document: TextDocument): Node[] {
+export function parseDocument(document: TextDocument): Node[] {
     return document.getText()
         .split('\n')
         .map((lineText, lineNumber) => {
