@@ -1,0 +1,2 @@
+theLink:
+    ADC #$12

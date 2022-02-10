@@ -102,19 +102,31 @@
 		},
 		{
 			"label": "build-test",
-			"dependsOn": [{"type": "npm", "script": "test-compile"}]
+			"dependsOn": [
+				{
+					"type": "npm",
+					"script": "test-compile"
+				}
+			]
 		},
 		{
 			"label": "watch",
 			"isBackground": true,
 			"problemMatcher": "$tsc-watch",
-			"dependsOn": [ "server-watch", "client-watch" ]
+			"dependsOn": [
+				"server-watch",
+				"client-watch"
+			]
 		},
 		{
 			"label": "prepareFixture",
 			"type": "shell",
 			"command": "node client/out/test/prepareFixture",
-			"dependsOn": ["build-test", "build"]
+			"dependsOn": [
+				"build-test",
+				"build"
+			],
+			"problemMatcher": []
 		}
 	]
 }

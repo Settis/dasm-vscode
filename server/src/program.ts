@@ -1,5 +1,5 @@
-import { CommandNameNode, LabelNode, LiteralNode, Node, NodeType, RelatedContext, RelatedObject } from "./ast/ast";
-import { SUBROUTINE } from "./dasm/directives";
+import { RelatedContext, Node, NodeType, LabelNode, LiteralNode, CommandNameNode, RelatedObject } from "./ast/nodes";
+import { INCLUDE, SUBROUTINE } from "./dasm/directives";
 import { ParsedFiles } from "./parsedFiles";
 
 const LOCAL_LABEL_PREFIX = '.';
@@ -51,9 +51,16 @@ export class Program {
     }
 
     private visitCommandName(node: CommandNameNode) {
-        const nameInUpperCase = node.name.toUpperCase();
-        if (nameInUpperCase === SUBROUTINE)
-            this.localLabels.push({});
+        switch (node.name.toUpperCase()) {
+            case SUBROUTINE:
+                this.localLabels.push({});
+                break;
+            case INCLUDE:
+                // const fileName = (node.parent?.children.find(isArguments)?.children[0] as )
+                break;
+            default:
+                break;
+        }
     }
 
     private getRelatedObject(name: string): RelatedObject {

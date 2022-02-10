@@ -1,9 +1,10 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { TextDocuments } from 'vscode-languageserver/node';
-import { FileNode, parseFile } from "./ast/ast";
 import * as fs from 'fs';
 import { DiagnosticWithURI } from './validators/util';
 import { validateNode } from './validators/general';
+import { parseFile } from './ast/construct';
+import { FileNode } from './ast/nodes';
 
 export class ParsedFiles {
     private cachedAst: { [index: string]: FileNode } = {}

@@ -1,87 +1,8 @@
-import { Location } from 'vscode-languageserver';
-import { DocumentUri, TextDocument } from 'vscode-languageserver-textdocument';
-import parseAsmLine, { Context, AsmLine } from "../dasm/asmLine";
-import { isNumber, parseNumber } from '../number';
-import { OpMode, parseOpMode } from '../dasm/opMode';
-
-export type Node = LabelNode | CommandNode | CommandNameNode | CommentNode | ArgumentsNode | OperationModeArgNode | LiteralNode | NumberNode | FileNode;
-
-interface BasicNode {
-    type: NodeType
-    parent?: Node
-    location: Location
-    children: Node[]
-}
-
-export interface LabelNode extends BasicNode {
-    type: NodeType.Label
-    name: string
-    relatedObject?: RelatedObject
-}
-
-export interface CommandNode extends BasicNode {
-    type: NodeType.Command
-}
-
-export interface CommandNameNode extends BasicNode {
-    type: NodeType.CommandName
-    name: string
-}
-
-export interface CommentNode extends BasicNode {
-    type: NodeType.Comment
-    comment: string
-}
-
-export type RelatedContext = { [key: string]: RelatedObject }
-
-export type RelatedObject = {
-    definitions: LabelNode[],
-    usages: LiteralNode[]
-}
-
-export interface ArgumentsNode extends BasicNode {
-    type: NodeType.Arguments
-}
-
-export interface OperationModeArgNode extends BasicNode {
-    type: NodeType.OprationModeArg
-    mode: OpMode
-}
-
-export interface LiteralNode extends BasicNode {
-    type: NodeType.Literal
-    text: string
-    relatedObject?: RelatedObject
-}
-
-export interface NumberNode extends BasicNode {
-    type: NodeType.Number
-    text: string
-    value: number
-}
-
-export interface FileNode extends BasicNode {
-    type: NodeType.File
-}
-
-export enum NodeType {
-    Label = 'Label',
-    Command = 'Command',
-    CommandName = 'CommandName',
-    Arguments = 'Arguments',
-    OprationModeArg = 'OprationModeArg',
-    Literal = 'Literal',
-    Comment = 'Comment',
-    Number = 'Number',
-    File = 'File',
-}
-
-type DocumentLine = {
-    uri: DocumentUri,
-    lineNumber: number,
-    asmLine: AsmLine
-}
+import { Location } from "vscode-languageserver";
+import { TextDocument } from "vscode-languageserver-textdocument";
+import parseAsmLine, { Context } from "../dasm/asmLine";
+import { isNumber, parseNumber } from "../number";
+import { FileNode, NodeType, Node, LabelNode, CommentNode, CommandNode, ArgumentsNode, DocumentLine, AddressXNode, AddressYNode, ImmediateNode, IndirectNode, IndirectXNode, IndirectYNode } from "./nodes";
 
 export function parseFile(document: TextDocument): FileNode {
     const nodes = parseDocument(document);
@@ -194,27 +115,64 @@ function constructArgumentsNode(documentLine: DocumentLine): ArgumentsNode | und
             children: []
         };
         for (const arg of args) 
-            joinNodes(argsNode, constructOperationModeArg(documentLine, arg));
+            joinNodes(argsNode, constructArgumentNode(documentLine, arg));
         return argsNode;
     }
 }
 
-function constructOperationModeArg(documentLine: DocumentLine, arg: Context): OperationModeArgNode {
-    const parsedOpMode = parseOpMode(arg);
-    const opModeNode: OperationModeArgNode = {
-        type: NodeType.OprationModeArg,
-        mode: parsedOpMode.mode,
-        location: constructLocation(documentLine, arg),
-        children: []
-    };
-    const opModeArg = parsedOpMode.arg;
-    if (opModeArg) {
-        joinNodes(opModeNode, contructExpressionNode(documentLine, opModeArg));
+type AddressNodeType = NodeType.Immediate | NodeType.IndirectX | NodeType.IndirectY | NodeType.Indirect | NodeType.AddressX | NodeType.AddressY;
+
+type AddressModeMatcher = {
+    prefix: string
+    suffix: string
+    nodeType: AddressNodeType
+}
+
+function constructArgumentNode(documentLine: DocumentLine, arg: Context): Node {
+    const matchers: AddressModeMatcher[] = [
+        {prefix: '#', suffix: '', nodeType: NodeType.Immediate},
+        {prefix: '(', suffix: ',X)', nodeType: NodeType.IndirectX},
+        {prefix: '(', suffix: '),Y', nodeType: NodeType.IndirectY},
+        {prefix: '(', suffix: ')', nodeType: NodeType.Indirect},
+        {prefix: '', suffix: ',X', nodeType: NodeType.AddressX},
+        {prefix: '', suffix: ',Y', nodeType: NodeType.AddressY},
+    ];
+    for (const matcher of matchers) {
+        const candidate = constructAddressNode(documentLine, arg, matcher);
+        if (candidate) return candidate;
     }
-    return opModeNode;
+    return contructExpressionNode(documentLine, arg);
+}
+
+type AddressNode = ImmediateNode | IndirectXNode | IndirectYNode | IndirectNode | AddressXNode | AddressYNode;
+
+function constructAddressNode(documentLine: DocumentLine, arg: Context, addressModeMatcher: AddressModeMatcher): AddressNode | undefined {
+    if (arg.text.startsWith(addressModeMatcher.prefix) && arg.text.endsWith(addressModeMatcher.suffix)) {
+        const node: AddressNode = {
+            type: addressModeMatcher.nodeType,
+            location: constructLocation(documentLine, arg),
+            children: []
+        };
+        const expression: Context = {
+            text: arg.text.substring(addressModeMatcher.prefix.length, arg.text.length - addressModeMatcher.suffix.length),
+            range: {
+                start: arg.range.start + addressModeMatcher.prefix.length,
+                end: arg.range.end - addressModeMatcher.suffix.length
+            }
+        };
+        joinNodes(node, contructExpressionNode(documentLine, expression));
+        return node;
+    }
 }
 
 function contructExpressionNode(documentLine: DocumentLine, expression: Context): Node {
+    if (expression.text.startsWith('"') && expression.text.endsWith('"'))
+        return {
+            type: NodeType.StringLiteral,
+            location: constructLocation(documentLine, expression),
+            children: [],
+            text: expression.text.substring(1, expression.text.length - 1)
+        };
     if (isNumber(expression.text))
         return {
             type: NodeType.Number,

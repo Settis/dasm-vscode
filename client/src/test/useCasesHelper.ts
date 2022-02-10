@@ -6,12 +6,14 @@ export const projectRootFolder = path.resolve(__dirname, '../../../');
 export const e2eTestsFolder = path.resolve(projectRootFolder, 'e2eTests');
 export const useCasesFolder = path.resolve(e2eTestsFolder, 'useCases');
 export const fixturesFolder = path.resolve(e2eTestsFolder, 'testFixture');
+export const staticCasesFolder = path.resolve(e2eTestsFolder, 'staticCases');
 
 const annotationPattern = /\{([^{]*?)\|(.*?)\}/g;
 
 export function recreateFixtureFolder() {
     fs.rmSync(fixturesFolder, { force: true, recursive: true });
     fs.mkdirSync(fixturesFolder);
+    fs.cpSync(staticCasesFolder, fixturesFolder, {recursive: true});
 }
 
 export function readUseCases() {

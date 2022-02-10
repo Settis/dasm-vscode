@@ -1,5 +1,5 @@
 import { Diagnostic, DiagnosticSeverity, DocumentUri } from "vscode-languageserver";
-import { Node } from "../ast/ast";
+import { Node } from "../ast/nodes";
 import { getMessage, MSG } from "../messages";
 
 export interface DiagnosticWithURI extends Diagnostic {
