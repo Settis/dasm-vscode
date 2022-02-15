@@ -1,10 +1,10 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { TextDocuments } from 'vscode-languageserver/node';
-import * as fs from 'fs';
 import { DiagnosticWithURI } from './validators/util';
 import { validateNode } from './validators/general';
 import { parseFile } from './ast/construct';
 import { FileNode } from './ast/nodes';
+import { readContent } from './localFiles';
 
 export class ParsedFiles {
     private cachedAst: { [index: string]: FileNode } = {}
@@ -27,12 +27,9 @@ export class ParsedFiles {
         if (cachedRoot) return cachedRoot;
         let document = this.documents.get(uri);
         if (!document) {
-            try {
-                const data = fs.readFileSync(uri, 'utf8');
-                document = TextDocument.create(uri, "dasm", 1, data);
-            } catch (err) {
-                return;
-            }
+            const data = readContent(uri);
+            if (!data) return;
+            document = TextDocument.create(uri, "dasm", 1, data);
         }
         const fileRoot = parseFile(document);
         this.cachedAst[uri] = fileRoot;

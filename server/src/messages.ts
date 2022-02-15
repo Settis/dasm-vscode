@@ -8,6 +8,11 @@ export enum MSG {
     INVALID_NUMBER,
     LABEL_NOT_DEFINED,
     TOO_MANY_DEFINITIONS,
+    INTERNAL_ERROR,
+    STRING_LITERAL_EXPECTED,
+    FILE_NOT_RESOLVABLE,
+    CIRCULAR_INCLUDE,
+    EMPTY_STRING,
 }
 
 const EN: { [key in MSG]: string } = {
@@ -20,6 +25,11 @@ const EN: { [key in MSG]: string } = {
     [MSG.INVALID_NUMBER]: "Invalid number",
     [MSG.LABEL_NOT_DEFINED]: "Label is not defined",
     [MSG.TOO_MANY_DEFINITIONS]: "Label is already defined",
+    [MSG.INTERNAL_ERROR]: "extension internal error",
+    [MSG.STRING_LITERAL_EXPECTED]: "String literal is expected here",
+    [MSG.FILE_NOT_RESOLVABLE]: "The file is not resolvable",
+    [MSG.CIRCULAR_INCLUDE]: "You have circular include",
+    [MSG.EMPTY_STRING]: "Empty string is not allowed here",
 };
 
 export function getMessage(template: MSG): string {
