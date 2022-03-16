@@ -3,7 +3,7 @@ import * as assert from 'assert';
 
 
 describe('Use case helper', () => {
-    it('works', () => {
+    it.only('works', () => {
         const action = {
             type: 'Error',
             message: 'Some'

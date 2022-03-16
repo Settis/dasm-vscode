@@ -10,9 +10,9 @@
         "type": "git",
         "url": "https://github.com/Settis/dasm-vscode"
     },
-	"scripts": {
-		"test": "mocha out/test/useCasesHelper.test.js"
-	},
+    "scripts": {
+        "test": "mocha out/test/useCasesHelper.test.js"
+    },
     "dependencies": {
         "@types/node": "^16.9.1",
         "vscode-languageclient": "^7.0.0"
@@ -21,6 +21,7 @@
         "@types/js-yaml": "^4.0.3",
         "@types/vscode": "^1.52.0",
         "@vscode/test-electron": "^1.6.1",
+        "chevrotain": "^10.1.2",
         "js-yaml": "4.1.0"
     }
 }

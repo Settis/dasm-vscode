@@ -11,6 +11,7 @@
 		"url": "https://github.com/Settis/dasm-vscode"
 	},
 	"dependencies": {
+		"chevrotain": "^10.1.2",
 		"mocha": "^9.1.1",
 		"vscode-languageserver": "^7.0.0",
 		"vscode-languageserver-textdocument": "^1.0.1"

@@ -1,6 +1,7 @@
 import fs = require("fs");
 import path = require("path");
 import yaml = require('js-yaml');
+import { parse } from "./useCaseParser";
 
 export const projectRootFolder = path.resolve(__dirname, '../../../');
 export const e2eTestsFolder = path.resolve(projectRootFolder, 'e2eTests');
@@ -26,13 +27,8 @@ export class UseCase {
     constructor(readonly name: string, readonly description: UseCaseDescription) {}
 
     getFixtureContent() {
-        let prev = this.description.text;
-        let current = prev;
-        do {
-            prev = current;
-            current = prev.replace(annotationPattern, '$1');
-        } while (prev !== current);
-        return current;
+        parse(this.description.text);
+        return this.description.text;
     }
 
     getUseCaseFolder() {
