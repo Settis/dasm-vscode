@@ -142,7 +142,7 @@ export type ErrorAction = {
     severity?: 'Error' | 'Warning' | 'Information' | 'Hint'
 }
 
-type GetDefinitionAction = {
+export type GetDefinitionAction = {
     type: 'GetDefinition',
     result: string,
 }
@@ -151,7 +151,7 @@ type DefinitionResultAction = {
     type: 'DefinitionResult'
 }
 
-type GetUsagesAction = {
+export type GetUsagesAction = {
     type: 'GetUsages',
     result: string,
 }
