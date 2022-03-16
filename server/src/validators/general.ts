@@ -1,13 +1,10 @@
-import { Node, NodeType, ProgramNode, RelatedContext } from "../ast";
+import { Node, NodeType, RelatedContext } from "../ast/nodes";
 import { MSG } from "../messages";
+import { Program } from "../program";
 import { validateCommand } from "./asmCommandValidator";
 import { constructError, DiagnosticWithURI } from "./util";
 
-export function validateProgram(program: ProgramNode): DiagnosticWithURI[] {
-    return validateNode(program).concat(validateLabels(program));
-}
-
-function validateNode(node: Node): DiagnosticWithURI[] {
+export function validateNode(node: Node): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
     if (node.type === NodeType.Command)
         result.push(...validateCommand(node));
@@ -15,7 +12,7 @@ function validateNode(node: Node): DiagnosticWithURI[] {
     return result;
 }
 
-function validateLabels(program: ProgramNode): DiagnosticWithURI[] {
+export function validateLabels(program: Program): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
     result.push(...validateLabelsInContext(program.labels));
     for (const context of program.localLabels)

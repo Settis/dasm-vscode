@@ -6,7 +6,7 @@ text: |2
   {|barGetUsages}B{|barGetUsages}AR{|barGetUsages}:
         LDA {BA{|barGetUsages}R|barUsed}
         STA {BAR|barUsed},X
-  {BAR|defined,barUsed}
+  {BAR|defined}
   .lo{|loopGetUsages}op
         JMP {.loop|loopUsed}
         subroutine

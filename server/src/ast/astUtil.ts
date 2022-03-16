@@ -1,5 +1,5 @@
 import { Position } from "vscode-languageserver-textdocument";
-import { Node, NodeType } from "./ast";
+import { Node, NodeType, CommandNameNode, ArgumentsNode, NumberNode } from "./nodes";
 
 export function getNearestParentByType(startingNode: Node, nodeType: NodeType): Node | undefined {
     const parent = startingNode.parent;
@@ -27,6 +27,22 @@ export function isPositionInsideNode(position: PositionWithUri, node: Node): boo
     return position.uri === node.location.uri 
         && compare(node.location.range.start, position) < 1 
         && compare(position, node.location.range.end) < 1;
+}
+
+export function getArguments(node: CommandNameNode): ArgumentsNode | undefined {
+    return node.parent?.children.find(isArguments);
+}
+
+export function isArguments(node: Node): node is ArgumentsNode {
+    return node.type === NodeType.Arguments;
+}
+
+export function isCommandName(node: Node): node is CommandNameNode {
+    return node.type === NodeType.CommandName;
+}
+
+export function isNumber(node: Node): node is NumberNode {
+    return node.type === NodeType.Number;
 }
 
 /**

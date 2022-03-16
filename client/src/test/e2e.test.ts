@@ -1,6 +1,7 @@
-import { ErrorAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
+import { ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
 import { constructRange, getDocUri, getErrors, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
+import * as path from 'path';
 import { Range, DiagnosticSeverity, commands, Location } from "vscode";
 
 const useCases = readUseCases();
@@ -39,7 +40,7 @@ for (const useCase of useCases) {
         const annotations = useCase.getAnnotations();
 
         suiteSetup(async () => { 
-            await openUseCaseFile(mainUri); 
+            await openUseCaseFile(mainUri);
         });
 
         test("check errors", async () => {
@@ -65,38 +66,75 @@ for (const useCase of useCases) {
         });
 
         test("check definitions", async () => {
-            for (const annotation of annotations) {
-                const action = annotation.action;
-                if (action.type !== 'GetDefinition') continue;
+            for (const getDefinitionAnnotation of annotations.filter(it => it.action.type === 'GetDefinition')) {
                 const actualDefinitions = await commands.executeCommand<Location[]>('vscode.executeDefinitionProvider', mainUri, {
-                    line: annotation.range.line,
-                    character: annotation.range.startChar,
+                    line: getDefinitionAnnotation.range.line,
+                    character: getDefinitionAnnotation.range.startChar,
                 });
-                if (actualDefinitions === undefined && action.result === null) continue;
-                const expectedResults = annotations.filter(it => it.name === action.result);
+                const getDefResult = (getDefinitionAnnotation.action as GetDefinitionAction).result;
+                if (actualDefinitions === undefined && getDefResult === null) continue;
+                const expectedResults = annotations.filter(it => it.name === getDefResult);
 
-                for (const expectedResult of expectedResults) {
-                    const expectedRange = getRange(expectedResult);
-                    const actualResult = actualDefinitions?.find(it => it.range.isEqual(expectedRange));
-                    if (actualResult === undefined)
-                        assert.fail(`This definition was expected, but not shown.\n ${printLineWithRange(useCase, expectedRange)}`);
-                }
-                if (actualDefinitions === undefined) assert.fail("This is impossible!");
-                for (const actualResult of actualDefinitions) {
-                    const expectedResult = expectedResults.find(it => getRange(it).isEqual(actualResult.range));
-                    if (expectedResult === undefined)
-                        assert.fail(`This definition is not expected.\n ${printLineWithRange(useCase, actualResult.range)}`);
-                }
+                checkDefRef(useCase, expectedResults, actualDefinitions, 'definition');
             }
         });
 
-        test("check references", () => {
-            // something
+        test("check references", async () => {
+            for (const getUsagesAnnotation of annotations.filter(it => it.action.type === 'GetUsages')) {
+                const actualReferences = await commands.executeCommand<Location[]>('vscode.executeReferenceProvider', mainUri, {
+                    line: getUsagesAnnotation.range.line,
+                    character: getUsagesAnnotation.range.startChar,
+                });
+                const getRefResult = (getUsagesAnnotation.action as GetUsagesAction).result;
+                if (actualReferences === undefined && getRefResult === null) continue;
+                const expectedReferences = annotations.filter(it => it.name === getRefResult);
+
+                checkDefRef(useCase, expectedReferences, actualReferences, 'reference');
+            }
         });
 
         // all vscode commands here https://code.visualstudio.com/api/references/commands
     });
 }
+
+suite('Test include', () => {
+    const includeFolder = path.resolve(fixturesFolder, 'include');
+
+    test('Definitions are correct', async () => {
+        const mainUri = getDocUri(path.resolve(includeFolder, 'simple.asm'));
+        await openUseCaseFile(mainUri);
+        const theLinkDefinitions = await commands.executeCommand<Location[]>('vscode.executeDefinitionProvider', mainUri, {
+            line: 1,
+            character: 12,
+        });
+        assert.ok(theLinkDefinitions, 'No theLink definitions');
+        assert.strictEqual(theLinkDefinitions.length, 1, "theLink definitions size");
+        const theLinkDefinition = theLinkDefinitions[0];
+        assert.deepEqual(theLinkDefinition.uri, getDocUri(path.resolve(includeFolder, 'simpleInclude.asm')));
+        assert.deepEqual(theLinkDefinition.range, constructRange(0, 0, 7));
+        const anotherDefinitions = await commands.executeCommand<Location[]>('vscode.executeDefinitionProvider', mainUri, {
+            line: 4,
+            character: 12,
+        });
+        assert.ok(anotherDefinitions, 'No ANOTHER definitions');
+        assert.strictEqual(anotherDefinitions.length, 1, 'another definitions size');
+        const anotherDefinition = anotherDefinitions[0];
+        assert.deepEqual(anotherDefinition.uri, getDocUri(path.resolve(includeFolder, 'some/another.asm')));
+        assert.deepEqual(anotherDefinition.range, constructRange(0, 0, 7));
+    });
+
+    test('Errors dissapear on closing', async () => {
+        const mainUri = getDocUri(path.resolve(includeFolder, 'withError.asm'));
+        await openUseCaseFile(mainUri);
+        await getErrors(mainUri, 0);
+        const includeUri = getDocUri(path.resolve(includeFolder, 'errorInclude.asm'));
+        const includeError = (await getErrors(includeUri, 1))[0];
+        assert.deepEqual(includeError.message, 'Label is not defined');
+        await commands.executeCommand('workbench.action.closeActiveEditor');
+        await getErrors(mainUri, 0);
+        await getErrors(includeUri, 0);
+    });
+});
 
 function printLineWithRange(useCase: UseCase, range: Range): string {
     const linePrefix = ' ' + (range.start.line + 1) + ' : ';
@@ -109,4 +147,19 @@ function printLineWithRange(useCase: UseCase, range: Range): string {
 function getRange(useCaseAnnotation: UseCaseAnnotation) {
     const range = useCaseAnnotation.range;
     return constructRange(range.line, range.startChar, range.length);
+}
+
+function checkDefRef(useCase: UseCase, expectedResults: UseCaseAnnotation[], actualResults: Location[] | undefined, name: string) {
+    for (const expectedResult of expectedResults) {
+        const expectedRange = getRange(expectedResult);
+        const actualResult = actualResults?.find(it => it.range.isEqual(expectedRange));
+        if (actualResult === undefined)
+            assert.fail(`This ${name} was expected, but not shown.\n ${printLineWithRange(useCase, expectedRange)}`);
+    }
+    if (actualResults === undefined) assert.fail("This is impossible!");
+    for (const actualResult of actualResults) {
+        const expectedResult = expectedResults.find(it => getRange(it).isEqual(actualResult.range));
+        if (expectedResult === undefined)
+            assert.fail(`This ${name} is not expected.\n ${printLineWithRange(useCase, actualResult.range)}`);
+    }
 }

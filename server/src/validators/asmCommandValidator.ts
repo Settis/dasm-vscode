@@ -1,15 +1,16 @@
-import { CommandNameNode, CommandNode, NodeType, NumberNode, OperationModeArgNode } from "../ast";
 import { MSG } from "../messages";
-import { ModesSet, OperationDescription, operations } from "../operations";
-import { OpMode } from "../opMode";
+import { ModesSet, OperationDescription, operations } from "../dasm/operations";
+import { OpMode } from "../dasm/opMode";
 import { constructError, DiagnosticWithURI } from "./util";
-import { NAMES } from "../directives";
+import { NAMES } from "../dasm/directives";
+import { isArguments, isCommandName, isNumber } from "../ast/astUtil";
+import { CommandNode, CommandNameNode, Node, NodeType } from "../ast/nodes";
 
 export function validateCommand(node: CommandNode): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
-    const commandName = node.children.find(it => it.type === NodeType.CommandName);
+    const commandName = node.children.find(isCommandName);
     if (commandName) {
-        result.push(...validateCommandName(node, commandName as CommandNameNode));
+        result.push(...validateCommandName(node, commandName));
     } else {
         result.push(constructError(MSG.NO_COMMAND_NAME, node));
     }
@@ -20,19 +21,19 @@ function validateCommandName(node: CommandNode, commandName: CommandNameNode): D
     const operation = operations[commandName.name.toUpperCase()];
     const result: DiagnosticWithURI[] = [];
     if (operation) {
-        const args = node.children.find(it => it.type === NodeType.Arguments)?.children || [];
-        result.push(...validateCommandArgs(commandName, operation, args as OperationModeArgNode[]));
+        const args = node.children.find(isArguments)?.children || [];
+        result.push(...validateCommandArgs(commandName, operation, args));
     } else if (!NAMES.has(commandName.name.toUpperCase())) {
         result.push(constructError(MSG.UNKNOWN_COMMAND, commandName));
     }
     return result;
 }
 
-function validateCommandArgs(commandName: CommandNameNode, operation: OperationDescription, args: OperationModeArgNode[]): DiagnosticWithURI[] {
+function validateCommandArgs(commandName: CommandNameNode, operation: OperationDescription, args: Node[]): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
     if (args.length == 0 && ! (OpMode.Implied in operation.modes))
         result.push(constructError(MSG.NOT_IMPLIED_MODE, commandName));
-    else if (args[0]?.mode === OpMode.Immediate && ! (OpMode.Immediate in operation.modes))
+    else if (args[0]?.type === NodeType.Immediate && ! (OpMode.Immediate in operation.modes))
         result.push(constructError(MSG.WRONG_IMMEDIATE, args[0]));
     else if (args[0])
         result.push(...validateCommandAddressMode(operation, args[0]));
@@ -61,10 +62,23 @@ const MODE_CONVERSOIN: {
     }
 };
 
-function validateCommandAddressMode(operation: OperationDescription, arg: OperationModeArgNode): DiagnosticWithURI[] {
+const TYPE_TO_MODE: {
+    [key in NodeType]?: OpMode
+} = {
+    [NodeType.Immediate]: OpMode.Immediate,
+    [NodeType.Indirect]: OpMode.Indirect,
+    [NodeType.IndirectX]: OpMode.IndirectX,
+    [NodeType.IndirectY]: OpMode.IndirectY,
+    [NodeType.AddressX]: OpMode.AddressX,
+    [NodeType.AddressY]: OpMode.AddressY,
+};
+
+function validateCommandAddressMode(operation: OperationDescription, arg: Node): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
-    let mode = arg.mode;
-    const numberNode = arg.children.find(it => it.type === NodeType.Number) as NumberNode;
+    let mode = TYPE_TO_MODE[arg.type] || OpMode.Address;
+    let numberNode = arg.children.find(isNumber);
+    if (numberNode === undefined && arg.type === NodeType.Number)
+        numberNode = arg; 
     if (numberNode) {
         if (isNaN(numberNode.value))
             result.push(constructError(MSG.INVALID_NUMBER, numberNode));

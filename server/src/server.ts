@@ -1,16 +1,19 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection, DefinitionParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
-import { assembleProgram } from './assemblers/assemble';
-import { parseProgram, ProgramNode } from './ast';
-import { getNodeByPosition } from './astUtil';
-import { validateProgram } from './validators/general';
+import { getNodeByPosition } from './ast/astUtil';
+import { ParsedFiles } from './parsedFiles';
+import { Program } from './program';
+import { validateLabels } from './validators/general';
+import { DiagnosticWithURI } from './validators/util';
 
 const connection = createConnection();
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
-const programs: { [key: string]: ProgramNode } = {};
+const parsedFiles = new ParsedFiles(documents);
+const openedDocuments = new Set<string>();
+let lastSendedDiagnostics = new Set<string>();
 
-connection.onInitialize((params: InitializeParams) => {
+connection.onInitialize((_: InitializeParams) => {
 	return {
 		capabilities: {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
@@ -29,7 +32,7 @@ connection.onReferences((params: ReferenceParams) => {
 });
 
 function getRelatedObject(params: TextDocumentPositionParams) {
-	const programNode = programs[params.textDocument.uri];
+	const programNode = parsedFiles.getFileAst(params.textDocument.uri);
 	if (programNode === undefined) return;
 	const nodeByPosition = getNodeByPosition(programNode, {
 		...params.position,
@@ -40,21 +43,53 @@ function getRelatedObject(params: TextDocumentPositionParams) {
 	}
 }
 
-documents.onDidChangeContent(change => {
-	validateTextDocument(change.document);
+documents.onDidOpen(event => {
+	openedDocuments.add(event.document.uri);
+	rescanDocuments();
 });
 
-function validateTextDocument(textDocument: TextDocument) {
-	const programNode = parseProgram(textDocument);
-	assembleProgram(programNode);
-	programs[textDocument.uri] = programNode;
-	const diagnostics = validateProgram(programNode);
-	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-}
+documents.onDidChangeContent(_ => {
+	rescanDocuments();
+});
 
 documents.onDidClose(change => {
-	connection.sendDiagnostics({ uri: change.document.uri, diagnostics: []});
+	openedDocuments.delete(change.document.uri);
+	rescanDocuments();
 });
+
+function rescanDocuments() {
+	parsedFiles.clean();
+	const programs = Array.from(openedDocuments).map(uri => new Program(parsedFiles, uri));
+	programs.forEach(program => program.assemble());
+	const usedFiles = new Set<string>(openedDocuments);
+	const diagnostics: DiagnosticWithURI[] = [];
+	for (const program of programs) {
+		program.usedFiles.forEach(uri => usedFiles.add(uri));
+		diagnostics.push(...validateLabels(program));
+		diagnostics.push(...program.errors);
+	}
+	for (const usedFile of usedFiles)
+		diagnostics.push(...parsedFiles.getFileDiagnostics(usedFile));
+	const errorMap = new Map<string,DiagnosticWithURI[]>();
+	for (const diagnostic of diagnostics) {
+		let errorArray = errorMap.get(diagnostic.uri);
+		if (!errorArray) {
+			errorArray = [];
+			errorMap.set(diagnostic.uri, errorArray);
+		}
+		errorArray.push(diagnostic);
+	}
+	const diagnosticsToDelete = lastSendedDiagnostics;
+	lastSendedDiagnostics = new Set<string>();
+	for (const errors of errorMap.values()) {
+		const uri = errors[0].uri;
+		connection.sendDiagnostics({uri, diagnostics: errors});
+		diagnosticsToDelete.delete(uri);
+		lastSendedDiagnostics.add(uri);
+	}
+	for (const uri of diagnosticsToDelete)
+		connection.sendDiagnostics({uri, diagnostics: []});
+}
 
 documents.listen(connection);
 connection.listen();

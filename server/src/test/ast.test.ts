@@ -1,41 +1,41 @@
 import * as assert from 'assert';
 import { Location } from 'vscode-languageserver';
 import { Position, Range, TextDocument } from 'vscode-languageserver-textdocument';
-import { CommandNameNode, CommentNode, LabelNode, LiteralNode, Node, NodeType, OperationModeArgNode, parseProgram } from '../ast';
-import { OpMode } from '../opMode';
+import { parseFile } from '../ast/construct';
+import { NodeType, Node, LabelNode, CommandNameNode, CommentNode, LiteralNode, StringLiteralNode, FileNode } from '../ast/nodes';
 
 describe('AST tests', () => {
     it('zero line', () => {
-        const program = parseProgram(new TestTextDocument(''));
+        const program = parseFile(new TestTextDocument(''));
         assert.strictEqual(program.children.length, 0);
     });
     it('long line', () => {
-        const program = parseProgram(new TestTextDocument('                                 '));
-        assert.strictEqual(program.type, NodeType.Program);
+        const program = parseFile(new TestTextDocument('                                 '));
+        assert.strictEqual(program.type, NodeType.File);
         assert.strictEqual(program.children.length, 0);
     });
     it('Two empty lines', () => {
-        const program = parseProgram(new TestTextDocument('   \n    '));
+        const program = parseFile(new TestTextDocument('   \n    '));
         assert.strictEqual(program.children.length, 0);
     });
     it('LABEL                            ', () => {
-        const program = parseProgram(new TestTextDocument('LABEL                            '));
+        const program = parseFile(new TestTextDocument('LABEL                            '));
         assert.strictEqual(program.children.length, 1);
         checkLabel(program.children[0]);
     });
     it('                        ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('                        ; Comment'));
+        const program = parseFile(new TestTextDocument('                        ; Comment'));
         assert.strictEqual(program.children.length, 1);
         checkCommentNode(program.children[0]);
     });
     it('LABEL                   ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('LABEL                   ; Comment'));
+        const program = parseFile(new TestTextDocument('LABEL                   ; Comment'));
         assert.strictEqual(program.children.length, 2);
         checkLabel(program.children[0]);
         checkCommentNode(program.children[1]);
     });
     it('        CMD ARG,X ARG2           ', () => {
-        const program = parseProgram(new TestTextDocument('        CMD ARG,X ARG2           '));
+        const program = parseFile(new TestTextDocument('        CMD ARG,X ARG2           '));
         assert.strictEqual(program.children.length, 1);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 8, 22);
@@ -48,7 +48,7 @@ describe('AST tests', () => {
         checkArg2Node(args.children[1]);
     });
     it('LABEL   CMD             ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('LABEL   CMD             ; Comment'));
+        const program = parseFile(new TestTextDocument('LABEL   CMD             ; Comment'));
         assert.strictEqual(program.children.length, 2);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 0, 11);
@@ -58,7 +58,7 @@ describe('AST tests', () => {
         checkCommentNode(program.children[1]);
     });
     it('LABEL   CMD ARG,X       ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('LABEL   CMD ARG,X       ; Comment'));
+        const program = parseFile(new TestTextDocument('LABEL   CMD ARG,X       ; Comment'));
         assert.strictEqual(program.children.length, 2);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 0, 17);
@@ -72,7 +72,7 @@ describe('AST tests', () => {
         checkCommentNode(program.children[1]);
     });
     it('        CMD ARG   ARG2  ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('        CMD ARG   ARG2  ; Comment'));
+        const program = parseFile(new TestTextDocument('        CMD ARG   ARG2  ; Comment'));
         assert.strictEqual(program.children.length, 2);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 8, 22);
@@ -86,7 +86,7 @@ describe('AST tests', () => {
         checkCommentNode(program.children[1]);
     });
     it('LABEL   CMD ARG,X ARG2  ; Comment', () => {
-        const program = parseProgram(new TestTextDocument('LABEL   CMD ARG,X ARG2  ; Comment'));
+        const program = parseFile(new TestTextDocument('LABEL   CMD ARG,X ARG2  ; Comment'));
         assert.strictEqual(program.children.length, 2);
         const commandNode = program.children[0];
         basicNodeCheck(commandNode, NodeType.Command, 0, 22);
@@ -99,6 +99,46 @@ describe('AST tests', () => {
         checkArgXNode(args.children[0]);
         checkArg2Node(args.children[1]);
         checkCommentNode(program.children[1]);
+    });
+    it('    INCLUDE "FILE.ASM"', () => {
+        const program = parseFile(new TestTextDocument('    INCLUDE "FILE.ASM"'));
+        assert.strictEqual(program.children.length, 1);
+        const commandNode = program.children[0];
+        basicNodeCheck(commandNode, NodeType.Command, 4, 22);
+        assert.strictEqual(commandNode.children.length, 2);
+        const commandNameNode = commandNode.children[0] as CommandNameNode;
+        basicNodeCheck(commandNameNode, NodeType.CommandName, 4, 11);
+        assert.strictEqual(commandNameNode.name, "INCLUDE");
+        const args = commandNode.children[1];
+        assert.strictEqual(args.children.length, 1);
+        const fileName = args.children[0] as StringLiteralNode;
+        basicNodeCheck(fileName, NodeType.StringLiteral, 12, 22);
+        assert.strictEqual(fileName.text, "FILE.ASM");
+    });
+    // Check address parsing
+    it('  LDX #$44', () => {
+        const program = parseFile(new TestTextDocument('  LDX #$44'));
+        basicNodeCheck(getArgument(program), NodeType.Immediate, 6, 10);
+    });
+    it('  LDX ($44,X)', () => {
+        const program = parseFile(new TestTextDocument('  LDX ($44,X)'));
+        basicNodeCheck(getArgument(program), NodeType.IndirectX, 6, 13);
+    });
+    it('  LDX ($44),Y', () => {
+        const program = parseFile(new TestTextDocument('  LDX ($44),Y'));
+        basicNodeCheck(getArgument(program), NodeType.IndirectY, 6, 13);
+    });
+    it('  LDX ($44)', () => {
+        const program = parseFile(new TestTextDocument('  LDX ($44)'));
+        basicNodeCheck(getArgument(program), NodeType.Indirect, 6, 11);
+    });
+    it('  LDX $44,X', () => {
+        const program = parseFile(new TestTextDocument('  LDX $44,X'));
+        basicNodeCheck(getArgument(program), NodeType.AddressX, 6, 11);
+    });
+    it('  LDX $44,Y', () => {
+        const program = parseFile(new TestTextDocument('  LDX $44,Y'));
+        basicNodeCheck(getArgument(program), NodeType.AddressY, 6, 11);
     });
 });
 
@@ -118,32 +158,31 @@ function checkCommentNode(node: Node) {
 }
 
 function checkArgNode(node:Node) {
-    basicNodeCheck(node, NodeType.OprationModeArg, 12, 15);
-    assert.strictEqual((node as OperationModeArgNode).mode, OpMode.Address);
-    const literal = node.children[0];
-    basicNodeCheck(literal, NodeType.Literal, 12, 15);
-    assert.strictEqual((literal as LiteralNode).text, 'ARG');
+    basicNodeCheck(node, NodeType.Literal, 12, 15);
+    assert.strictEqual((node as LiteralNode).text, 'ARG');
 }
 
 function checkArgXNode(node: Node) {
-    basicNodeCheck(node, NodeType.OprationModeArg, 12, 17);
-    assert.strictEqual((node as OperationModeArgNode).mode, OpMode.AddressX);
+    basicNodeCheck(node, NodeType.AddressX, 12, 17);
     const literal = node.children[0];
     basicNodeCheck(literal, NodeType.Literal, 12, 15);
     assert.strictEqual((literal as LiteralNode).text, 'ARG');
 }
 
 function checkArg2Node(node: Node) {
-    basicNodeCheck(node, NodeType.OprationModeArg, 18, 22);
-    assert.strictEqual((node as OperationModeArgNode).mode, OpMode.Address);
-    const literal = node.children[0];
-    basicNodeCheck(literal, NodeType.Literal, 18, 22);
-    assert.strictEqual((literal as LiteralNode).text, 'ARG2');
+    basicNodeCheck(node, NodeType.Literal, 18, 22);
+    assert.strictEqual((node as LiteralNode).text, 'ARG2');
 }
 
 function basicNodeCheck(node: Node, type: NodeType, from: number, to: number) {
     assert.strictEqual(node.type, type);
     assert.deepStrictEqual(node.location, constructLocation(from, to));
+}
+
+function getArgument(program: FileNode): Node {
+    const commandNode = program.children[0];
+    const args = commandNode.children[1];
+    return args.children[0];
 }
 
 const URI = "test://document.asm";
