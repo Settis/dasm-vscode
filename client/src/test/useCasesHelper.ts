@@ -2,6 +2,7 @@ import fs = require("fs");
 import path = require("path");
 import yaml = require('js-yaml');
 import { parse } from "./useCaseParser";
+import { TextCstNode, TextLineCstNode } from "./useCaseParserTypes";
 
 export const projectRootFolder = path.resolve(__dirname, '../../../');
 export const e2eTestsFolder = path.resolve(projectRootFolder, 'e2eTests');
@@ -27,8 +28,7 @@ export class UseCase {
     constructor(readonly name: string, readonly description: UseCaseDescription) {}
 
     getFixtureContent() {
-        parse(this.description.text);
-        return this.description.text;
+        return getFixtureFromUseCase(parse(this.description.text) as TextCstNode);
     }
 
     getUseCaseFolder() {
@@ -49,6 +49,14 @@ export class UseCase {
         }
         return result;
     }
+}
+
+function getFixtureFromUseCase(useCase: TextCstNode): string {
+    return useCase.children.textLine.map(getFixtureFromTextLine).join('\n');
+}
+
+function getFixtureFromTextLine(textLine: TextLineCstNode): string {
+    return textLine.children.textWithTag?.flatMap(it => it.children.other).map(it => it.image).join('') || '';
 }
 
 class UseCaseLine {
