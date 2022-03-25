@@ -18,7 +18,8 @@
 	},
 	"scripts": {
 		"test": "mocha out/test/**/*.test.js",
-		"coverage": "nyc mocha out/test"
+		"coverage": "nyc mocha out/test",
+		"generateParserTypes": "node out/parser/cst/writeCstTypes.js"
 	},
 	"devDependencies": {
 		"nyc": "^15.1.0"
