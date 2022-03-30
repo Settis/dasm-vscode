@@ -26,8 +26,16 @@ export class LabelNode implements BasicNode {
     readonly type: NodeType = NodeType.Label;
     constructor(
         readonly location: Location,
-        readonly name: StringLiteralNode,
+        readonly name: IdentifierNode,
         readonly isLocal: boolean
+    ) {}
+}
+
+export class IdentifierNode implements BasicNode {
+    readonly type: NodeType = NodeType.Identifier;
+    constructor(
+        readonly location: Location,
+        readonly name: string
     ) {}
 }
 
@@ -35,7 +43,7 @@ export class CommandNode implements BasicNode {
     readonly type: NodeType = NodeType.Command;
     constructor(
         readonly location: Location,
-        readonly name: StringLiteralNode,
+        readonly name: IdentifierNode,
         readonly args: ArgumentNode[]
     ) {}
 }
@@ -53,7 +61,7 @@ export class ArgumentNode implements BasicNode {
     constructor(
         readonly location: Location,
         readonly addressMode: AddressMode,
-        readonly value: StringLiteralNode | NumberNode 
+        readonly value: StringLiteralNode | IdentifierNode | NumberNode 
     ) {}
 }
 
@@ -68,6 +76,7 @@ export class NumberNode implements BasicNode {
 export enum NodeType {
     Label = 'Label',
     Command = 'Command',
+    Identifier = 'Identifier',
     CommandName = 'CommandName',
     Arguments = 'Arguments',
     Argument = 'Argument',

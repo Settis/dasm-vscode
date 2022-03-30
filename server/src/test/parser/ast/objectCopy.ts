@@ -1,4 +1,5 @@
 export function copy(orig: any, mask: any): any {
+    if (!orig) return orig;
     const result = {} as any;
     for (const name of Object.keys(mask)) {
         const maskField = mask[name];

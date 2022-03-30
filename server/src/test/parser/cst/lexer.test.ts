@@ -11,7 +11,7 @@ describe('CST lexer tests', () => {
     it('recognize line with inderect addressing and comment', () => {
         checkTokens(
             'LABEL   CMD ARG,X       ; Comment',
-            ['LABEL', '   ', 'CMD', ' ', 'ARG', ',', 'X', '       ', '; Comment']
+            ['LABEL', '   ', 'CMD', ' ', 'ARG', ',X', '       ', '; Comment']
         );
     });
     it('recognize string literal', () => {
@@ -35,7 +35,7 @@ describe('CST lexer tests', () => {
     it('recognize indirect command', () => {
         checkTokens(
             '  LDX ($44),Y',
-            ['  ', 'LDX', ' ', '(', '$44', ')', ',', 'Y']
+            ['  ', 'LDX', ' ', '(', '$44', '),Y']
         );
     });
     it('recognize string literal with spaces', () => {
@@ -55,6 +55,9 @@ describe('CST lexer tests', () => {
             ' %1001 0123 456 $FF',
             [' ', '%1001', ' ', '0123', ' ', '456', ' ', '$FF']
         );
+    });
+    it('recognize identifiers statred/ended with X/Y', () => {
+        checkTokens(' X Y XOOY YOOX ', [' ', 'X', ' ', 'Y', ' ', 'XOOY', ' ', 'YOOX', ' ']);
     });
 });
 

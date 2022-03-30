@@ -48,6 +48,15 @@ describe('Testing object copy', () => {
             foo: [{f: 2}, {f: 3}]
         });
     });
+    it('with null fields', () => {
+        testCopy({
+            foo: null
+        },{
+            foo: null
+        },{
+            foo: null
+        });
+    });
 });
 
 function testCopy(orig: any, mask: any, result: any) {
