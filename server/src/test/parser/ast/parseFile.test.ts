@@ -418,12 +418,15 @@ describe.only('Correct AST for', () => {
 });
 
 function checkAST(text: string, ...lines: TestLineNode[]) {
-    const ast = parseText('', text);
-    const result: TestFileNode = {
+    const actualResult = parseText('', text);
+    assert.ok(actualResult.lexerErrors.length == 0, "Unexpected lexer errors");
+    assert.ok(actualResult.parserErrors.length == 0, "Unexpected parser errors");
+    const ast = actualResult.ast;
+    const expectedAst: TestFileNode = {
         type: NodeType.File,
         lines: lines
     };
-    assert.deepStrictEqual(copy(ast, result), result);
+    assert.deepStrictEqual(copy(ast, expectedAst), expectedAst);
 }
 
 type TestFileNode = {

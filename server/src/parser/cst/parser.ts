@@ -20,29 +20,19 @@ class DasmParser extends CstParser {
     }) as () => TextCstNode;
 
     private line = this.RULE('line', () => {
-        this.OPTION(() => {this.SUBRULE(this.label);});
-        this.OPTION2(() => {this.SUBRULE(this.commandWithSeparator);});
-        this.OPTION3(() => {this.CONSUME(lexer.Space);});
-        this.OPTION4(() => {this.SUBRULE(this.commentWithSeparator);});
-    })
-
-    private commentWithSeparator = this.RULE('commentWithSeparator', () => {
-        this.CONSUME(lexer.Comment);
-    })
-
-    private commandWithSeparator = this.RULE('commandWithSeparator', () => {
-        this.CONSUME(lexer.Space);
-        this.SUBRULE(this.command);
-    })
-
-    private command = this.RULE('command', () => {
-        this.CONSUME(lexer.Identifier);
-        this.MANY({
-            DEF: () => {
-                this.CONSUME(lexer.Space);
-                this.SUBRULE(this.argument);
-            }
+        this.OPTION1(() => {this.SUBRULE(this.label);});
+        this.OPTION2(() => {
+            this.CONSUME1(lexer.Space);
+            this.CONSUME(lexer.Identifier);
+            this.MANY({
+                DEF: () => {
+                    this.CONSUME2(lexer.Space);
+                    this.SUBRULE(this.argument);
+                }
+            });
         });
+        this.OPTION3(() => {this.CONSUME(lexer.Space);});
+        this.OPTION4(() => {this.CONSUME(lexer.Comment);});
     })
 
     private label = this.RULE('label', () => {

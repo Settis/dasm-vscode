@@ -1,6 +1,6 @@
 import { CstNode, IToken } from "chevrotain";
 import { Location, Range } from "vscode-languageserver";
-import { AddressXArgumentCstNode, AddressYArgumentCstNode, ArgumentCstNode, CommandWithSeparatorCstNode, ImmediateArgumentCstNode, IndirectArgumentCstNode, IndirectXArgumentCstNode, IndirectYArgumentCstNode, LabelCstNode, LabelNameCstNode, LineCstNode, NumberCstNode, SimpleArgumentCstNode, TextCstNode } from "../cst/cstTypes";
+import { AddressXArgumentCstNode, AddressYArgumentCstNode, ArgumentCstNode, ImmediateArgumentCstNode, IndirectArgumentCstNode, IndirectXArgumentCstNode, IndirectYArgumentCstNode, LabelCstNode, LabelNameCstNode, LineCstNode, NumberCstNode, SimpleArgumentCstNode, TextCstNode } from "../cst/cstTypes";
 import { AddressMode, ArgumentNode, CommandNode, FileNode, IdentifierNode, LabelNode, LineNode, NumberNode, StringLiteralNode } from "./nodes";
 
 export class Visitor {
@@ -19,7 +19,7 @@ export class Visitor {
         return new LineNode(
             this.createLocation(lineNode), 
             this.convertLabel(lineNode.children.label), 
-            this.convertCommand(lineNode.children.commandWithSeparator)
+            this.convertCommand(lineNode.children.identifier, lineNode.children.argument)
         );
     }
 
@@ -41,13 +41,24 @@ export class Visitor {
             );
     }
 
-    private convertCommand(commandWithSeparator?: CommandWithSeparatorCstNode[]): CommandNode | null {
-        if (!commandWithSeparator) return null;
-        const command = commandWithSeparator[0].children.command[0];
+    private convertCommand(commandName?: IToken[], argument?: ArgumentCstNode[]): CommandNode | null {
+        if (!commandName) return null;
+        let commandEndLine = commandName[0].endLine!;
+        let commandEndColumn = commandName[0].endColumn!;
+        if (argument) {
+            const lastArgumentLocation = argument[argument.length-1].location!;
+            commandEndLine = lastArgumentLocation.endLine!;
+            commandEndColumn = lastArgumentLocation.endColumn!;
+        }
         return new CommandNode(
-            this.createLocation(command),
-            this.convertIdentifier(command.children.identifier[0]),
-            (command.children.argument || []).map(it => this.convertArgument(it))
+            Location.create(this.uri, Range.create(
+                commandName[0].startLine!,
+                commandName[0].startColumn!,
+                commandEndLine,
+                commandEndColumn
+            )),
+            this.convertIdentifier(commandName[0]),
+            (argument || []).map(it => this.convertArgument(it))
         );
     }
 

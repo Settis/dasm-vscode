@@ -17,39 +17,10 @@ export interface LineCstNode extends CstNode {
 
 export type LineCstChildren = {
   label?: LabelCstNode[];
-  commandWithSeparator?: CommandWithSeparatorCstNode[];
-  space?: IToken[];
-  commentWithSeparator?: CommentWithSeparatorCstNode[];
-};
-
-export interface CommentWithSeparatorCstNode extends CstNode {
-  name: "commentWithSeparator";
-  children: CommentWithSeparatorCstChildren;
-}
-
-export type CommentWithSeparatorCstChildren = {
-  comment: IToken[];
-};
-
-export interface CommandWithSeparatorCstNode extends CstNode {
-  name: "commandWithSeparator";
-  children: CommandWithSeparatorCstChildren;
-}
-
-export type CommandWithSeparatorCstChildren = {
-  space: IToken[];
-  command: CommandCstNode[];
-};
-
-export interface CommandCstNode extends CstNode {
-  name: "command";
-  children: CommandCstChildren;
-}
-
-export type CommandCstChildren = {
-  identifier: IToken[];
-  space?: IToken[];
+  space?: (IToken)[];
+  identifier?: IToken[];
   argument?: ArgumentCstNode[];
+  comment?: IToken[];
 };
 
 export interface LabelCstNode extends CstNode {
@@ -176,9 +147,6 @@ export type NumberCstChildren = {
 export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   text(children: TextCstChildren, param?: IN): OUT;
   line(children: LineCstChildren, param?: IN): OUT;
-  commentWithSeparator(children: CommentWithSeparatorCstChildren, param?: IN): OUT;
-  commandWithSeparator(children: CommandWithSeparatorCstChildren, param?: IN): OUT;
-  command(children: CommandCstChildren, param?: IN): OUT;
   label(children: LabelCstChildren, param?: IN): OUT;
   argument(children: ArgumentCstChildren, param?: IN): OUT;
   immediateArgument(children: ImmediateArgumentCstChildren, param?: IN): OUT;
