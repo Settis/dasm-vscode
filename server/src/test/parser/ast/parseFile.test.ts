@@ -419,8 +419,7 @@ describe('Correct AST for', () => {
 
 function checkAST(text: string, ...lines: TestLineNode[]) {
     const actualResult = parseText('', text);
-    assert.ok(actualResult.lexerErrors.length == 0, "Unexpected lexer errors");
-    assert.ok(actualResult.parserErrors.length == 0, "Unexpected parser errors");
+    assert.ok(actualResult.errors.length == 0, "Unexpected errors");
     const ast = actualResult.ast;
     const expectedAst: TestFileNode = {
         type: NodeType.File,

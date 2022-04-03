@@ -1,10 +1,9 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { TextDocuments } from 'vscode-languageserver/node';
 import { DiagnosticWithURI } from './validators/util';
-import { validateNode } from './validators/general';
-import { parseFile } from './ast/construct';
-import { FileNode } from './ast/nodes';
 import { readContent } from './localFiles';
+import { FileNode } from './parser/ast/nodes';
+import { parseText } from './parser/ast/utils';
 
 export class ParsedFiles {
     private cachedAst: { [index: string]: FileNode } = {}
@@ -31,10 +30,10 @@ export class ParsedFiles {
             if (!data) return;
             document = TextDocument.create(uri, "dasm", 1, data);
         }
-        const fileRoot = parseFile(document);
-        this.cachedAst[uri] = fileRoot;
-        this.cachedErrors[uri] = validateNode(fileRoot);
-        return fileRoot;
+        const fileRoot = parseText(document.uri, document.getText());
+        this.cachedAst[uri] = fileRoot.ast;
+        this.cachedErrors[uri] = fileRoot.errors;
+        return fileRoot.ast;
     }
 
     public getFileDiagnostics(uri: string): DiagnosticWithURI[] {

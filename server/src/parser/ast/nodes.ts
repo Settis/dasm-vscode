@@ -77,21 +77,11 @@ export enum NodeType {
     Label = 'Label',
     Command = 'Command',
     Identifier = 'Identifier',
-    CommandName = 'CommandName',
-    Arguments = 'Arguments',
     Argument = 'Argument',
-    Literal = 'Literal',
-    Comment = 'Comment',
     Number = 'Number',
     File = 'File',
     Line = "Line",
     StringLiteral = 'StringLiteral',
-    Immediate = 'Immediate',
-    IndirectX = 'IndirectX',
-    IndirectY = 'IndirectY',
-    Indirect = 'Indirect',
-    AddressX = 'AddressX',
-    AddressY = 'AddressY',
 }
 
 export enum AddressMode {
