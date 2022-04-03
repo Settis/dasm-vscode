@@ -3,7 +3,7 @@ import { AddressMode, NodeType } from "../../../parser/ast/nodes";
 import { parseText } from "../../../parser/ast/utils";
 import { copy } from "./objectCopy";
 
-describe.only('Correct AST for', () => {
+describe('Correct AST for', () => {
     it('emty text', () => {
         checkAST('', {
                 type: NodeType.Line,
