@@ -3,6 +3,7 @@ import {
 	createConnection, DefinitionParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
 import { getNodeByPosition } from './ast/astUtil';
 import { ParsedFiles } from './parsedFiles';
+import { RelatedContextByNode } from './parser/ast/related';
 import { Program } from './program';
 import { validateLabels } from './validators/general';
 import { DiagnosticWithURI } from './validators/util';
@@ -12,6 +13,7 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedFiles = new ParsedFiles(documents);
 const openedDocuments = new Set<string>();
 let lastSendedDiagnostics = new Set<string>();
+let relatedObjects: RelatedContextByNode = new Map();
 
 connection.onInitialize((_: InitializeParams) => {
 	return {
@@ -38,9 +40,8 @@ function getRelatedObject(params: TextDocumentPositionParams) {
 		...params.position,
 		uri: params.textDocument.uri
 	});
-	if (nodeByPosition !== undefined && "relatedObject" in nodeByPosition) {
-		return nodeByPosition.relatedObject;
-	}
+	if (nodeByPosition)
+		return relatedObjects.get(nodeByPosition);
 }
 
 documents.onDidOpen(event => {
@@ -59,8 +60,13 @@ documents.onDidClose(change => {
 
 function rescanDocuments() {
 	parsedFiles.clean();
+	relatedObjects = new Map();
 	const programs = Array.from(openedDocuments).map(uri => new Program(parsedFiles, uri));
-	programs.forEach(program => program.assemble());
+	programs.forEach(program => {
+		program.assemble();
+		for (const node of program.relatedContexts.keys())
+			relatedObjects.set(node, program.relatedContexts.get(node)!);
+	});
 	const usedFiles = new Set<string>(openedDocuments);
 	const diagnostics: DiagnosticWithURI[] = [];
 	for (const program of programs) {

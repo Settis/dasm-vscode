@@ -3,42 +3,32 @@ import { ModesSet, OperationDescription, operations } from "../dasm/operations";
 import { OpMode } from "../dasm/opMode";
 import { constructError, DiagnosticWithURI } from "./util";
 import { NAMES } from "../dasm/directives";
-import { isArguments, isCommandName, isNumber } from "../ast/astUtil";
-import { CommandNode, CommandNameNode, Node, NodeType } from "../ast/nodes";
+import { AddressMode, ArgumentNode, CommandNode, NodeType, NumberNode } from "../parser/ast/nodes";
 
 export function validateCommand(node: CommandNode): DiagnosticWithURI[] {
-    const result: DiagnosticWithURI[] = [];
-    const commandName = node.children.find(isCommandName);
-    if (commandName) {
-        result.push(...validateCommandName(node, commandName));
-    } else {
-        result.push(constructError(MSG.NO_COMMAND_NAME, node));
+    const commandName = node.name.name.toUpperCase();
+    const operation = operations[commandName];
+    if (operation)
+        return validateCommandArgs(node, operation);
+    else {
+        if (NAMES.has(commandName))
+            return [];
+        else
+            return [constructError(MSG.UNKNOWN_COMMAND, node.name)];
     }
-    return result;
 }
 
-function validateCommandName(node: CommandNode, commandName: CommandNameNode): DiagnosticWithURI[] {
-    const operation = operations[commandName.name.toUpperCase()];
-    const result: DiagnosticWithURI[] = [];
-    if (operation) {
-        const args = node.children.find(isArguments)?.children || [];
-        result.push(...validateCommandArgs(commandName, operation, args));
-    } else if (!NAMES.has(commandName.name.toUpperCase())) {
-        result.push(constructError(MSG.UNKNOWN_COMMAND, commandName));
-    }
-    return result;
-}
-
-function validateCommandArgs(commandName: CommandNameNode, operation: OperationDescription, args: Node[]): DiagnosticWithURI[] {
-    const result: DiagnosticWithURI[] = [];
+function validateCommandArgs(commandNode: CommandNode, operation: OperationDescription): DiagnosticWithURI[] {
+    const args = commandNode.args;
     if (args.length == 0 && ! (OpMode.Implied in operation.modes))
-        result.push(constructError(MSG.NOT_IMPLIED_MODE, commandName));
-    else if (args[0]?.type === NodeType.Immediate && ! (OpMode.Immediate in operation.modes))
+        return [constructError(MSG.NOT_IMPLIED_MODE, commandNode)];
+    const result: DiagnosticWithURI[] = [];
+    if (args.length > 1)
+        result.push(constructError(MSG.TOO_MANY_ARGUMENTS, args[1], args[args.length-1]));
+    if (args[0].addressMode === AddressMode.Immediate && ! (OpMode.Immediate in operation.modes))
         result.push(constructError(MSG.WRONG_IMMEDIATE, args[0]));
     else if (args[0])
         result.push(...validateCommandAddressMode(operation, args[0]));
-    if (args.length > 1)
-        result.push(constructError(MSG.TOO_MANY_ARGUMENTS, args[1], args[args.length-1]));
     return result;
 }
 
@@ -63,27 +53,22 @@ const MODE_CONVERSOIN: {
 };
 
 const TYPE_TO_MODE: {
-    [key in NodeType]?: OpMode
+    [key in AddressMode]?: OpMode
 } = {
-    [NodeType.Immediate]: OpMode.Immediate,
-    [NodeType.Indirect]: OpMode.Indirect,
-    [NodeType.IndirectX]: OpMode.IndirectX,
-    [NodeType.IndirectY]: OpMode.IndirectY,
-    [NodeType.AddressX]: OpMode.AddressX,
-    [NodeType.AddressY]: OpMode.AddressY,
+    [AddressMode.Immediate]: OpMode.Immediate,
+    [AddressMode.Indirect]: OpMode.Indirect,
+    [AddressMode.IndirectX]: OpMode.IndirectX,
+    [AddressMode.IndirectY]: OpMode.IndirectY,
+    [AddressMode.AddressX]: OpMode.AddressX,
+    [AddressMode.AddressY]: OpMode.AddressY,
 };
 
-function validateCommandAddressMode(operation: OperationDescription, arg: Node): DiagnosticWithURI[] {
+function validateCommandAddressMode(operation: OperationDescription, arg: ArgumentNode): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
-    let mode = TYPE_TO_MODE[arg.type] || OpMode.Address;
-    let numberNode = arg.children.find(isNumber);
-    if (numberNode === undefined && arg.type === NodeType.Number)
-        numberNode = arg; 
-    if (numberNode) {
-        if (isNaN(numberNode.value))
-            result.push(constructError(MSG.INVALID_NUMBER, numberNode));
-        else if (mode in MODE_CONVERSOIN) {
-            if (numberNode.value > 0xFF)
+    let mode = TYPE_TO_MODE[arg.addressMode] || OpMode.Address;
+    if (arg.value.type === NodeType.Number) {
+        if (mode in MODE_CONVERSOIN) {
+            if ((arg.value as NumberNode ).value > 0xFF)
                 mode = MODE_CONVERSOIN[mode]!.absolute;
             else
                 mode = MODE_CONVERSOIN[mode]!.zp;

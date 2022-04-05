@@ -1,8 +1,9 @@
 import { Location } from "vscode-languageserver";
 
-interface BasicNode {
+export interface BasicNode {
     readonly type: NodeType
     readonly location: Location
+    getChildren(): BasicNode[]
 }
 
 export class FileNode implements BasicNode {
@@ -11,6 +12,9 @@ export class FileNode implements BasicNode {
         readonly location: Location,
         readonly lines: LineNode[]
     ) {}
+    public getChildren(): BasicNode[] {
+        return this.lines;
+    }
 }
 
 export class LineNode implements BasicNode {
@@ -20,6 +24,9 @@ export class LineNode implements BasicNode {
         readonly label: LabelNode | null,
         readonly command: CommandNode | null
     ) {}
+    public getChildren(): BasicNode[] {
+        return [this.label, this.command].filter(it => it !== null) as BasicNode[];
+    }
 }
 
 export class LabelNode implements BasicNode {
@@ -29,6 +36,9 @@ export class LabelNode implements BasicNode {
         readonly name: IdentifierNode,
         readonly isLocal: boolean
     ) {}
+    public getChildren(): BasicNode[] {
+        return [this.name];
+    }
 }
 
 export class IdentifierNode implements BasicNode {
@@ -37,6 +47,9 @@ export class IdentifierNode implements BasicNode {
         readonly location: Location,
         readonly name: string
     ) {}
+    public getChildren(): BasicNode[] {
+        return [];
+    }
 }
 
 export class CommandNode implements BasicNode {
@@ -46,6 +59,11 @@ export class CommandNode implements BasicNode {
         readonly name: IdentifierNode,
         readonly args: ArgumentNode[]
     ) {}
+    public getChildren(): BasicNode[] {
+        const result: BasicNode[] = [this.name];
+        result.push(...this.args);
+        return result;
+    }
 }
 
 export class StringLiteralNode implements BasicNode {
@@ -54,6 +72,9 @@ export class StringLiteralNode implements BasicNode {
         readonly location: Location,
         readonly text: string
     ) {}
+    public getChildren(): BasicNode[] {
+        return [];
+    }
 }
 
 export class ArgumentNode implements BasicNode {
@@ -63,6 +84,9 @@ export class ArgumentNode implements BasicNode {
         readonly addressMode: AddressMode,
         readonly value: StringLiteralNode | IdentifierNode | NumberNode 
     ) {}
+    public getChildren(): BasicNode[] {
+        return [this.value];
+    }
 }
 
 export class NumberNode implements BasicNode {
@@ -71,6 +95,9 @@ export class NumberNode implements BasicNode {
         readonly location: Location,
         readonly value: number
     ) {}
+    public getChildren(): BasicNode[] {
+        return [];
+    }
 }
 
 export enum NodeType {

@@ -1,29 +1,21 @@
 import { Position } from "vscode-languageserver-textdocument";
+import { BasicNode } from "../parser/ast/nodes";
 import { Node, NodeType, CommandNameNode, ArgumentsNode, NumberNode } from "./nodes";
-
-export function getNearestParentByType(startingNode: Node, nodeType: NodeType): Node | undefined {
-    const parent = startingNode.parent;
-    if (parent) {
-        if (parent.type == nodeType) return parent;
-        return getNearestParentByType(parent, nodeType);
-    }
-    return undefined;
-}
 
 interface PositionWithUri extends Position {
     uri: string
 }
 
-export function getNodeByPosition(startingNode: Node, position: PositionWithUri): Node | undefined {
+export function getNodeByPosition(startingNode: BasicNode, position: PositionWithUri): BasicNode | undefined {
     if (!isPositionInsideNode(position, startingNode)) return;
-    for (const child of startingNode.children) {
+    for (const child of startingNode.getChildren()) {
         const result = getNodeByPosition(child, position);
         if (result) return result;
     }
     return startingNode;
 }
 
-export function isPositionInsideNode(position: PositionWithUri, node: Node): boolean {
+export function isPositionInsideNode(position: PositionWithUri, node: BasicNode): boolean {
     return position.uri === node.location.uri 
         && compare(node.location.range.start, position) < 1 
         && compare(position, node.location.range.end) < 1;
