@@ -13,6 +13,8 @@ export enum MSG {
     FILE_NOT_RESOLVABLE,
     CIRCULAR_INCLUDE,
     EMPTY_STRING,
+    LEXING_ERROR_SOURCE,
+    PARSING_ERROR_SOURCE
 }
 
 const EN: { [key in MSG]: string } = {
@@ -30,6 +32,8 @@ const EN: { [key in MSG]: string } = {
     [MSG.FILE_NOT_RESOLVABLE]: "The file is not resolvable",
     [MSG.CIRCULAR_INCLUDE]: "You have circular include",
     [MSG.EMPTY_STRING]: "Empty string is not allowed here",
+    [MSG.LEXING_ERROR_SOURCE]: "lexer",
+    [MSG.PARSING_ERROR_SOURCE]: "parser"
 };
 
 export function getMessage(template: MSG): string {

@@ -1,9 +1,9 @@
 text: |2
     STA $56
-    STA {%56|invalid}
-    STA ({095|invalid},X)
+    STA {%|invalid}56
+    STA (095,X)
 actions:
   invalid:
     type: Error
-    message: Invalid number
+    message: "unexpected character: ->%<- at offset: 16, skipped 1 characters."
     severity: Error

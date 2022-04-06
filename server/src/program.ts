@@ -1,9 +1,9 @@
-import { isArguments } from "./ast/astUtil";
-import { RelatedContext, Node, NodeType, LabelNode, LiteralNode, CommandNameNode, RelatedObject, StringLiteralNode } from "./ast/nodes";
 import { INCBIN, INCDIR, INCLUDE, SUBROUTINE } from "./dasm/directives";
 import { isExists } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
+import { AddressMode, CommandNode, FileNode, IdentifierNode, LabelNode, LineNode, NodeType, StringLiteralNode } from "./parser/ast/nodes";
+import { RelatedContextByName, RelatedContextByNode, RelatedObject } from "./parser/ast/related";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
 
 const LOCAL_LABEL_PREFIX = '.';
@@ -13,8 +13,9 @@ export class Program {
         this.folderUri = uri.replace(/[^/]*$/, "");
     }
 
-    public labels: RelatedContext = {};
-    public localLabels: RelatedContext[] = [{}];
+    public labels: RelatedContextByName = new Map();
+    public localLabels: RelatedContextByName[] = [new Map()];
+    public relatedContexts: RelatedContextByNode = new Map();
     private folderUri: string;
     private includeFolders = new Set<string>();
     public errors: DiagnosticWithURI[] = [];
@@ -27,67 +28,62 @@ export class Program {
 
     private visitFile(uri: string) {
         const ast = this.parsedFiles.getFileAst(uri);
-        if (ast) this.visitNode(ast);
+        if (ast) this.visitFileNode(ast);
     }
 
-    private visitNode(node: Node) {
-        switch (node.type) {
-            case NodeType.Label:
-                this.visitLabel(node);
-                break;
-            case NodeType.Literal:
-                this.visitLiteral(node);
-                break;
-            case NodeType.CommandName:
-                this.visitCommandName(node);
-                break;
-            default:
-                break;
+    private visitFileNode(fileNode: FileNode) {
+        fileNode.lines.forEach(line => this.visitLineNode(line));
+    }
+
+    private visitLineNode(lineNode: LineNode) {
+        if (lineNode.label)
+            this.visitLabelNode(lineNode.label);
+        if (lineNode.command)
+            this.visitCommandNode(lineNode.command);
+    }
+
+    private visitLabelNode(labelNode: LabelNode) {
+        const relatedObject = this.getRelatedObjectForLabel(labelNode.name.name);
+        const labelNameNode = labelNode.name;
+        relatedObject.definitions.push(labelNameNode);
+        this.relatedContexts.set(labelNameNode, relatedObject);
+    }
+
+    private getRelatedObjectForLabel(name: string): RelatedObject {
+        const context = name.startsWith(LOCAL_LABEL_PREFIX) ? this.localLabels[this.localLabels.length - 1] : this.labels;
+        let object = context.get(name);
+        if (!object) {
+            object = {
+                definitions: [],
+                usages: []
+            };
+            context.set(name, object);
         }
-        for (const child of node.children)
-            this.visitNode(child);
+        return object;
     }
 
-    private visitLabel(node: LabelNode) {
-        const relatedObject = this.getRelatedObject(node.name);
-        relatedObject.definitions.push(node);
-        node.relatedObject = relatedObject;
-    }
-
-    private visitLiteral(node: LiteralNode) {
-        const relatedObject = this.getRelatedObject(node.text);
-        relatedObject.usages.push(node);
-        node.relatedObject = relatedObject;
-    }
-
-    private visitCommandName(node: CommandNameNode) {
-        switch (node.name.toUpperCase()) {
+    private visitCommandNode(commandNode: CommandNode) {
+        switch (commandNode.name.name.toUpperCase()) {
             case SUBROUTINE:
-                this.localLabels.push({});
+                this.localLabels.push(new Map());
                 break;
             case INCLUDE:
-                this.handleIncludeCommand(node);
+                this.handleIncludeCommand(commandNode);
                 break;
             case INCBIN:
-                this.handleIncludeBinCommand(node);
+                this.handleIncludeBinCommand(commandNode);
                 break;
             case INCDIR:
-                this.handleIncludeDirCommand(node);
+                this.handleIncludeDirCommand(commandNode);
                 break;
             default:
+                this.handleOtherCommand(commandNode);
                 break;
         }
     }
 
-    private getRelatedObject(name: string): RelatedObject {
-        if (name.startsWith(LOCAL_LABEL_PREFIX))
-            return getRelatedObject(this.localLabels[this.localLabels.length - 1], name);
-        else 
-            return getRelatedObject(this.labels, name);
-    }
-
-    private handleIncludeCommand(node: CommandNameNode) {
-        const fileNameNode = this.getRequiredStringArg(node);
+    private handleIncludeCommand(commandNode: CommandNode) {
+        const fileNameNode = this.getRequiredStringArg(commandNode);
         if (!fileNameNode) return;
         const fileUri = this.findFileUri(fileNameNode.text);
         if (fileUri) {
@@ -103,37 +99,56 @@ export class Program {
             this.errors.push(constructError(MSG.FILE_NOT_RESOLVABLE, fileNameNode));
     }
 
-    private handleIncludeBinCommand(node: CommandNameNode) {
-        const fileNameNode = this.getRequiredStringArg(node);
+    private handleIncludeBinCommand(commandNode: CommandNode) {
+        const fileNameNode = this.getRequiredStringArg(commandNode);
         if (!fileNameNode) return;
         const fileUri = this.findFileUri(fileNameNode.text);
         if (!fileUri)
             this.errors.push(constructError(MSG.FILE_NOT_RESOLVABLE, fileNameNode));
     }
 
-    private handleIncludeDirCommand(node: CommandNameNode) {
-        const dirNameNode = this.getRequiredStringArg(node);
+    private handleIncludeDirCommand(commandNode: CommandNode) {
+        const dirNameNode = this.getRequiredStringArg(commandNode);
         if (!dirNameNode) return;
         this.includeFolders.add(dirNameNode.text);
         if (!isExists(this.folderUri + dirNameNode.text))
             this.errors.push(constructWarning(MSG.FILE_NOT_RESOLVABLE, dirNameNode));
     }
 
-    private getRequiredStringArg(node: CommandNameNode): StringLiteralNode | undefined {
-        const commandNode = node.parent;
-        if (!commandNode) {
-            this.errors.push(constructError(MSG.INTERNAL_ERROR, node));
+    private getRequiredStringArg(commandNode: CommandNode): StringLiteralNode | undefined {
+        if (commandNode.args.length != 1) {
+            this.errors.push(constructError(MSG.STRING_LITERAL_EXPECTED, commandNode));
             return;
         }
-        const arg0 = commandNode.children.find(isArguments)?.children[0];
-        if (arg0?.type === NodeType.StringLiteral) {
-            if (arg0.text.length === 0) {
-                this.errors.push(constructError(MSG.EMPTY_STRING, arg0));
-                return;
-            }
-            return arg0;
+        const arg0 = commandNode.args[0];
+        if (arg0.addressMode !== AddressMode.None) {
+            this.errors.push(constructError(MSG.STRING_LITERAL_EXPECTED, arg0));
+            return;
         }
-        this.errors.push(constructError(MSG.STRING_LITERAL_EXPECTED, commandNode));
+        const argValue = arg0.value;
+        if (argValue.type !== NodeType.StringLiteral) {
+            this.errors.push(constructError(MSG.STRING_LITERAL_EXPECTED, argValue));
+            return;
+        }
+        if ((argValue as StringLiteralNode).text.length === 0) {
+            this.errors.push(constructError(MSG.EMPTY_STRING, arg0));
+            return;
+        }
+        return argValue as StringLiteralNode;
+    }
+
+    private handleOtherCommand(commandNode: CommandNode) {
+        for (const arg of commandNode.args) {
+            const value = arg.value;
+            if (value.type === NodeType.Identifier)
+                this.visitLiteral(value as IdentifierNode);
+        }
+    }
+
+    private visitLiteral(node: IdentifierNode) {
+        const relatedObject = this.getRelatedObjectForLabel(node.name);
+        relatedObject.usages.push(node);
+        this.relatedContexts.set(node, relatedObject);
     }
 
     private findFileUri(name: string): string | undefined {
@@ -144,15 +159,4 @@ export class Program {
             if (isExists(fileUri)) return fileUri;
         }
     }
-}
-
-function getRelatedObject(context: RelatedContext, name: string): RelatedObject {
-    let result = context[name];
-    if (result) return result;
-    result = {
-        definitions: [],
-        usages: []
-    };
-    context[name] = result;
-    return result;
 }

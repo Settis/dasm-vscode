@@ -1,15 +1,16 @@
-import { Node, NodeType, RelatedContext } from "../ast/nodes";
 import { MSG } from "../messages";
+import { FileNode } from "../parser/ast/nodes";
+import { RelatedContextByName } from "../parser/ast/related";
 import { Program } from "../program";
+import { notEmpty } from "../utils";
 import { validateCommand } from "./asmCommandValidator";
 import { constructError, DiagnosticWithURI } from "./util";
 
-export function validateNode(node: Node): DiagnosticWithURI[] {
-    const result: DiagnosticWithURI[] = [];
-    if (node.type === NodeType.Command)
-        result.push(...validateCommand(node));
-    result.push(...node.children.flatMap(it => validateNode(it)));
-    return result;
+export function validateProgram(fileNode: FileNode): DiagnosticWithURI[] {
+    return fileNode.lines
+        .map(line => line.command)
+        .filter(notEmpty)
+        .flatMap(command => validateCommand(command!));
 }
 
 export function validateLabels(program: Program): DiagnosticWithURI[] {
@@ -20,10 +21,9 @@ export function validateLabels(program: Program): DiagnosticWithURI[] {
     return result;
 }
 
-function validateLabelsInContext(context: RelatedContext): DiagnosticWithURI[] {
+function validateLabelsInContext(context: RelatedContextByName): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
-    for (const labelName in context) {
-        const relatedLabel = context[labelName];
+    for (const relatedLabel of context.values()) {
         if (relatedLabel.definitions.length == 0)
             for (const usage of relatedLabel.usages)
                 result.push(constructError(MSG.LABEL_NOT_DEFINED, usage));
