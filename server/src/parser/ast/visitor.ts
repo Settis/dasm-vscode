@@ -1,7 +1,8 @@
-import { CstNode, IToken } from "chevrotain";
-import { Location, Range } from "vscode-languageserver";
+import { IToken } from "chevrotain";
+import { Location } from "vscode-languageserver";
 import { AddressXArgumentCstNode, AddressYArgumentCstNode, ArgumentCstNode, ImmediateArgumentCstNode, IndirectArgumentCstNode, IndirectXArgumentCstNode, IndirectYArgumentCstNode, LabelCstNode, LabelNameCstNode, LineCstNode, NumberCstNode, SimpleArgumentCstNode, TextCstNode } from "../cst/cstTypes";
 import { AddressMode, ArgumentNode, CommandNode, FileNode, IdentifierNode, LabelNode, LineNode, NumberNode, StringLiteralNode } from "./nodes";
+import { createRange, RangeSource } from "./utils";
 
 export class Visitor {
     constructor(
@@ -11,7 +12,9 @@ export class Visitor {
     public constructAst(text: TextCstNode): FileNode {
         return new FileNode(
             this.createLocation(text), 
-            (text.children.line||[]).map(it => this.convertLine(it))
+            (text.children.line||[])
+                .filter(it => it.location?.startColumn)
+                .map(it => this.convertLine(it))
         );
     }
 
@@ -43,20 +46,10 @@ export class Visitor {
 
     private convertCommand(commandName?: IToken[], argument?: ArgumentCstNode[]): CommandNode | null {
         if (!commandName) return null;
-        let commandEndLine = commandName[0].endLine!;
-        let commandEndColumn = commandName[0].endColumn!;
-        if (argument) {
-            const lastArgumentLocation = argument[argument.length-1].location!;
-            commandEndLine = lastArgumentLocation.endLine!;
-            commandEndColumn = lastArgumentLocation.endColumn!;
-        }
+        let commandEnd: RangeSource = commandName[0];
+        if (argument) commandEnd = argument[argument.length-1];
         return new CommandNode(
-            Location.create(this.uri, Range.create(
-                commandName[0].startLine!,
-                commandName[0].startColumn!,
-                commandEndLine,
-                commandEndColumn
-            )),
+            this.createLocation(commandName[0], commandEnd),
             this.convertIdentifier(commandName[0]),
             (argument || []).map(it => this.convertArgument(it))
         );
@@ -134,7 +127,7 @@ export class Visitor {
 
     private convertStringLiteral(literal: IToken): StringLiteralNode {
         return new StringLiteralNode(
-            this.createLocationFromToken(literal),
+            this.createLocation(literal),
             literal.image.substring(1, literal.image.length - 1)
         );
     }
@@ -164,27 +157,12 @@ export class Visitor {
 
     private convertIdentifier(identifierToken: IToken): IdentifierNode {
         return new IdentifierNode(
-            this.createLocationFromToken(identifierToken),
+            this.createLocation(identifierToken),
             identifierToken.image
         );
     }
 
-    private createLocation(node: CstNode): Location {
-        const nodeLocation = node.location!;
-        return Location.create(this.uri, Range.create(
-            nodeLocation.startLine!,
-            nodeLocation.startColumn!,
-            nodeLocation.endLine!,
-            nodeLocation.endColumn!
-        ));
-    }
-
-    private createLocationFromToken(token: IToken): Location {
-        return Location.create(this.uri, Range.create(
-            token.startLine!,
-            token.startColumn!,
-            token.endLine!,
-            token.endColumn!
-        ));
+    private createLocation(start: RangeSource, end?: RangeSource): Location {
+        return Location.create(this.uri, createRange(start, end));
     }
 }

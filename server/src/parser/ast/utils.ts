@@ -1,5 +1,5 @@
-import { ILexingError, IRecognitionException } from "chevrotain";
-import { Location, Range } from "vscode-languageserver";
+import { CstNode, ILexingError, IRecognitionException, IToken } from "chevrotain";
+import { Location, Position, Range } from "vscode-languageserver";
 import { getMessage, MSG } from "../../messages";
 import { DiagnosticWithURI } from "../../validators/util";
 import { DASM_LEXER } from "../cst/lexer";
@@ -41,12 +41,7 @@ function getEmptyResult(uri: string): ParsingResult {
 function convertLexingError(error: ILexingError, uri: string): DiagnosticWithURI {
     return {
         uri,
-        range: Range.create(
-            error.line!,
-            error.column!,
-            error.line!,
-            error.column! + error.length
-        ),
+        range: createRange(error),
         message: error.message,
         source: getMessage(MSG.LEXING_ERROR_SOURCE)
     };
@@ -55,13 +50,51 @@ function convertLexingError(error: ILexingError, uri: string): DiagnosticWithURI
 function convertParserError(error: IRecognitionException, uri: string): DiagnosticWithURI {
     return {
         uri,
-        range: Range.create(
-            error.token.startLine!,
-            error.token.startColumn!,
-            error.token.endLine!,
-            error.token.endColumn!
-        ),
+        range: createRange(error.token),
         message: error.message,
         source: getMessage(MSG.PARSING_ERROR_SOURCE)
     };
+}
+
+export type RangeSource = CstNode | IToken | ILexingError;
+
+export function createRange(start: RangeSource, end?: RangeSource): Range {
+    return Range.create(
+        createStartPosition(start),
+        createEndPosition(end || start)
+    );
+}
+
+function createStartPosition(src: RangeSource): Position {
+    let line = 0;
+    let character = 0;
+    if ('line' in src) {
+        line = src.line!;
+        character = src.column!;
+    } else if ('startLine' in src) {
+        line = src.startLine!;
+        character = src.startColumn!;
+    } else if ('location' in src) {
+        const location = src.location!;
+        line = location.startLine!;
+        character = location.startColumn!;
+    }
+    return Position.create(line - 1, character - 1);
+}
+
+function createEndPosition(src: RangeSource): Position {
+    let line = 0;
+    let character = 0;
+    if ('line' in src) {
+        line = src.line!;
+        character = src.column! + src.length - 1;
+    } else if ('startLine' in src) {
+        line = src.endLine!;
+        character = src.endColumn!;
+    } else if ('location' in src) {
+        const location = src.location!;
+        line = location.endLine!;
+        character = location.endColumn!;
+    }
+    return Position.create(line - 1, character);
 }

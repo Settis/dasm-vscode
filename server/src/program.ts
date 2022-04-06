@@ -130,6 +130,10 @@ export class Program {
             this.errors.push(constructError(MSG.STRING_LITERAL_EXPECTED, argValue));
             return;
         }
+        if ((argValue as StringLiteralNode).text.length === 0) {
+            this.errors.push(constructError(MSG.EMPTY_STRING, arg0));
+            return;
+        }
         return argValue as StringLiteralNode;
     }
 

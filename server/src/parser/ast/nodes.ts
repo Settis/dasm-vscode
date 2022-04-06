@@ -1,4 +1,5 @@
 import { Location } from "vscode-languageserver";
+import { notEmpty } from "../../utils";
 
 export interface BasicNode {
     readonly type: NodeType
@@ -25,7 +26,7 @@ export class LineNode implements BasicNode {
         readonly command: CommandNode | null
     ) {}
     public getChildren(): BasicNode[] {
-        return [this.label, this.command].filter(it => it !== null) as BasicNode[];
+        return [this.label, this.command].filter(notEmpty);
     }
 }
 

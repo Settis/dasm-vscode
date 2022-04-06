@@ -20,8 +20,12 @@ export function validateCommand(node: CommandNode): DiagnosticWithURI[] {
 
 function validateCommandArgs(commandNode: CommandNode, operation: OperationDescription): DiagnosticWithURI[] {
     const args = commandNode.args;
-    if (args.length == 0 && ! (OpMode.Implied in operation.modes))
-        return [constructError(MSG.NOT_IMPLIED_MODE, commandNode)];
+    if (args.length == 0) {
+        if (! (OpMode.Implied in operation.modes))
+            return [constructError(MSG.NOT_IMPLIED_MODE, commandNode)];
+        else
+            return [];
+    }
     const result: DiagnosticWithURI[] = [];
     if (args.length > 1)
         result.push(constructError(MSG.TOO_MANY_ARGUMENTS, args[1], args[args.length-1]));
