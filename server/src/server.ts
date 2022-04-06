@@ -1,9 +1,9 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection, DefinitionParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
-import { getNodeByPosition } from './ast/astUtil';
 import { ParsedFiles } from './parsedFiles';
 import { RelatedContextByNode } from './parser/ast/related';
+import { getNodeByPosition } from './parser/ast/utils';
 import { Program } from './program';
 import { validateLabels } from './validators/general';
 import { DiagnosticWithURI } from './validators/util';
