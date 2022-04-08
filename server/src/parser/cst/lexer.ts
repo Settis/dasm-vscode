@@ -16,7 +16,8 @@ export const IndirectXEnding = createToken({ name: 'indirectXEnding', pattern: /
 export const IndirectYEnding = createToken({ name: 'indirectYEnding', pattern: /\),[Yy]\b/ });
 export const LocalLabel = createToken({ name: 'localLabel', pattern: /\.\w+/ });
 export const Identifier = createToken({ name: 'identifier', pattern: /\w+/ });
-export const Comment = createToken({ name: 'comment', pattern: /;[^\n\r]*/ });
+export const Comment = createToken({ name: 'comment', pattern: /;[^\n\r]*/, group: Lexer.SKIPPED });
+export const MultilineComment = createToken({ name: 'multilineComment', pattern: /\/\*.*\*\//, group: Lexer.SKIPPED });
 export const StringLiteral = createToken({ name: 'stringLiteral', pattern: /"[^"]*"/ });
 
 export const ALL_TOKENS = [
@@ -37,6 +38,7 @@ export const ALL_TOKENS = [
     LocalLabel,
     Identifier,
     Comment,
+    MultilineComment,
     StringLiteral
 ];
 

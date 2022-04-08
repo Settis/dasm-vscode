@@ -32,7 +32,6 @@ class DasmParser extends CstParser {
             });
         });
         this.OPTION3(() => {this.CONSUME(lexer.Space);});
-        this.OPTION4(() => {this.CONSUME(lexer.Comment);});
     })
 
     private label = this.RULE('label', () => {

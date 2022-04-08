@@ -11,7 +11,7 @@ describe('CST lexer tests', () => {
     it('recognize line with inderect addressing and comment', () => {
         checkTokens(
             'LABEL   CMD ARG,X       ; Comment',
-            ['LABEL', '   ', 'CMD', ' ', 'ARG', ',X', '       ', '; Comment']
+            ['LABEL', '   ', 'CMD', ' ', 'ARG', ',X', '       ']
         );
     });
     it('recognize string literal', () => {
@@ -47,7 +47,7 @@ describe('CST lexer tests', () => {
     it('recognize strings and comments', () => {
         checkTokens(
             ' it "the string" ; Comment with "string"',
-            [' ', 'it', ' ', '"the string"', ' ', '; Comment with "string"']
+            [' ', 'it', ' ', '"the string"', ' ']
         );
     });
     it('recognize numbers', () => {
