@@ -35,7 +35,7 @@ class DasmParser extends CstParser {
     })
 
     private label = this.RULE('label', () => {
-        this.SUBRULE(this.lablelName);
+        this.CONSUME(lexer.Identifier);
         this.OPTION(() => {this.CONSUME(lexer.Colon);});
     })
 
@@ -88,13 +88,6 @@ class DasmParser extends CstParser {
         this.OR([
             {ALT: () => this.CONSUME(lexer.StringLiteral)},
             {ALT: () => this.SUBRULE(this.number)},
-            {ALT: () => this.SUBRULE(this.lablelName)}
-        ]);
-    })
-
-    private lablelName = this.RULE('labelName', () => {
-        this.OR([
-            {ALT: () => this.CONSUME(lexer.LocalLabel)},
             {ALT: () => this.CONSUME(lexer.Identifier)}
         ]);
     })

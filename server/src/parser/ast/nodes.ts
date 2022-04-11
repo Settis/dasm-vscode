@@ -110,6 +110,12 @@ export enum NodeType {
     File = 'File',
     Line = "Line",
     StringLiteral = 'StringLiteral',
+    UnaryOperator = 'UnaryOperator',
+    BinaryOperator = 'BinaryOperator',
+    Brackets = 'Brackets',
+    IfDirective = 'IfDirective',
+    RepeatDirective = 'RepeatDirective',
+    MacroDirective = 'MacroDirective'
 }
 
 export enum AddressMode {
@@ -120,4 +126,40 @@ export enum AddressMode {
     IndirectX = 'IndirectX',
     IndirectY = 'IndirectY',
     Indirect = 'Indirect',
+}
+
+export enum UnaryOperatorType {
+    OneComplement = 'OneComplement',
+    Negation = 'Negation',
+    Not = 'Not',
+    TakeLSB = 'TakeLSB',
+    TakeMSB = 'TakeMSB'
+}
+
+export enum BinaryOperatorType {
+    Multiplication = 'Multiplication',
+    Division = 'Division',
+    Modulus = 'Modulus',
+    Addition = 'Addition',
+    Subtraction = 'Subtraction',
+    ArithmeticShiftRight = 'ArithmeticShiftRight',
+    ArithmeticShiftLeft = 'ArithmeticShiftLeft',
+    GreatherThan = 'GreatherThan',
+    GreatherThanOrEqual = 'GreatherThanOrEqual',
+    LessThan = 'LessThan',
+    LessThanOrEqual = 'LessThanOrEqual',
+    Equal = 'Equal',
+    NotEqual = 'NotEqual',
+    ArithmeticAnd = 'ArithmeticAnd',
+    ArithmeticExclusiveOr = 'ArithmeticExclusiveOr',
+    ArithmeticOr = 'ArithmeticOr',
+    LogicalAnd = 'LogicalAnd',
+    LogicalOr = 'LogicalOr',
+    InlineIf = 'InlineIf'
+}
+
+export enum IfDirectiveType {
+    If = 'If',
+    IfConst = 'IfConst',
+    IfNConst = 'IfNConst'
 }
