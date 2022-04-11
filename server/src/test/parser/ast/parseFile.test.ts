@@ -558,7 +558,7 @@ function checkEchoExp(text: string, exp: TestExpressionNode) {
 }
 
 describe('Correct AST for multiline directives', () => {
-    it.only('simple if', () => {
+    it('simple if', () => {
         checkAST(
 `   IF ARG
       ADC $1
@@ -573,7 +573,7 @@ describe('Correct AST for multiline directives', () => {
                         type: NodeType.Identifier,
                         name: 'ARG'
                     },
-                    then: [{
+                    thenBody: [{
                         type: NodeType.Line,
                         label: null,
                         command: {
@@ -592,7 +592,7 @@ describe('Correct AST for multiline directives', () => {
                             }]
                         }
                     }],
-                    else: []
+                    elseBody: []
                 }
             }
         );
@@ -614,7 +614,7 @@ describe('Correct AST for multiline directives', () => {
                         type: NodeType.Identifier,
                         name: 'ARG'
                     },
-                    then: [{
+                    thenBody: [{
                         type: NodeType.Line,
                         label: null,
                         command: {
@@ -633,7 +633,7 @@ describe('Correct AST for multiline directives', () => {
                             }]
                         }
                     }],
-                    else: [{
+                    elseBody: [{
                         type: NodeType.Line,
                         label: null,
                         command: {
@@ -756,8 +756,8 @@ type TestIfDirecitveNode = {
     type: NodeType.IfDirective,
     ifType: IfDirectiveType,
     condition: TestExpressionNode,
-    then: TestLineNode[],
-    else: TestLineNode[]
+    thenBody: TestLineNode[],
+    elseBody: TestLineNode[]
 }
 
 type TestRepeatDirecitveNode = {
