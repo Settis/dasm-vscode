@@ -43,7 +43,10 @@ class DasmParser extends CstParser {
         this.OR([
             {ALT: () => this.SUBRULE(this.immediateArgument)},
             {ALT: () => this.SUBRULE(this.addressXYArgument)},
-            {ALT: () => this.SUBRULE(this.indirectArgument)},
+            {
+                GATE: () => this.LA(1).tokenType == lexer.OpenParenthesis,
+                ALT: () => this.SUBRULE(this.indirectArgument)
+            },
         ]);
     })
 
@@ -74,34 +77,38 @@ class DasmParser extends CstParser {
     private expression = this.RULE('expression', () => {
         this.SUBRULE1(this.unaryExpression);
         this.MANY(() => {
-            this.OR([
-                {ALT: () => this.CONSUME(lexer.MultiplicationSign)},
-                {ALT: () => this.CONSUME(lexer.DivisionSign)},
-                {ALT: () => this.CONSUME(lexer.PercentSign)},
-                {ALT: () => this.CONSUME(lexer.AdditionSign)},
-                {ALT: () => this.CONSUME(lexer.MinusSign)},
-                {ALT: () => this.CONSUME(lexer.ShiftRightSign)},
-                {ALT: () => this.CONSUME(lexer.ShiftLeftSign)},
-                {ALT: () => this.CONSUME(lexer.GreatherSign)},
-                {ALT: () => this.CONSUME(lexer.GreatherOrEqualSign)},
-                {ALT: () => this.CONSUME(lexer.LessSigh)},
-                {ALT: () => this.CONSUME(lexer.LessOrEqualSign)},
-                {ALT: () => this.CONSUME(lexer.EqualSign)},
-                {ALT: () => this.CONSUME(lexer.NotEqualSign)},
-                {ALT: () => this.CONSUME(lexer.ArithmeticAndSign)},
-                {ALT: () => this.CONSUME(lexer.XorSign)},
-                {ALT: () => this.CONSUME(lexer.ArithmeticOrSign)},
-                {ALT: () => this.CONSUME(lexer.LogicalAndSign)},
-                {ALT: () => this.CONSUME(lexer.LogicalOrSign)},
-                {ALT: () => this.CONSUME(lexer.QuestionMark)}
-            ]);
+            this.SUBRULE(this.binarySign);
             this.SUBRULE2(this.unaryExpression);
         });
     })
 
+    private binarySign = this.RULE('binarySign', () => {
+        this.OR([
+            {ALT: () => this.CONSUME(lexer.MultiplicationSign)},
+            {ALT: () => this.CONSUME(lexer.DivisionSign)},
+            {ALT: () => this.CONSUME(lexer.PercentSign)},
+            {ALT: () => this.CONSUME(lexer.AdditionSign)},
+            {ALT: () => this.CONSUME(lexer.MinusSign)},
+            {ALT: () => this.CONSUME(lexer.ShiftRightSign)},
+            {ALT: () => this.CONSUME(lexer.ShiftLeftSign)},
+            {ALT: () => this.CONSUME(lexer.GreatherSign)},
+            {ALT: () => this.CONSUME(lexer.GreatherOrEqualSign)},
+            {ALT: () => this.CONSUME(lexer.LessSigh)},
+            {ALT: () => this.CONSUME(lexer.LessOrEqualSign)},
+            {ALT: () => this.CONSUME(lexer.EqualSign)},
+            {ALT: () => this.CONSUME(lexer.NotEqualSign)},
+            {ALT: () => this.CONSUME(lexer.ArithmeticAndSign)},
+            {ALT: () => this.CONSUME(lexer.XorSign)},
+            {ALT: () => this.CONSUME(lexer.ArithmeticOrSign)},
+            {ALT: () => this.CONSUME(lexer.LogicalAndSign)},
+            {ALT: () => this.CONSUME(lexer.LogicalOrSign)},
+            {ALT: () => this.CONSUME(lexer.QuestionMark)}
+        ]);
+    })
+
     private unaryExpression = this.RULE('unaryExpression', () => {
         this.OR([
-            // {ALT: () => this.SUBRULE(this.roundBrackets)},
+            {ALT: () => this.SUBRULE(this.roundBrackets)},
             {ALT: () => this.SUBRULE(this.squareBrackets)},
             {ALT: () => this.SUBRULE(this.unaryOperator)},
             {ALT: () => this.CONSUME(lexer.StringLiteral)},

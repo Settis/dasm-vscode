@@ -84,6 +84,15 @@ export interface ExpressionCstNode extends CstNode {
 
 export type ExpressionCstChildren = {
   unaryExpression: (UnaryExpressionCstNode)[];
+  binarySign?: BinarySignCstNode[];
+};
+
+export interface BinarySignCstNode extends CstNode {
+  name: "binarySign";
+  children: BinarySignCstChildren;
+}
+
+export type BinarySignCstChildren = {
   multiplicationSign?: IToken[];
   divisionSign?: IToken[];
   percentSign?: IToken[];
@@ -111,6 +120,7 @@ export interface UnaryExpressionCstNode extends CstNode {
 }
 
 export type UnaryExpressionCstChildren = {
+  roundBrackets?: RoundBracketsCstNode[];
   squareBrackets?: SquareBracketsCstNode[];
   unaryOperator?: UnaryOperatorCstNode[];
   stringLiteral?: IToken[];
@@ -179,6 +189,7 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   addressXYArgument(children: AddressXYArgumentCstChildren, param?: IN): OUT;
   indirectArgument(children: IndirectArgumentCstChildren, param?: IN): OUT;
   expression(children: ExpressionCstChildren, param?: IN): OUT;
+  binarySign(children: BinarySignCstChildren, param?: IN): OUT;
   unaryExpression(children: UnaryExpressionCstChildren, param?: IN): OUT;
   roundBrackets(children: RoundBracketsCstChildren, param?: IN): OUT;
   squareBrackets(children: SquareBracketsCstChildren, param?: IN): OUT;
