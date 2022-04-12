@@ -20,7 +20,6 @@ export type LineCstChildren = {
   space?: (IToken)[];
   identifier?: IToken[];
   argument?: ArgumentCstNode[];
-  comment?: IToken[];
 };
 
 export interface LabelCstNode extends CstNode {
@@ -29,7 +28,7 @@ export interface LabelCstNode extends CstNode {
 }
 
 export type LabelCstChildren = {
-  labelName: LabelNameCstNode[];
+  identifier: IToken[];
   colon?: IToken[];
 };
 
@@ -40,12 +39,8 @@ export interface ArgumentCstNode extends CstNode {
 
 export type ArgumentCstChildren = {
   immediateArgument?: ImmediateArgumentCstNode[];
-  addressXArgument?: AddressXArgumentCstNode[];
-  addressYArgument?: AddressYArgumentCstNode[];
+  addressXYArgument?: AddressXYArgumentCstNode[];
   indirectArgument?: IndirectArgumentCstNode[];
-  indirectXArgument?: IndirectXArgumentCstNode[];
-  indirectYArgument?: IndirectYArgumentCstNode[];
-  simpleArgument?: SimpleArgumentCstNode[];
 };
 
 export interface ImmediateArgumentCstNode extends CstNode {
@@ -55,49 +50,18 @@ export interface ImmediateArgumentCstNode extends CstNode {
 
 export type ImmediateArgumentCstChildren = {
   sharp: IToken[];
-  simpleArgument: SimpleArgumentCstNode[];
+  expression: ExpressionCstNode[];
 };
 
-export interface AddressXArgumentCstNode extends CstNode {
-  name: "addressXArgument";
-  children: AddressXArgumentCstChildren;
+export interface AddressXYArgumentCstNode extends CstNode {
+  name: "addressXYArgument";
+  children: AddressXYArgumentCstChildren;
 }
 
-export type AddressXArgumentCstChildren = {
-  simpleArgument: SimpleArgumentCstNode[];
-  addressXEnding: IToken[];
-};
-
-export interface AddressYArgumentCstNode extends CstNode {
-  name: "addressYArgument";
-  children: AddressYArgumentCstChildren;
-}
-
-export type AddressYArgumentCstChildren = {
-  simpleArgument: SimpleArgumentCstNode[];
-  addressYEnding: IToken[];
-};
-
-export interface IndirectXArgumentCstNode extends CstNode {
-  name: "indirectXArgument";
-  children: IndirectXArgumentCstChildren;
-}
-
-export type IndirectXArgumentCstChildren = {
-  openParenthesis: IToken[];
-  simpleArgument: SimpleArgumentCstNode[];
-  indirectXEnding: IToken[];
-};
-
-export interface IndirectYArgumentCstNode extends CstNode {
-  name: "indirectYArgument";
-  children: IndirectYArgumentCstChildren;
-}
-
-export type IndirectYArgumentCstChildren = {
-  openParenthesis: IToken[];
-  simpleArgument: SimpleArgumentCstNode[];
-  indirectYEnding: IToken[];
+export type AddressXYArgumentCstChildren = {
+  expression: ExpressionCstNode[];
+  addressXEnding?: IToken[];
+  addressYEnding?: IToken[];
 };
 
 export interface IndirectArgumentCstNode extends CstNode {
@@ -107,28 +71,90 @@ export interface IndirectArgumentCstNode extends CstNode {
 
 export type IndirectArgumentCstChildren = {
   openParenthesis: IToken[];
-  simpleArgument: SimpleArgumentCstNode[];
+  expression: ExpressionCstNode[];
+  closeParenthesis?: IToken[];
+  indirectXEnding?: IToken[];
+  indirectYEnding?: IToken[];
+};
+
+export interface ExpressionCstNode extends CstNode {
+  name: "expression";
+  children: ExpressionCstChildren;
+}
+
+export type ExpressionCstChildren = {
+  unaryExpression: (UnaryExpressionCstNode)[];
+  multiplicationSign?: IToken[];
+  divisionSign?: IToken[];
+  percentSign?: IToken[];
+  additionSign?: IToken[];
+  minusSign?: IToken[];
+  shiftRightSign?: IToken[];
+  shiftLeftSign?: IToken[];
+  greatherSign?: IToken[];
+  greatherOrEqualSign?: IToken[];
+  lessSign?: IToken[];
+  lessOrEqualSign?: IToken[];
+  equalSigh?: IToken[];
+  notEqualSign?: IToken[];
+  arithmeticAndSign?: IToken[];
+  xorSign?: IToken[];
+  arithmeticOrSign?: IToken[];
+  logicalAndSign?: IToken[];
+  logicalOrSign?: IToken[];
+  questionMark?: IToken[];
+};
+
+export interface UnaryExpressionCstNode extends CstNode {
+  name: "unaryExpression";
+  children: UnaryExpressionCstChildren;
+}
+
+export type UnaryExpressionCstChildren = {
+  squareBrackets?: SquareBracketsCstNode[];
+  unaryOperator?: UnaryOperatorCstNode[];
+  stringLiteral?: IToken[];
+  number?: NumberCstNode[];
+  identifier?: IToken[];
+};
+
+export interface RoundBracketsCstNode extends CstNode {
+  name: "roundBrackets";
+  children: RoundBracketsCstChildren;
+}
+
+export type RoundBracketsCstChildren = {
+  openParenthesis: IToken[];
+  expression: ExpressionCstNode[];
   closeParenthesis: IToken[];
 };
 
-export interface SimpleArgumentCstNode extends CstNode {
-  name: "simpleArgument";
-  children: SimpleArgumentCstChildren;
+export interface SquareBracketsCstNode extends CstNode {
+  name: "squareBrackets";
+  children: SquareBracketsCstChildren;
 }
 
-export type SimpleArgumentCstChildren = {
-  stringLiteral?: IToken[];
-  number?: NumberCstNode[];
-  labelName?: LabelNameCstNode[];
+export type SquareBracketsCstChildren = {
+  openSquareBracket: IToken[];
+  expression: ExpressionCstNode[];
+  closeSquareBracket: IToken[];
 };
 
-export interface LabelNameCstNode extends CstNode {
-  name: "labelName";
-  children: LabelNameCstChildren;
+export interface UnaryOperatorCstNode extends CstNode {
+  name: "unaryOperator";
+  children: UnaryOperatorCstChildren;
 }
 
-export type LabelNameCstChildren = {
-  localLabel?: IToken[];
+export type UnaryOperatorCstChildren = {
+  tilde?: IToken[];
+  minusSign?: IToken[];
+  exclamationMark?: IToken[];
+  lessSign?: IToken[];
+  greatherSign?: IToken[];
+  roundBrackets?: RoundBracketsCstNode[];
+  squareBrackets?: SquareBracketsCstNode[];
+  stringLiteral?: IToken[];
+  number?: NumberCstNode[];
   identifier?: IToken[];
 };
 
@@ -150,12 +176,12 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   label(children: LabelCstChildren, param?: IN): OUT;
   argument(children: ArgumentCstChildren, param?: IN): OUT;
   immediateArgument(children: ImmediateArgumentCstChildren, param?: IN): OUT;
-  addressXArgument(children: AddressXArgumentCstChildren, param?: IN): OUT;
-  addressYArgument(children: AddressYArgumentCstChildren, param?: IN): OUT;
-  indirectXArgument(children: IndirectXArgumentCstChildren, param?: IN): OUT;
-  indirectYArgument(children: IndirectYArgumentCstChildren, param?: IN): OUT;
+  addressXYArgument(children: AddressXYArgumentCstChildren, param?: IN): OUT;
   indirectArgument(children: IndirectArgumentCstChildren, param?: IN): OUT;
-  simpleArgument(children: SimpleArgumentCstChildren, param?: IN): OUT;
-  labelName(children: LabelNameCstChildren, param?: IN): OUT;
+  expression(children: ExpressionCstChildren, param?: IN): OUT;
+  unaryExpression(children: UnaryExpressionCstChildren, param?: IN): OUT;
+  roundBrackets(children: RoundBracketsCstChildren, param?: IN): OUT;
+  squareBrackets(children: SquareBracketsCstChildren, param?: IN): OUT;
+  unaryOperator(children: UnaryOperatorCstChildren, param?: IN): OUT;
   number(children: NumberCstChildren, param?: IN): OUT;
 }

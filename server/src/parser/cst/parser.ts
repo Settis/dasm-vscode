@@ -42,50 +42,97 @@ class DasmParser extends CstParser {
     private argument = this.RULE('argument', () => {
         this.OR([
             {ALT: () => this.SUBRULE(this.immediateArgument)},
-            {ALT: () => this.SUBRULE(this.addressXArgument)},
-            {ALT: () => this.SUBRULE(this.addressYArgument)},
+            {ALT: () => this.SUBRULE(this.addressXYArgument)},
             {ALT: () => this.SUBRULE(this.indirectArgument)},
-            {ALT: () => this.SUBRULE(this.indirectXArgument)},
-            {ALT: () => this.SUBRULE(this.indirectYArgument)},
-            {ALT: () => this.SUBRULE(this.simpleArgument)}
         ]);
     })
 
     private immediateArgument = this.RULE('immediateArgument', () => {
         this.CONSUME(lexer.Sharp);
-        this.SUBRULE(this.simpleArgument);
+        this.SUBRULE(this.expression);
     })
 
-    private addressXArgument = this.RULE('addressXArgument', () => {
-        this.SUBRULE(this.simpleArgument);
-        this.CONSUME(lexer.AddressXEnding);
-    })
-
-    private addressYArgument = this.RULE('addressYArgument', () => {
-        this.SUBRULE(this.simpleArgument);
-        this.CONSUME(lexer.AddressYEnding);
-    })
-
-    private indirectXArgument = this.RULE('indirectXArgument', () => {
-        this.CONSUME(lexer.OpenParenthesis);
-        this.SUBRULE(this.simpleArgument);
-        this.CONSUME(lexer.IndirectXEnding);
-    })
-
-    private indirectYArgument = this.RULE('indirectYArgument', () => {
-        this.CONSUME(lexer.OpenParenthesis);
-        this.SUBRULE(this.simpleArgument);
-        this.CONSUME(lexer.IndirectYEnding);
+    private addressXYArgument = this.RULE('addressXYArgument', () => {
+        this.SUBRULE(this.expression);
+        this.OPTION(() => this.OR([
+                {ALT: () => this.CONSUME(lexer.AddressXEnding)},
+                {ALT: () => this.CONSUME(lexer.AddressYEnding)}
+            ])
+        );
     })
 
     private indirectArgument = this.RULE('indirectArgument', () => {
         this.CONSUME(lexer.OpenParenthesis);
-        this.SUBRULE(this.simpleArgument);
+        this.SUBRULE(this.expression);
+        this.OR([
+            {ALT: () => this.CONSUME(lexer.CloseParenthesis)},
+            {ALT: () => this.CONSUME(lexer.IndirectXEnding)},
+            {ALT: () => this.CONSUME(lexer.IndirectYEnding)}
+        ]);
+    })
+
+    private expression = this.RULE('expression', () => {
+        this.SUBRULE1(this.unaryExpression);
+        this.MANY(() => {
+            this.OR([
+                {ALT: () => this.CONSUME(lexer.MultiplicationSign)},
+                {ALT: () => this.CONSUME(lexer.DivisionSign)},
+                {ALT: () => this.CONSUME(lexer.PercentSign)},
+                {ALT: () => this.CONSUME(lexer.AdditionSign)},
+                {ALT: () => this.CONSUME(lexer.MinusSign)},
+                {ALT: () => this.CONSUME(lexer.ShiftRightSign)},
+                {ALT: () => this.CONSUME(lexer.ShiftLeftSign)},
+                {ALT: () => this.CONSUME(lexer.GreatherSign)},
+                {ALT: () => this.CONSUME(lexer.GreatherOrEqualSign)},
+                {ALT: () => this.CONSUME(lexer.LessSigh)},
+                {ALT: () => this.CONSUME(lexer.LessOrEqualSign)},
+                {ALT: () => this.CONSUME(lexer.EqualSign)},
+                {ALT: () => this.CONSUME(lexer.NotEqualSign)},
+                {ALT: () => this.CONSUME(lexer.ArithmeticAndSign)},
+                {ALT: () => this.CONSUME(lexer.XorSign)},
+                {ALT: () => this.CONSUME(lexer.ArithmeticOrSign)},
+                {ALT: () => this.CONSUME(lexer.LogicalAndSign)},
+                {ALT: () => this.CONSUME(lexer.LogicalOrSign)},
+                {ALT: () => this.CONSUME(lexer.QuestionMark)}
+            ]);
+            this.SUBRULE2(this.unaryExpression);
+        });
+    })
+
+    private unaryExpression = this.RULE('unaryExpression', () => {
+        this.OR([
+            // {ALT: () => this.SUBRULE(this.roundBrackets)},
+            {ALT: () => this.SUBRULE(this.squareBrackets)},
+            {ALT: () => this.SUBRULE(this.unaryOperator)},
+            {ALT: () => this.CONSUME(lexer.StringLiteral)},
+            {ALT: () => this.SUBRULE(this.number)},
+            {ALT: () => this.CONSUME(lexer.Identifier)}
+        ]);
+    })
+
+    private roundBrackets = this.RULE('roundBrackets', () => {
+        this.CONSUME(lexer.OpenParenthesis);
+        this.SUBRULE(this.expression);
         this.CONSUME(lexer.CloseParenthesis);
     })
 
-    private simpleArgument = this.RULE('simpleArgument', () => {
-        this.OR([
+    private squareBrackets = this.RULE('squareBrackets', () => {
+        this.CONSUME(lexer.OpenSquareBracket);
+        this.SUBRULE(this.expression);
+        this.CONSUME(lexer.CloseSquareBracket);
+    })
+
+    private unaryOperator = this.RULE('unaryOperator', () => {
+        this.OR1([
+            {ALT: () => this.CONSUME(lexer.Tilde)},
+            {ALT: () => this.CONSUME(lexer.MinusSign)},
+            {ALT: () => this.CONSUME(lexer.ExclamationMark)},
+            {ALT: () => this.CONSUME(lexer.LessSigh)},
+            {ALT: () => this.CONSUME(lexer.GreatherSign)}
+        ]);
+        this.OR2([
+            {ALT: () => this.SUBRULE(this.roundBrackets)},
+            {ALT: () => this.SUBRULE(this.squareBrackets)},
             {ALT: () => this.CONSUME(lexer.StringLiteral)},
             {ALT: () => this.SUBRULE(this.number)},
             {ALT: () => this.CONSUME(lexer.Identifier)}
