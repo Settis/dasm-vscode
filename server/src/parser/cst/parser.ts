@@ -130,14 +130,18 @@ class DasmParser extends CstParser {
     })
 
     private unaryOperator = this.RULE('unaryOperator', () => {
-        this.OR1([
+        this.OR([
             {ALT: () => this.CONSUME(lexer.Tilde)},
             {ALT: () => this.CONSUME(lexer.MinusSign)},
             {ALT: () => this.CONSUME(lexer.ExclamationMark)},
             {ALT: () => this.CONSUME(lexer.LessSigh)},
             {ALT: () => this.CONSUME(lexer.GreatherSign)}
         ]);
-        this.OR2([
+        this.SUBRULE(this.unaryOperatorValue);
+    })
+
+    private unaryOperatorValue = this.RULE('unaryOperatorValue', () => {
+        this.OR([
             {ALT: () => this.SUBRULE(this.roundBrackets)},
             {ALT: () => this.SUBRULE(this.squareBrackets)},
             {ALT: () => this.CONSUME(lexer.StringLiteral)},

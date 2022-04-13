@@ -161,6 +161,15 @@ export type UnaryOperatorCstChildren = {
   exclamationMark?: IToken[];
   lessSign?: IToken[];
   greatherSign?: IToken[];
+  unaryOperatorValue: UnaryOperatorValueCstNode[];
+};
+
+export interface UnaryOperatorValueCstNode extends CstNode {
+  name: "unaryOperatorValue";
+  children: UnaryOperatorValueCstChildren;
+}
+
+export type UnaryOperatorValueCstChildren = {
   roundBrackets?: RoundBracketsCstNode[];
   squareBrackets?: SquareBracketsCstNode[];
   stringLiteral?: IToken[];
@@ -194,5 +203,6 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   roundBrackets(children: RoundBracketsCstChildren, param?: IN): OUT;
   squareBrackets(children: SquareBracketsCstChildren, param?: IN): OUT;
   unaryOperator(children: UnaryOperatorCstChildren, param?: IN): OUT;
+  unaryOperatorValue(children: UnaryOperatorValueCstChildren, param?: IN): OUT;
   number(children: NumberCstChildren, param?: IN): OUT;
 }

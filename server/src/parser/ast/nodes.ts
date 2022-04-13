@@ -34,8 +34,7 @@ export class LabelNode implements BasicNode {
     readonly type = NodeType.Label;
     constructor(
         readonly location: Location,
-        readonly name: IdentifierNode,
-        readonly isLocal: boolean
+        readonly name: IdentifierNode
     ) {}
     public getChildren(): BasicNode[] {
         return [this.name];

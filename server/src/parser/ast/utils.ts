@@ -56,7 +56,7 @@ function convertParserError(error: IRecognitionException, uri: string): Diagnost
     };
 }
 
-export type RangeSource = CstNode | IToken | ILexingError;
+export type RangeSource = BasicNode | CstNode | IToken | ILexingError;
 
 export function createRange(start: RangeSource, end?: RangeSource): Range {
     return Range.create(
@@ -74,6 +74,10 @@ function createStartPosition(src: RangeSource): Position {
     } else if ('startLine' in src) {
         line = src.startLine!;
         character = src.startColumn!;
+    } else if ('type' in src) {
+        const location = src.location.range.start;
+        line = location.line;
+        character = location.character;
     } else if ('location' in src) {
         const location = src.location!;
         line = location.startLine!;
@@ -91,6 +95,10 @@ function createEndPosition(src: RangeSource): Position {
     } else if ('startLine' in src) {
         line = src.endLine!;
         character = src.endColumn!;
+    } else if ('type' in src) {
+        const location = src.location.range.end;
+        line = location.line;
+        character = location.character;
     } else if ('location' in src) {
         const location = src.location!;
         line = location.endLine!;
