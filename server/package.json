@@ -17,7 +17,7 @@
 		"vscode-languageserver-textdocument": "^1.0.1"
 	},
 	"scripts": {
-		"test": "mocha out/test/**/*.test.js",
+		"test": "mocha --enable-source-maps out/test/**/*.test.js",
 		"coverage": "nyc mocha out/test",
 		"generateParserTypes": "node out/parser/cst/writeCstTypes.js"
 	},

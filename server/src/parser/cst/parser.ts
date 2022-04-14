@@ -42,9 +42,11 @@ class DasmParser extends CstParser {
     private argument = this.RULE('argument', () => {
         this.OR([
             {ALT: () => this.SUBRULE(this.immediateArgument)},
-            {ALT: () => this.SUBRULE(this.addressXYArgument)},
             {
-                GATE: () => this.LA(1).tokenType == lexer.OpenParenthesis,
+                GATE: () => this.LA(1).tokenType !== lexer.OpenParenthesis,
+                ALT: () => this.SUBRULE(this.addressXYArgument)},
+            {
+                GATE: () => this.LA(1).tokenType === lexer.OpenParenthesis,
                 ALT: () => this.SUBRULE(this.indirectArgument)
             },
         ]);
