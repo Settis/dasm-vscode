@@ -15,6 +15,7 @@ export class Visitor {
             (text.children.line||[])
                 .filter(it => it.location?.startColumn)
                 .map(it => this.convertLine(it))
+                .filter(it => !(it.label === null && it.command === null))
         );
     }
 
@@ -22,7 +23,7 @@ export class Visitor {
         return new ast.LineNode(
             this.createLocation(lineNode), 
             this.convertLabel(lineNode.children.label), 
-            this.convertCommand(lineNode.children.identifier, lineNode.children.argument)
+            this.convertCommand(lineNode.children.command)
         );
     }
 
@@ -34,7 +35,47 @@ export class Visitor {
         );
     }
 
-    private convertCommand(commandName?: IToken[], argument?: cst.ArgumentCstNode[]): ast.CommandNode | null {
+    private convertCommand(commandNodes?: cst.CommandCstNode[]): ast.AllComandNode | null {
+        if (!commandNodes) return null;
+        const commandChildren = commandNodes[0].children;
+        if (commandChildren.ifCommand) return this.convertIfCommand(commandChildren.ifCommand[0]);
+        if (commandChildren.repeatCommand) return this.convertRepeatCommand(commandChildren.repeatCommand[0]);
+        if (commandChildren.macroCommand) return this.convertMacroCommand(commandChildren.macroCommand[0]);
+        return this.convertGeneralCommand(commandChildren.generalCommand![0]);
+    }
+
+    private convertIfCommand(command: cst.IfCommandCstNode): ast.IfDirectiveNode {
+        const thenTextLines = this.constructAst(command.children.text[0]).lines;
+        let elseTextLines: ast.LineNode[] = [];
+        if (command.children.text[1]) elseTextLines = this.constructAst(command.children.text[1]).lines;
+        return new ast.IfDirectiveNode(
+            this.createLocation(command),
+            getIfDirectiveType(command),
+            this.convertExpression(command.children.expression[0]),
+            thenTextLines,
+            elseTextLines
+        );
+    }
+
+    private convertRepeatCommand(command: cst.RepeatCommandCstNode): ast.RepeatDirectiveNode {
+        return new ast.RepeatDirectiveNode(
+            this.createLocation(command),
+            this.convertExpression(command.children.expression[0]),
+            this.constructAst(command.children.text[0]).lines
+        );
+    }
+
+    private convertMacroCommand(command: cst.MacroCommandCstNode): ast.MacroDirectiveNode {
+        return new ast.MacroDirectiveNode(
+            this.createLocation(command),
+            this.convertIdentifier(command.children.identifier[0]),
+            this.constructAst(command.children.text[0]).lines
+        );
+    }
+
+    private convertGeneralCommand(command: cst.GeneralCommandCstNode): ast.CommandNode | null {
+        const commandName = command.children.identifier; 
+        const argument = command.children.argument;
         if (!commandName) return null;
         let commandEnd: RangeSource = commandName[0];
         if (argument) commandEnd = argument[argument.length-1];
@@ -206,4 +247,11 @@ function getUnaryOperatorType(node: cst.UnaryOperatorCstNode): ast.UnaryOperator
     if (childern.exclamationMark) return ast.UnaryOperatorType.Not;
     if (childern.lessSign) return ast.UnaryOperatorType.TakeLSB;
     return ast.UnaryOperatorType.TakeMSB;
+}
+
+function getIfDirectiveType(node: cst.IfCommandCstNode): ast.IfDirectiveType {
+    const childern = node.children;
+    if (childern.ifConstKeyword) return ast.IfDirectiveType.IfConst;
+    if (childern.ifNConstKeyword) return ast.IfDirectiveType.IfNConst;
+    return ast.IfDirectiveType.If;
 }

@@ -4,7 +4,7 @@ import { getMessage, MSG } from "../../messages";
 import { DiagnosticWithURI } from "../../validators/util";
 import { DASM_LEXER } from "../cst/lexer";
 import { DASM_PARSER } from "../cst/parser";
-import { BasicNode, FileNode, LineNode } from "./nodes";
+import { BasicNode, FileNode } from "./nodes";
 import { Visitor } from "./visitor";
 
 export function parseText(uri: string, text: string): ParsingResult {
@@ -28,10 +28,7 @@ export type ParsingResult = {
 
 function getEmptyResult(uri: string): ParsingResult {
     const location = Location.create(uri, Range.create(0,0,0,0));
-    const ast = new FileNode(
-        location, 
-        [new LineNode(location, null, null)]
-    );
+    const ast = new FileNode(location, []);
     return {
         errors: [],
         ast

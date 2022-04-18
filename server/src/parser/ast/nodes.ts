@@ -23,12 +23,14 @@ export class LineNode implements BasicNode {
     constructor(
         readonly location: Location,
         readonly label: LabelNode | null,
-        readonly command: CommandNode | null
+        readonly command: AllComandNode | null
     ) {}
     public getChildren(): BasicNode[] {
         return [this.label, this.command].filter(notEmpty);
     }
 }
+
+export type AllComandNode = CommandNode | IfDirectiveNode | RepeatDirectiveNode | MacroDirectiveNode;
 
 export class LabelNode implements BasicNode {
     readonly type = NodeType.Label;
@@ -69,7 +71,7 @@ export class IfDirectiveNode implements BasicNode {
     }
 }
 
-export class RepeatDirectiveMode implements BasicNode {
+export class RepeatDirectiveNode implements BasicNode {
     readonly type = NodeType.RepeatDirective;
     constructor(
         readonly location: Location,

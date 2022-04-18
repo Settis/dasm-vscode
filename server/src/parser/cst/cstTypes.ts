@@ -18,8 +18,7 @@ export interface LineCstNode extends CstNode {
 export type LineCstChildren = {
   label?: LabelCstNode[];
   space?: (IToken)[];
-  identifier?: IToken[];
-  argument?: ArgumentCstNode[];
+  command?: CommandCstNode[];
 };
 
 export interface LabelCstNode extends CstNode {
@@ -30,6 +29,71 @@ export interface LabelCstNode extends CstNode {
 export type LabelCstChildren = {
   identifier: IToken[];
   colon?: IToken[];
+};
+
+export interface CommandCstNode extends CstNode {
+  name: "command";
+  children: CommandCstChildren;
+}
+
+export type CommandCstChildren = {
+  ifCommand?: IfCommandCstNode[];
+  repeatCommand?: RepeatCommandCstNode[];
+  macroCommand?: MacroCommandCstNode[];
+  generalCommand?: GeneralCommandCstNode[];
+};
+
+export interface IfCommandCstNode extends CstNode {
+  name: "ifCommand";
+  children: IfCommandCstChildren;
+}
+
+export type IfCommandCstChildren = {
+  ifConstKeyword?: IToken[];
+  ifNConstKeyword?: IToken[];
+  ifKeyword?: IToken[];
+  space: (IToken)[];
+  expression: ExpressionCstNode[];
+  text: (TextCstNode)[];
+  elseKeyword?: IToken[];
+  endIfKeyword: IToken[];
+};
+
+export interface RepeatCommandCstNode extends CstNode {
+  name: "repeatCommand";
+  children: RepeatCommandCstChildren;
+}
+
+export type RepeatCommandCstChildren = {
+  repeatKeyword: IToken[];
+  space: (IToken)[];
+  expression: ExpressionCstNode[];
+  text: TextCstNode[];
+  rependKeyword: IToken[];
+};
+
+export interface MacroCommandCstNode extends CstNode {
+  name: "macroCommand";
+  children: MacroCommandCstChildren;
+}
+
+export type MacroCommandCstChildren = {
+  macroKeyword: IToken[];
+  space: (IToken)[];
+  identifier: IToken[];
+  text: TextCstNode[];
+  endMacroKeyword: IToken[];
+};
+
+export interface GeneralCommandCstNode extends CstNode {
+  name: "generalCommand";
+  children: GeneralCommandCstChildren;
+}
+
+export type GeneralCommandCstChildren = {
+  identifier: IToken[];
+  space?: (IToken)[];
+  argument?: ArgumentCstNode[];
 };
 
 export interface ArgumentCstNode extends CstNode {
@@ -193,6 +257,11 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   text(children: TextCstChildren, param?: IN): OUT;
   line(children: LineCstChildren, param?: IN): OUT;
   label(children: LabelCstChildren, param?: IN): OUT;
+  command(children: CommandCstChildren, param?: IN): OUT;
+  ifCommand(children: IfCommandCstChildren, param?: IN): OUT;
+  repeatCommand(children: RepeatCommandCstChildren, param?: IN): OUT;
+  macroCommand(children: MacroCommandCstChildren, param?: IN): OUT;
+  generalCommand(children: GeneralCommandCstChildren, param?: IN): OUT;
   argument(children: ArgumentCstChildren, param?: IN): OUT;
   immediateArgument(children: ImmediateArgumentCstChildren, param?: IN): OUT;
   addressXYArgument(children: AddressXYArgumentCstChildren, param?: IN): OUT;

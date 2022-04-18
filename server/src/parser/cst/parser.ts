@@ -13,30 +13,74 @@ class DasmParser extends CstParser {
     public text = this.RULE('text', () => {
         this.MANY_SEP({
             SEP: lexer.NewLineSeparator,
-            DEF: () => {
-                this.SUBRULE(this.line);
-            }
+            DEF: () => this.SUBRULE(this.line)
         });
     }) as () => TextCstNode;
 
     private line = this.RULE('line', () => {
-        this.OPTION1(() => {this.SUBRULE(this.label);});
+        this.OPTION1(() => this.SUBRULE(this.label));
         this.OPTION2(() => {
             this.CONSUME1(lexer.Space);
-            this.CONSUME(lexer.Identifier);
-            this.MANY({
-                DEF: () => {
-                    this.CONSUME2(lexer.Space);
-                    this.SUBRULE(this.argument);
-                }
-            });
+            this.SUBRULE(this.command);
         });
-        this.OPTION3(() => {this.CONSUME(lexer.Space);});
+        this.OPTION3(() => this.CONSUME(lexer.Space));
     })
 
     private label = this.RULE('label', () => {
         this.CONSUME(lexer.Identifier);
-        this.OPTION(() => {this.CONSUME(lexer.Colon);});
+        this.OPTION(() => this.CONSUME(lexer.Colon));
+    })
+
+    private command = this.RULE('command', () => {
+        this.OR([
+            {ALT: () => this.SUBRULE(this.ifCommand)},
+            {ALT: () => this.SUBRULE(this.repeatCommand)},
+            {ALT: () => this.SUBRULE(this.macroCommand)},
+            {ALT: () => this.SUBRULE(this.generalCommand)}
+        ]);
+    })
+
+    private ifCommand = this.RULE('ifCommand', () => {
+        this.OR([
+            {ALT: () => this.CONSUME(lexer.IfConstKeyword)},
+            {ALT: () => this.CONSUME(lexer.IfNConstKeyword)},
+            {ALT: () => this.CONSUME(lexer.IfKeyword)}
+        ]);
+        this.CONSUME1(lexer.Space);
+        this.SUBRULE(this.expression);
+        this.SUBRULE1(this.text);
+        this.OPTION(() => {
+            this.CONSUME(lexer.ElseKeyword);
+            this.SUBRULE2(this.text);
+        });
+        this.CONSUME(lexer.EndIfKeyword);
+    })
+
+    private repeatCommand = this.RULE('repeatCommand', () => {
+        this.CONSUME(lexer.RepeatKeyword);
+        this.CONSUME1(lexer.Space);
+        this.SUBRULE(this.expression);
+        this.SUBRULE(this.text);
+        this.CONSUME(lexer.RependKeyword);
+    })
+
+    private macroCommand = this.RULE('macroCommand', () => {
+        this.CONSUME(lexer.MacroKeyword);
+        this.CONSUME1(lexer.Space);
+        this.CONSUME(lexer.Identifier);
+        this.SUBRULE(this.text);
+        this.CONSUME(lexer.EndMacroKeyword);
+    })
+
+    private generalCommand = this.RULE('generalCommand', () => {
+        this.CONSUME(lexer.Identifier);
+        this.MANY({
+            DEF: () => {
+                this.CONSUME2(lexer.Space);
+                this.SUBRULE(this.argument);
+            }
+        });
+        this.OPTION(() => this.CONSUME(lexer.Space));
     })
 
     private argument = this.RULE('argument', () => {

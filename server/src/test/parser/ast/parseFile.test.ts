@@ -5,31 +5,13 @@ import { copy } from "./objectCopy";
 
 describe('Correct AST for line', () => {
     it('emty text', () => {
-        checkAST('', {
-                type: NodeType.Line,
-                label: null,
-                command: null
-            });
+        checkAST('');
     });
     it('long line', () => {
-        checkAST('                                 ', 
-            {
-                type: NodeType.Line,
-                label: null,
-                command: null
-            }
-        );
+        checkAST('                                 ');
     });
     it('Two empty lines', () => {
-        checkAST('   \n    ', {
-                type: NodeType.Line,
-                label: null,
-                command: null
-            }, {
-                type: NodeType.Line,
-                label: null,
-                command: null
-            });
+        checkAST('   \n    ');
     });
     it('LABEL                            ', () => {
         checkAST('LABEL                            ', {
@@ -58,11 +40,7 @@ describe('Correct AST for line', () => {
         });
     });
     it('                        ; Comment', () => {
-        checkAST('                        ; Comment', {
-            type: NodeType.Line,
-            label: null,
-            command: null
-        });
+        checkAST('                        ; Comment');
     });
     it('LABEL                   ; Comment', () => {
         checkAST('LABEL                   ; Comment', {
