@@ -1,16 +1,13 @@
 import { MSG } from "../messages";
-import { FileNode } from "../parser/ast/nodes";
+import { AllComandNode, FileNode, IfDirectiveNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "../parser/ast/nodes";
 import { RelatedContextByName } from "../parser/ast/related";
 import { Program } from "../program";
 import { notEmpty } from "../utils";
-import { validateCommand } from "./asmCommandValidator";
+import { validateGeneralCommand } from "./asmCommandValidator";
 import { constructError, DiagnosticWithURI } from "./util";
 
 export function validateProgram(fileNode: FileNode): DiagnosticWithURI[] {
-    return fileNode.lines
-        .map(line => line.command)
-        .filter(notEmpty)
-        .flatMap(command => validateCommand(command!));
+    return validateLines(fileNode.lines);
 }
 
 export function validateLabels(program: Program): DiagnosticWithURI[] {
@@ -19,6 +16,39 @@ export function validateLabels(program: Program): DiagnosticWithURI[] {
     for (const context of program.localLabels)
         result.push(...validateLabelsInContext(context));
     return result;
+}
+
+function validateLines(lines: LineNode[]): DiagnosticWithURI[] {
+    return lines.map(line => line.command)
+        .filter(notEmpty)
+        .flatMap(validateCommand);
+}
+
+function validateCommand(command: AllComandNode): DiagnosticWithURI[] {
+    switch (command.type) {
+        case NodeType.Command:
+            return validateGeneralCommand(command);
+        case NodeType.IfDirective:
+            return validateIfCommand(command);
+        case NodeType.RepeatDirective:
+            return validateRepeatCommand(command);
+        case NodeType.MacroDirective:
+            return validateMacroCommand(command);
+    }
+}
+
+function validateIfCommand(command: IfDirectiveNode): DiagnosticWithURI[] {
+    const errors = validateLines(command.thenBody);
+    errors.push(...validateLines(command.elseBody));
+    return errors;
+}
+
+function validateRepeatCommand(command: RepeatDirectiveNode): DiagnosticWithURI[] {
+    return validateLines(command.body);
+}
+
+function validateMacroCommand(command: MacroDirectiveNode): DiagnosticWithURI[] {
+    return validateLines(command.body);
 }
 
 function validateLabelsInContext(context: RelatedContextByName): DiagnosticWithURI[] {

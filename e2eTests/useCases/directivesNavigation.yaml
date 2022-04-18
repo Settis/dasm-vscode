@@ -1,0 +1,28 @@
+text: |2
+  {EXP|eDef}:
+  {DATA|dDef}:
+
+      IF E{|getEDef}XP
+        ADC #D{|getDDef}ATA
+      else
+        ADC #DAT{|getDDef}A
+      endif
+
+      repeat EX{|getEDef}P
+        ADC #D{|getDDef}ATA
+      repend
+
+      macro foo
+        ADC #DAT{|getDDef}A
+      endm
+actions:
+  getEDef:
+    type: GetDefinition
+    result: eDef
+  eDef:
+    type: DefinitionResult
+  getDDef:
+    type: GetDefinition
+    result: dDef
+  dDef:
+    type: DefinitionResult

@@ -1,0 +1,14 @@
+text: |2
+  {FO{|getUse}O|def}:
+      ADC #{FOO|use}*{FO{|getDef}O|use}^-{FOO|use} 
+actions:
+  getDef:
+    type: GetDefinition
+    result: def
+  def:
+    type: DefinitionResult
+  getUse:
+    type: GetUsages
+    result: use
+  use:
+    type: UsagesResult

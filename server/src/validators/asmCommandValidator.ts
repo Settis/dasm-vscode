@@ -5,7 +5,7 @@ import { constructError, DiagnosticWithURI } from "./util";
 import { NAMES } from "../dasm/directives";
 import { AddressMode, ArgumentNode, CommandNode, NodeType, NumberNode } from "../parser/ast/nodes";
 
-export function validateCommand(node: CommandNode): DiagnosticWithURI[] {
+export function validateGeneralCommand(node: CommandNode): DiagnosticWithURI[] {
     const commandName = node.name.name.toUpperCase();
     const operation = operations[commandName];
     if (operation)

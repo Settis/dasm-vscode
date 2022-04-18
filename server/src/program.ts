@@ -2,7 +2,7 @@ import { INCBIN, INCDIR, INCLUDE, SUBROUTINE } from "./dasm/directives";
 import { isExists } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
-import { AddressMode, CommandNode, FileNode, IdentifierNode, LabelNode, LineNode, NodeType, StringLiteralNode } from "./parser/ast/nodes";
+import { AddressMode, AllComandNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode, StringLiteralNode } from "./parser/ast/nodes";
 import { RelatedContextByName, RelatedContextByNode, RelatedObject } from "./parser/ast/related";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
 
@@ -62,10 +62,44 @@ export class Program {
         return object;
     }
 
-    private visitCommandNode(commandNode: CommandNode) {
+    private visitCommandNode(commandNode: AllComandNode) {
+        switch (commandNode.type) {
+            case NodeType.IfDirective:
+                this.visitIfDirectiveNode(commandNode);
+                break;
+            case NodeType.RepeatDirective:
+                this.visitRepeastDirectiveNode(commandNode);
+                break;
+            case NodeType.MacroDirective:
+                this.visitMacroDirectiveNode(commandNode);
+                break;
+            case NodeType.Command:
+                this.visitGeneralCommandNode(commandNode);
+                break;
+        }
+    }
+
+    private visitIfDirectiveNode(commandNode: IfDirectiveNode) {
+        this.visitExpression(commandNode.condition);
+        commandNode.thenBody.forEach(line => this.visitLineNode(line));
+        commandNode.elseBody.forEach(line => this.visitLineNode(line));
+    }
+
+    private visitRepeastDirectiveNode(commandNode: RepeatDirectiveNode) {
+        this.visitExpression(commandNode.expression);
+        commandNode.body.forEach(line => this.visitLineNode(line));
+    }
+
+    private visitMacroDirectiveNode(commandNode: MacroDirectiveNode) {
+        this.createSubroutineContext();
+        commandNode.body.forEach(line => this.visitLineNode(line));
+        this.createSubroutineContext();
+    }
+
+    private visitGeneralCommandNode(commandNode: CommandNode) {
         switch (commandNode.name.name.toUpperCase()) {
             case SUBROUTINE:
-                this.localLabels.push(new Map());
+                this.createSubroutineContext();
                 break;
             case INCLUDE:
                 this.handleIncludeCommand(commandNode);
@@ -80,6 +114,10 @@ export class Program {
                 this.handleOtherCommand(commandNode);
                 break;
         }
+    }
+
+    private createSubroutineContext() {
+        this.localLabels.push(new Map());
     }
 
     private handleIncludeCommand(commandNode: CommandNode) {
@@ -139,13 +177,29 @@ export class Program {
 
     private handleOtherCommand(commandNode: CommandNode) {
         for (const arg of commandNode.args) {
-            const value = arg.value;
-            if (value.type === NodeType.Identifier)
-                this.visitLiteral(value as IdentifierNode);
+            this.visitExpression(arg.value);
         }
     }
 
-    private visitLiteral(node: IdentifierNode) {
+    private visitExpression(node: ExpressionNode) {
+        switch (node.type) {
+            case NodeType.Identifier:
+                this.visitIdentifier(node);
+                break;
+            case NodeType.UnaryOperator:
+                this.visitExpression(node.operand);
+                break;
+            case NodeType.BinaryOperator:
+                this.visitExpression(node.left);
+                this.visitExpression(node.right);
+                break;
+            case NodeType.Brackets:
+                this.visitExpression(node.value);
+                break;
+        }
+    }
+
+    private visitIdentifier(node: IdentifierNode) {
         const relatedObject = this.getRelatedObjectForLabel(node.name);
         relatedObject.usages.push(node);
         this.relatedContexts.set(node, relatedObject);
