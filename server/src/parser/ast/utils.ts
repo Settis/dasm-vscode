@@ -75,8 +75,7 @@ function createStartPosition(src: RangeSource): Position {
         line = src.startLine!;
         character = src.startColumn!;
     } else if ('type' in src) {
-        const location = src.location.range.start;
-        return Position.create(location.line, location.character);
+        return src.location.range.start;
     } else if ('location' in src) {
         const location = src.location!;
         line = location.startLine!;
@@ -95,8 +94,7 @@ function createEndPosition(src: RangeSource): Position {
         line = src.endLine!;
         character = src.endColumn!;
     } else if ('type' in src) {
-        const location = src.location.range.end;
-        return Position.create(location.line, location.character);
+        return src.location.range.end;
     } else if ('location' in src) {
         const location = src.location!;
         line = location.endLine!;
