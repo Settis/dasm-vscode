@@ -53,7 +53,7 @@ text: |2
   PI = 4
   
     IFCONST PI
-      IF PI=3
+      IF PI==3
         ECHO "Are you sure?"
       ENDIF
     ENDIF
