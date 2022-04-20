@@ -14,7 +14,7 @@ export function activate(context: ExtensionContext) {
     const serverModule = context.asAbsolutePath(
 		path.join('out', 'server.js')
 	);
-    const debugOptions = {execArgv: ['--nolazy', '--inspect=6009']};
+    const debugOptions = {execArgv: ['--nolazy', '--inspect=6009', '--enable-source-maps']};
     const serverOptions: ServerOptions = {
 		run: {module: serverModule, transport: TransportKind.ipc},
 		debug: {
