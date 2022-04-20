@@ -14,6 +14,7 @@ export function parseText(uri: string, text: string): ParsingResult {
     DASM_PARSER.input = lexerResult.tokens;
     const cst = DASM_PARSER.text();
     errors.push(...DASM_PARSER.errors.map(it => convertParserError(it, uri)));
+    if (errors.length !== 0) return getEmptyResult(uri, errors);
     const visitor = new Visitor(uri);
     return {
         errors,
@@ -26,11 +27,11 @@ export type ParsingResult = {
     ast: FileNode
 }
 
-function getEmptyResult(uri: string): ParsingResult {
+function getEmptyResult(uri: string, errors?: DiagnosticWithURI[]): ParsingResult {
     const location = Location.create(uri, Range.create(0,0,0,0));
     const ast = new FileNode(location, []);
     return {
-        errors: [],
+        errors: errors || [],
         ast
     };
 }
@@ -45,9 +46,11 @@ function convertLexingError(error: ILexingError, uri: string): DiagnosticWithURI
 }
 
 function convertParserError(error: IRecognitionException, uri: string): DiagnosticWithURI {
+    let errorToken = error.token;
+    if (isNaN(error.token.startOffset) && 'previousToken' in error) errorToken = (error as any).previousToken;
     return {
         uri,
-        range: createRange(error.token),
+        range: createRange(errorToken),
         message: error.message,
         source: getMessage(MSG.PARSING_ERROR_SOURCE)
     };

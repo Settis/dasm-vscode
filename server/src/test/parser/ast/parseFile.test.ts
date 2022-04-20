@@ -514,6 +514,28 @@ describe('Correct AST for expressions', () => {
             }
         });
     });
+    it('  ECHO [ exp >> 8 ] & $FF', () => {
+        checkEchoExp('  ECHO [exp>>8]&$FF', {
+            type: NodeType.BinaryOperator,
+            operatorType: BinaryOperatorType.ArithmeticAnd,
+            left: {
+                type: NodeType.Brackets,
+                value: {
+                    type: NodeType.BinaryOperator,
+                    operatorType: BinaryOperatorType.ArithmeticShiftRight,
+                    left: EXP,
+                    right: {
+                        type: NodeType.Number,
+                        value: 8
+                    }
+                }
+            },
+            right: {
+                type: NodeType.Number,
+                value: 255
+            }
+        });
+    });
 });
 
 function checkEchoExp(text: string, exp: TestExpressionNode) {

@@ -58,6 +58,8 @@ export const RependKeyword = createToken({ name: 'rependKeyword', pattern: /repe
 export const MacroKeyword = createToken({ name: 'macroKeyword', pattern: /mac(ro)?/i });
 export const EndMacroKeyword = createToken({ name: 'endMacroKeyword', pattern: /endm/i });
 
+export const HexLine = createToken({ name: 'hexLine', pattern: /hex [^\n\r]*/i, group: Lexer.SKIPPED });
+
 export const ImpliedExtension = createToken({ name: 'impliedExtension', pattern: /\.(0|i)/i, longer_alt: Identifier });
 export const ImpliedIndexingXExtension = createToken({ name: 'impliedIndexingXExtension', pattern: /\.0x/i, longer_alt: Identifier });
 export const ImpliedIndexingYExtension = createToken({ name: 'impliedIndexingYExtension', pattern: /\.0y/i, longer_alt: Identifier });
@@ -75,6 +77,8 @@ export const WordExtension = createToken({ name: 'wordExtension', pattern: /\.w/
 export const WordXExtension = createToken({ name: 'wordXExtension', pattern: /\.wx/i, longer_alt: Identifier });
 export const WordYExtension = createToken({ name: 'wordYExtension', pattern: /\.wy/i, longer_alt: Identifier });
 export const ZeroPageExtension = createToken({ name: 'zeroPageExtension', pattern: /\.z/i, longer_alt: Identifier });
+
+export const DecimalFormatFlag = createToken({ name: 'decimalFormatFlag', pattern: /d/, longer_alt: Identifier });
 
 export const NewLineSeparator = createToken({ name: 'newLineSeprarator', pattern: /\n|\r\n?/ });
 export const Comment = createToken({ name: 'comment', pattern: /;[^\n\r]*/, group: Lexer.SKIPPED });
@@ -139,6 +143,8 @@ export const ALL_TOKENS = [
     MacroKeyword,
     EndMacroKeyword,
 
+    HexLine,
+
     ImpliedExtension,
     ImpliedIndexingXExtension,
     ImpliedIndexingYExtension,
@@ -156,6 +162,7 @@ export const ALL_TOKENS = [
     WordXExtension,
     WordYExtension,
     ZeroPageExtension,
+    DecimalFormatFlag,
     TripleDots,
     DoubleDots,
     Identifier,

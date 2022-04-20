@@ -148,7 +148,7 @@ export class NumberNode implements BasicNode {
 }
 
 export type ExpressionNode = UnaryOperatorNode | BinaryOperatorNode | BracketsNode |
-    StringLiteralNode | IdentifierNode | NumberNode;
+    StringLiteralNode | IdentifierNode | NumberNode | MacroArgumentNode;
 
 export class UnaryOperatorNode implements BasicNode {
     readonly type = NodeType.UnaryOperator;
@@ -186,6 +186,17 @@ export class BracketsNode implements BasicNode {
     }
 }
 
+export class MacroArgumentNode implements BasicNode {
+    readonly type = NodeType.MacroArgument;
+    constructor(
+        readonly location: Location,
+        readonly number: number
+    ) {}
+    public getChildren(): BasicNode[] {
+        return [];
+    }
+}
+
 export enum NodeType {
     Label = 'Label',
     Command = 'Command',
@@ -200,7 +211,8 @@ export enum NodeType {
     Brackets = 'Brackets',
     IfDirective = 'IfDirective',
     RepeatDirective = 'RepeatDirective',
-    MacroDirective = 'MacroDirective'
+    MacroDirective = 'MacroDirective',
+    MacroArgument = 'MacroArgument',
 }
 
 export enum AddressMode {

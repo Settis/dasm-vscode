@@ -27,7 +27,8 @@ export interface LabelCstNode extends CstNode {
 }
 
 export type LabelCstChildren = {
-  identifier: IToken[];
+  identifier?: IToken[];
+  dot?: IToken[];
   colon?: IToken[];
 };
 
@@ -52,7 +53,7 @@ export type IfCommandCstChildren = {
   ifConstKeyword?: IToken[];
   ifNConstKeyword?: IToken[];
   ifKeyword?: IToken[];
-  space: (IToken)[];
+  space: IToken[];
   expression: ExpressionCstNode[];
   text: (TextCstNode)[];
   elseKeyword?: IToken[];
@@ -66,7 +67,7 @@ export interface RepeatCommandCstNode extends CstNode {
 
 export type RepeatCommandCstChildren = {
   repeatKeyword: IToken[];
-  space: (IToken)[];
+  space: IToken[];
   expression: ExpressionCstNode[];
   text: TextCstNode[];
   rependKeyword: IToken[];
@@ -79,7 +80,7 @@ export interface MacroCommandCstNode extends CstNode {
 
 export type MacroCommandCstChildren = {
   macroKeyword: IToken[];
-  space: (IToken)[];
+  space: IToken[];
   identifier: IToken[];
   text: TextCstNode[];
   endMacroKeyword: IToken[];
@@ -91,9 +92,46 @@ export interface GeneralCommandCstNode extends CstNode {
 }
 
 export type GeneralCommandCstChildren = {
-  identifier: IToken[];
+  commandName: CommandNameCstNode[];
   space?: (IToken)[];
-  argument?: ArgumentCstNode[];
+  argument?: (ArgumentCstNode)[];
+  comma?: IToken[];
+};
+
+export interface CommandNameCstNode extends CstNode {
+  name: "commandName";
+  children: CommandNameCstChildren;
+}
+
+export type CommandNameCstChildren = {
+  assignSign?: IToken[];
+  identifier?: IToken[];
+  commandExtension?: CommandExtensionCstNode[];
+};
+
+export interface CommandExtensionCstNode extends CstNode {
+  name: "commandExtension";
+  children: CommandExtensionCstChildren;
+}
+
+export type CommandExtensionCstChildren = {
+  impliedExtension?: IToken[];
+  impliedIndexingXExtension?: IToken[];
+  impliedIndexingYExtension?: IToken[];
+  absoluteExtension?: IToken[];
+  byteExtension?: IToken[];
+  byteXExtension?: IToken[];
+  byteYExtension?: IToken[];
+  directExtension?: IToken[];
+  extendedExtension?: IToken[];
+  indirectExtension?: IToken[];
+  longExtension?: IToken[];
+  relativeExtension?: IToken[];
+  uninitializedExtension?: IToken[];
+  wordExtension?: IToken[];
+  wordXExtension?: IToken[];
+  wordYExtension?: IToken[];
+  zeroPageExtension?: IToken[];
 };
 
 export interface ArgumentCstNode extends CstNode {
@@ -148,6 +186,7 @@ export interface ExpressionCstNode extends CstNode {
 
 export type ExpressionCstChildren = {
   unaryExpression: (UnaryExpressionCstNode)[];
+  space?: (IToken)[];
   binarySign?: BinarySignCstNode[];
 };
 
@@ -190,6 +229,10 @@ export type UnaryExpressionCstChildren = {
   stringLiteral?: IToken[];
   number?: NumberCstNode[];
   identifier?: IToken[];
+  dot?: IToken[];
+  doubleDots?: IToken[];
+  tripleDots?: IToken[];
+  macroArgument?: MacroArgumentCstNode[];
 };
 
 export interface RoundBracketsCstNode extends CstNode {
@@ -199,6 +242,7 @@ export interface RoundBracketsCstNode extends CstNode {
 
 export type RoundBracketsCstChildren = {
   openParenthesis: IToken[];
+  space?: (IToken)[];
   expression: ExpressionCstNode[];
   closeParenthesis: IToken[];
 };
@@ -210,8 +254,10 @@ export interface SquareBracketsCstNode extends CstNode {
 
 export type SquareBracketsCstChildren = {
   openSquareBracket: IToken[];
+  space?: (IToken)[];
   expression: ExpressionCstNode[];
   closeSquareBracket: IToken[];
+  decimalFormatFlag?: IToken[];
 };
 
 export interface UnaryOperatorCstNode extends CstNode {
@@ -225,6 +271,7 @@ export type UnaryOperatorCstChildren = {
   exclamationMark?: IToken[];
   lessSign?: IToken[];
   greatherSign?: IToken[];
+  space?: IToken[];
   unaryOperatorValue: UnaryOperatorValueCstNode[];
 };
 
@@ -253,6 +300,17 @@ export type NumberCstChildren = {
   hexadecimalNumber?: IToken[];
 };
 
+export interface MacroArgumentCstNode extends CstNode {
+  name: "macroArgument";
+  children: MacroArgumentCstChildren;
+}
+
+export type MacroArgumentCstChildren = {
+  openCurlyBracket: IToken[];
+  decimalNumber: IToken[];
+  closeCurlyBracket: IToken[];
+};
+
 export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   text(children: TextCstChildren, param?: IN): OUT;
   line(children: LineCstChildren, param?: IN): OUT;
@@ -262,6 +320,8 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   repeatCommand(children: RepeatCommandCstChildren, param?: IN): OUT;
   macroCommand(children: MacroCommandCstChildren, param?: IN): OUT;
   generalCommand(children: GeneralCommandCstChildren, param?: IN): OUT;
+  commandName(children: CommandNameCstChildren, param?: IN): OUT;
+  commandExtension(children: CommandExtensionCstChildren, param?: IN): OUT;
   argument(children: ArgumentCstChildren, param?: IN): OUT;
   immediateArgument(children: ImmediateArgumentCstChildren, param?: IN): OUT;
   addressXYArgument(children: AddressXYArgumentCstChildren, param?: IN): OUT;
@@ -274,4 +334,5 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   unaryOperator(children: UnaryOperatorCstChildren, param?: IN): OUT;
   unaryOperatorValue(children: UnaryOperatorValueCstChildren, param?: IN): OUT;
   number(children: NumberCstChildren, param?: IN): OUT;
+  macroArgument(children: MacroArgumentCstChildren, param?: IN): OUT;
 }

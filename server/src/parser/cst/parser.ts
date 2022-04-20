@@ -2,6 +2,28 @@ import { CstParser } from "chevrotain";
 import { TextCstNode } from "./cstTypes";
 import * as lexer from "./lexer";
 
+const SET_OF_BINARY_SIGNS = new Set([
+    lexer.MultiplicationSign,
+    lexer.DivisionSign,
+    lexer.PercentSign,
+    lexer.AdditionSign,
+    lexer.MinusSign,
+    lexer.ShiftRightSign,
+    lexer.ShiftLeftSign,
+    lexer.GreatherSign,
+    lexer.GreatherOrEqualSign,
+    lexer.LessSigh,
+    lexer.LessOrEqualSign,
+    lexer.EqualSign,
+    lexer.NotEqualSign,
+    lexer.ArithmeticAndSign,
+    lexer.XorSign,
+    lexer.ArithmeticOrSign,
+    lexer.LogicalAndSign,
+    lexer.LogicalOrSign,
+    lexer.QuestionMark,
+]);
+
 class DasmParser extends CstParser {
     constructor() {
         super(lexer.ALL_TOKENS, {
@@ -27,7 +49,10 @@ class DasmParser extends CstParser {
     })
 
     private label = this.RULE('label', () => {
-        this.CONSUME(lexer.Identifier);
+        this.OR([
+            {ALT: () => this.CONSUME(lexer.Identifier)},
+            {ALT: () => this.CONSUME(lexer.Dot)}
+        ]);
         this.OPTION(() => this.CONSUME(lexer.Colon));
     })
 
@@ -73,14 +98,61 @@ class DasmParser extends CstParser {
     })
 
     private generalCommand = this.RULE('generalCommand', () => {
-        this.CONSUME(lexer.Identifier);
-        this.MANY({
-            DEF: () => {
-                this.CONSUME2(lexer.Space);
-                this.SUBRULE(this.argument);
-            }
+        this.SUBRULE(this.commandName);
+        this.OPTION(() => {
+            this.CONSUME2(lexer.Space);
+            this.SUBRULE1(this.argument);
+            this.MANY({
+                GATE: () => this.isArgumentsAvailable(),
+                DEF: () => {
+                    this.OR([
+                        {ALT: () => this.CONSUME3(lexer.Space)},
+                        {ALT: () => {
+                            this.CONSUME(lexer.Comma);
+                            this.OPTION2(() => this.CONSUME4(lexer.Space));
+                        }}
+                    ]);
+                    this.SUBRULE2(this.argument);
+                }
+            });
         });
-        this.OPTION(() => this.CONSUME(lexer.Space));
+        this.OPTION3(() => this.CONSUME(lexer.Space));
+    })
+
+    private isArgumentsAvailable() {
+        const tokenType = this.LA(2).tokenType;
+        return tokenType !== lexer.NewLineSeparator
+            && tokenType.name !== 'EOF';
+    }
+
+    private commandName = this.RULE('commandName', () => {
+        this.OR([
+            {ALT: () => this.CONSUME(lexer.AssignSign)},
+            {ALT: () => this.CONSUME(lexer.Identifier)}
+        ]);
+        this.OPTION(() => this.SUBRULE(this.commandExtension));
+    })
+
+    private commandExtension = this.RULE('commandExtension', () => {
+        this.OR([
+            {ALT: () => this.CONSUME(lexer.ImpliedExtension)},
+            {ALT: () => this.CONSUME(lexer.ImpliedIndexingXExtension)},
+            {ALT: () => this.CONSUME(lexer.ImpliedIndexingYExtension)},
+            {ALT: () => this.CONSUME(lexer.AbsoluteExtension)},
+            {ALT: () => this.CONSUME(lexer.ByteExtension)},
+            {ALT: () => this.CONSUME(lexer.ByteXExtension)},
+            {ALT: () => this.CONSUME(lexer.ByteYExtension)},
+            {ALT: () => this.CONSUME(lexer.DirectExtension)},
+            {ALT: () => this.CONSUME(lexer.ExtendedExtension)},
+            {ALT: () => this.CONSUME(lexer.IndirectExtension)},
+            {ALT: () => this.CONSUME(lexer.LongExtension)},
+            {ALT: () => this.CONSUME(lexer.RelativeExtension)},
+            {ALT: () => this.CONSUME(lexer.UninitializedExtension)},
+            {ALT: () => this.CONSUME(lexer.WordExtension)},
+            {ALT: () => this.CONSUME(lexer.WordXExtension)},
+            {ALT: () => this.CONSUME(lexer.WordYExtension)},
+            {ALT: () => this.CONSUME(lexer.ZeroPageExtension)}
+        ]);
     })
 
     private argument = this.RULE('argument', () => {
@@ -122,11 +194,21 @@ class DasmParser extends CstParser {
 
     private expression = this.RULE('expression', () => {
         this.SUBRULE1(this.unaryExpression);
-        this.MANY(() => {
-            this.SUBRULE(this.binarySign);
-            this.SUBRULE2(this.unaryExpression);
+        this.MANY({
+            GATE: () => this.isBinarySignNearby(),
+            DEF: () => {
+                this.OPTION1(() => this.CONSUME1(lexer.Space));
+                this.SUBRULE(this.binarySign);
+                this.OPTION2(() => this.CONSUME2(lexer.Space));
+                this.SUBRULE2(this.unaryExpression);
+            }
         });
     })
+
+    private isBinarySignNearby() {
+        return SET_OF_BINARY_SIGNS.has(this.LA(1).tokenType)
+            || SET_OF_BINARY_SIGNS.has(this.LA(2).tokenType);
+    }
 
     private binarySign = this.RULE('binarySign', () => {
         this.OR([
@@ -159,20 +241,29 @@ class DasmParser extends CstParser {
             {ALT: () => this.SUBRULE(this.unaryOperator)},
             {ALT: () => this.CONSUME(lexer.StringLiteral)},
             {ALT: () => this.SUBRULE(this.number)},
-            {ALT: () => this.CONSUME(lexer.Identifier)}
+            {ALT: () => this.CONSUME(lexer.Identifier)},
+            {ALT: () => this.CONSUME(lexer.Dot)},
+            {ALT: () => this.CONSUME(lexer.DoubleDots)},
+            {ALT: () => this.CONSUME(lexer.TripleDots)},
+            {ALT: () => this.SUBRULE(this.macroArgument)}
         ]);
     })
 
     private roundBrackets = this.RULE('roundBrackets', () => {
         this.CONSUME(lexer.OpenParenthesis);
+        this.OPTION1(() => this.CONSUME1(lexer.Space));
         this.SUBRULE(this.expression);
+        this.OPTION2(() => this.CONSUME2(lexer.Space));
         this.CONSUME(lexer.CloseParenthesis);
     })
 
     private squareBrackets = this.RULE('squareBrackets', () => {
         this.CONSUME(lexer.OpenSquareBracket);
+        this.OPTION1(() => this.CONSUME1(lexer.Space));
         this.SUBRULE(this.expression);
+        this.OPTION2(() => this.CONSUME2(lexer.Space));
         this.CONSUME(lexer.CloseSquareBracket);
+        this.OPTION(() => this.CONSUME(lexer.DecimalFormatFlag));
     })
 
     private unaryOperator = this.RULE('unaryOperator', () => {
@@ -183,6 +274,7 @@ class DasmParser extends CstParser {
             {ALT: () => this.CONSUME(lexer.LessSigh)},
             {ALT: () => this.CONSUME(lexer.GreatherSign)}
         ]);
+        this.OPTION(() => this.CONSUME(lexer.Space));
         this.SUBRULE(this.unaryOperatorValue);
     })
 
@@ -203,6 +295,12 @@ class DasmParser extends CstParser {
             {ALT: () => this.CONSUME(lexer.DecimalNumber)},
             {ALT: () => this.CONSUME(lexer.HexadecimalNumber)}
         ]);
+    })
+
+    private macroArgument = this.RULE('macroArgument', () => {
+        this.CONSUME(lexer.OpenCurlyBracket);
+        this.CONSUME(lexer.DecimalNumber);
+        this.CONSUME(lexer.CloseCurlyBracket);
     })
 }
 

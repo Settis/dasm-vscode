@@ -1,5 +1,6 @@
 import { IToken } from "chevrotain";
 import { Location } from "vscode-languageserver";
+import { EQU } from "../../dasm/directives";
 import * as cst from "../cst/cstTypes";
 import * as ast from "./nodes";
 import { createRange, RangeSource } from "./utils";
@@ -29,9 +30,10 @@ export class Visitor {
 
     private convertLabel(label?: cst.LabelCstNode[]): ast.LabelNode | null {
         if (!label) return null;
+        const childern = label[0].children;
         return new ast.LabelNode(
             this.createLocation(label[0]),
-            this.convertIdentifier(label[0].children.identifier[0])
+            this.convertIdentifier((childern.identifier || childern.dot)![0])
         );
     }
 
@@ -74,16 +76,26 @@ export class Visitor {
     }
 
     private convertGeneralCommand(command: cst.GeneralCommandCstNode): ast.CommandNode | null {
-        const commandName = command.children.identifier; 
+        const commandName = command.children.commandName; 
         const argument = command.children.argument;
         if (!commandName) return null;
         let commandEnd: RangeSource = commandName[0];
         if (argument) commandEnd = argument[argument.length-1];
         return new ast.CommandNode(
             this.createLocation(commandName[0], commandEnd),
-            this.convertIdentifier(commandName[0]),
+            this.convertCommandName(commandName[0]),
             (argument || []).map(it => this.convertArgument(it))
         );
+    }
+
+    private convertCommandName(commandName: cst.CommandNameCstNode): ast.IdentifierNode {
+        const childern = commandName.children;
+        if (childern.assignSign)
+            return new ast.IdentifierNode(
+                this.createLocation(childern.assignSign[0]),
+                EQU
+            );
+        return this.convertIdentifier(childern.identifier![0]);
     }
 
     private convertArgument(argumentNode: cst.ArgumentCstNode): ast.ArgumentNode {
@@ -138,10 +150,14 @@ export class Visitor {
     private convertUnaryExpression(expression: cst.UnaryExpressionCstNode): ast.ExpressionNode {
         const childern = expression.children;
         if (childern.identifier) return this.convertIdentifier(childern.identifier[0]);
+        if (childern.dot) return this.convertIdentifier(childern.dot[0]);
+        if (childern.doubleDots) return this.convertIdentifier(childern.doubleDots[0]);
+        if (childern.tripleDots) return this.convertIdentifier(childern.tripleDots[0]);
         if (childern.number) return this.convertNumber(childern.number[0]);
         if (childern.roundBrackets) return this.convertBrackets(childern.roundBrackets[0]);
         if (childern.squareBrackets) return this.convertBrackets(childern.squareBrackets[0]);
         if (childern.stringLiteral) return this.convertStringLiteral(childern.stringLiteral[0]);
+        if (childern.macroArgument) return this.convertMacroArgument(childern.macroArgument[0]);
         return this.convertUnaryOperator(childern.unaryOperator![0]);
     }
 
@@ -197,6 +213,13 @@ export class Visitor {
         return new ast.IdentifierNode(
             this.createLocation(identifierToken),
             identifierToken.image
+        );
+    }
+
+    private convertMacroArgument(argument: cst.MacroArgumentCstNode): ast.MacroArgumentNode {
+        return new ast.MacroArgumentNode(
+            this.createLocation(argument),
+            parseInt(argument.children.decimalNumber[0].image)
         );
     }
 
