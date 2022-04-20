@@ -59,6 +59,15 @@ describe('CST lexer tests', () => {
     it('recognize identifiers statred/ended with X/Y', () => {
         checkTokens(' X Y XOOY YOOX ', [' ', 'X', ' ', 'Y', ' ', 'XOOY', ' ', 'YOOX', ' ']);
     });
+    it('recognize macros arguments', () => {
+        checkTokens('{1}', ['{', '1', '}']);
+    });
+    it('recognize char literal', () => {
+        checkTokens("'f,oo", ["'f", ',', 'oo']);
+    });
+    it('recognize assignment', () => {
+        checkTokens('foo = 3', ['foo', ' ', '=', ' ', '3']);
+    });
 });
 
 function checkTokens(text: string, expectedTokens: string[]) {

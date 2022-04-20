@@ -18,6 +18,7 @@ export const GreatherOrEqualSign = createToken({ name: 'greatherOrEqualSign', pa
 export const LessOrEqualSign = createToken({ name: 'lessOrEqualSign', pattern: /<=/ });
 export const EqualSign = createToken({ name: 'equalSigh', pattern: /==/ });
 export const NotEqualSign = createToken({ name: 'notEqualSign', pattern: /!=/ });
+export const AssignSign = createToken({ name: 'assignSign', pattern: /=/ });
 export const ArithmeticAndSign = createToken({ name: 'arithmeticAndSign', pattern: /&/ });
 export const XorSign = createToken({ name: 'xorSign', pattern: /\^/ });
 export const ArithmeticOrSign = createToken({ name: 'arithmeticOrSign', pattern: /\|/ });
@@ -29,6 +30,8 @@ export const OpenParenthesis = createToken({ name: 'openParenthesis', pattern: /
 export const CloseParenthesis = createToken({ name: 'closeParenthesis', pattern: /\)/ });
 export const OpenSquareBracket = createToken({ name: 'openSquareBracket', pattern: /\[/ });
 export const CloseSquareBracket = createToken({ name: 'closeSquareBracket', pattern: /\]/ });
+export const OpenCurlyBracket = createToken({ name: 'openCurlyBracket', pattern: /{/ });
+export const CloseCurlyBracket = createToken({ name: 'closeCurlyBracket', pattern: /}/ });
 
 export const BinaryNumber = createToken({ name: 'binaryNumber', pattern: /%[01]+/ });
 export const OctalNumber = createToken({ name: 'octalNumber', pattern: /0[0-7]+/ });
@@ -73,11 +76,12 @@ export const WordXExtension = createToken({ name: 'wordXExtension', pattern: /\.
 export const WordYExtension = createToken({ name: 'wordYExtension', pattern: /\.wy/i, longer_alt: Identifier });
 export const ZeroPageExtension = createToken({ name: 'zeroPageExtension', pattern: /\.z/i, longer_alt: Identifier });
 
-export const NewLineSeparator = createToken({ name: 'newLineSeprarator', pattern: /\n|\r\n?/});
+export const NewLineSeparator = createToken({ name: 'newLineSeprarator', pattern: /\n|\r\n?/ });
 export const Comment = createToken({ name: 'comment', pattern: /;[^\n\r]*/, group: Lexer.SKIPPED });
 export const MultilineComment = createToken({ name: 'multilineComment', pattern: /\/\*.*\*\//, group: Lexer.SKIPPED });
 
 export const StringLiteral = createToken({ name: 'stringLiteral', pattern: /"[^"]*"/ });
+export const CharLiteral = createToken({ name: 'charLiteral', pattern: /'./ });
 
 export const ALL_TOKENS = [
     Space,
@@ -87,6 +91,7 @@ export const ALL_TOKENS = [
     MinusSign,
     EqualSign,
     NotEqualSign,
+    AssignSign,
     ExclamationMark,
     GreatherOrEqualSign,
     LessOrEqualSign,
@@ -112,6 +117,8 @@ export const ALL_TOKENS = [
     CloseParenthesis,
     OpenSquareBracket,
     CloseSquareBracket,
+    OpenCurlyBracket,
+    CloseCurlyBracket,
     
     Comma,
 
@@ -157,7 +164,8 @@ export const ALL_TOKENS = [
     NewLineSeparator,
     Comment,
     MultilineComment,
-    StringLiteral
+    StringLiteral,
+    CharLiteral
 ];
 
 export const DASM_LEXER = new Lexer(ALL_TOKENS, {
