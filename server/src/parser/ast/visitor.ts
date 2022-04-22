@@ -153,10 +153,12 @@ export class Visitor {
         if (childern.dot) return this.convertIdentifier(childern.dot[0]);
         if (childern.doubleDots) return this.convertIdentifier(childern.doubleDots[0]);
         if (childern.tripleDots) return this.convertIdentifier(childern.tripleDots[0]);
+        if (childern.multiplicationSign) return this.convertIdentifier(childern.multiplicationSign[0]);
         if (childern.number) return this.convertNumber(childern.number[0]);
         if (childern.roundBrackets) return this.convertBrackets(childern.roundBrackets[0]);
         if (childern.squareBrackets) return this.convertBrackets(childern.squareBrackets[0]);
         if (childern.stringLiteral) return this.convertStringLiteral(childern.stringLiteral[0]);
+        if (childern.charLiteral) return this.convertCharLiteral(childern.charLiteral[0]);
         if (childern.macroArgument) return this.convertMacroArgument(childern.macroArgument[0]);
         return this.convertUnaryOperator(childern.unaryOperator![0]);
     }
@@ -189,6 +191,13 @@ export class Visitor {
         return new ast.StringLiteralNode(
             this.createLocation(literal),
             literal.image.substring(1, literal.image.length - 1)
+        );
+    }
+
+    private convertCharLiteral(literal: IToken): ast.CharLiteralNode {
+        return new ast.CharLiteralNode(
+            this.createLocation(literal),
+            literal.image.substring(1)
         );
     }
 

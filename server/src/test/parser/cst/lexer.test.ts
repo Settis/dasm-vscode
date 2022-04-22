@@ -68,6 +68,12 @@ describe('CST lexer tests', () => {
     it('recognize assignment', () => {
         checkTokens('foo = 3', ['foo', ' ', '=', ' ', '3']);
     });
+    it('cut comment', () => {
+        checkTokens(' /* foo */ ', [' ', ' ']);
+    });
+    it('recognize multiline comment', () => {
+        checkTokens('/* some \n second line \n */', []);
+    });
 });
 
 function checkTokens(text: string, expectedTokens: string[]) {

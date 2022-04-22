@@ -387,6 +387,78 @@ describe('Correct AST for line', () => {
     it('   TEST $2A', () => {
         checkAST('   TEST $2A', NUMBER_LINE);
     });
+    it("    dc 'a", () => {
+        checkAST("    dc 'a", {
+            type: NodeType.Line,
+            label: null,
+            command: {
+                type: NodeType.Command,
+                name: {
+                    type: NodeType.Identifier,
+                    name: 'dc'
+                },
+                args: [{
+                    type: NodeType.Argument,
+                    addressMode: AddressMode.None,
+                    value: {
+                        type: NodeType.CharLiteral,
+                        value: 'a'
+                    }
+                }] 
+            }
+        });
+    });
+    it('  dc.s "unicode"', () => {
+        checkAST('  dc.s "unicode"', {
+            type: NodeType.Line,
+            label: null,
+            command: {
+                type: NodeType.Command,
+                name: {
+                    type: NodeType.Identifier,
+                    name: 'dc'
+                },
+                args: [{
+                    type: NodeType.Argument,
+                    addressMode: AddressMode.None,
+                    value: {
+                        type: NodeType.StringLiteral,
+                        text: 'unicode'
+                    }
+                }] 
+            }
+        });
+    });
+    it('  ECHO "Synonim for . ", *', () => {
+        checkAST('  ECHO "Synonim for . ", *', {
+            type: NodeType.Line,
+            label: null,
+            command: {
+                type: NodeType.Command,
+                name: {
+                    type: NodeType.Identifier,
+                    name: 'ECHO'
+                },
+                args: [
+                    {
+                        type: NodeType.Argument,
+                        addressMode: AddressMode.None,
+                        value: {
+                            type: NodeType.StringLiteral,
+                            text: 'Synonim for . '
+                        }
+                    }, {
+                        type: NodeType.Argument,
+                        addressMode: AddressMode.None,
+                        value: {
+                            type: NodeType.Identifier,
+                            name: '*'
+                        }
+                    }
+                ]
+            }
+        });
+    });
 });
 
 describe('Correct AST for expressions', () => {
@@ -790,7 +862,7 @@ type TestArgumentNode = {
 }
 
 type TestExpressionNode = TestStringLiteralNode | TestIdentifierNode | TestNumberNode |
-    TestUnaryOperatorNode | TestBinaryOperatorNode | TestBracketsNode;
+    TestUnaryOperatorNode | TestBinaryOperatorNode | TestBracketsNode | TestCharLiteralNode;
 
 type TestUnaryOperatorNode = {
     type: NodeType.UnaryOperator,
@@ -818,4 +890,9 @@ type TestNumberNode = {
 type TestIdentifierNode = {
     type: NodeType.Identifier,
     name: string
+}
+
+type TestCharLiteralNode = {
+    type: NodeType.CharLiteral,
+    value: string
 }

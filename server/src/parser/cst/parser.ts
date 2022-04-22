@@ -151,7 +151,8 @@ class DasmParser extends CstParser {
             {ALT: () => this.CONSUME(lexer.WordExtension)},
             {ALT: () => this.CONSUME(lexer.WordXExtension)},
             {ALT: () => this.CONSUME(lexer.WordYExtension)},
-            {ALT: () => this.CONSUME(lexer.ZeroPageExtension)}
+            {ALT: () => this.CONSUME(lexer.ZeroPageExtension)},
+            {ALT: () => this.CONSUME(lexer.SwapEndiannessExtension)},
         ]);
     })
 
@@ -245,7 +246,9 @@ class DasmParser extends CstParser {
             {ALT: () => this.CONSUME(lexer.Dot)},
             {ALT: () => this.CONSUME(lexer.DoubleDots)},
             {ALT: () => this.CONSUME(lexer.TripleDots)},
-            {ALT: () => this.SUBRULE(this.macroArgument)}
+            {ALT: () => this.CONSUME(lexer.MultiplicationSign)},
+            {ALT: () => this.SUBRULE(this.macroArgument)},
+            {ALT: () => this.CONSUME(lexer.CharLiteral)},
         ]);
     })
 

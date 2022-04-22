@@ -77,17 +77,20 @@ export const WordExtension = createToken({ name: 'wordExtension', pattern: /\.w/
 export const WordXExtension = createToken({ name: 'wordXExtension', pattern: /\.wx/i, longer_alt: Identifier });
 export const WordYExtension = createToken({ name: 'wordYExtension', pattern: /\.wy/i, longer_alt: Identifier });
 export const ZeroPageExtension = createToken({ name: 'zeroPageExtension', pattern: /\.z/i, longer_alt: Identifier });
+export const SwapEndiannessExtension = createToken({ name: 'swapEndiannessExtension', pattern: /\.s/i, longer_alt: Identifier });
 
 export const DecimalFormatFlag = createToken({ name: 'decimalFormatFlag', pattern: /d/, longer_alt: Identifier });
 
-export const NewLineSeparator = createToken({ name: 'newLineSeprarator', pattern: /\n|\r\n?/ });
+export const NewLineSeparator = createToken({ name: 'newLineSeprarator', pattern: /\n|\r\n?/, line_breaks: true });
 export const Comment = createToken({ name: 'comment', pattern: /;[^\n\r]*/, group: Lexer.SKIPPED });
-export const MultilineComment = createToken({ name: 'multilineComment', pattern: /\/\*.*\*\//, group: Lexer.SKIPPED });
+export const MultilineComment = createToken({ name: 'multilineComment', pattern: /\/\*[^*]*\*+([^/*][^*]*\*+)*\//, group: Lexer.SKIPPED, line_breaks: true });
 
 export const StringLiteral = createToken({ name: 'stringLiteral', pattern: /"[^"]*"/ });
 export const CharLiteral = createToken({ name: 'charLiteral', pattern: /'./ });
 
 export const ALL_TOKENS = [
+    MultilineComment,
+
     Space,
     Colon,
     Sharp,
@@ -162,6 +165,7 @@ export const ALL_TOKENS = [
     WordXExtension,
     WordYExtension,
     ZeroPageExtension,
+    SwapEndiannessExtension,
     DecimalFormatFlag,
     TripleDots,
     DoubleDots,
@@ -170,7 +174,6 @@ export const ALL_TOKENS = [
 
     NewLineSeparator,
     Comment,
-    MultilineComment,
     StringLiteral,
     CharLiteral
 ];

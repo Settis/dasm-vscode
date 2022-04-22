@@ -124,6 +124,17 @@ export class StringLiteralNode implements BasicNode {
     }
 }
 
+export class CharLiteralNode implements BasicNode {
+    readonly type = NodeType.CharLiteral;
+    constructor(
+        readonly location: Location,
+        readonly value: string
+    ) {}
+    public getChildren(): BasicNode[] {
+        return [];
+    }
+}
+
 export class ArgumentNode implements BasicNode {
     readonly type = NodeType.Argument;
     constructor(
@@ -148,7 +159,7 @@ export class NumberNode implements BasicNode {
 }
 
 export type ExpressionNode = UnaryOperatorNode | BinaryOperatorNode | BracketsNode |
-    StringLiteralNode | IdentifierNode | NumberNode | MacroArgumentNode;
+    StringLiteralNode | IdentifierNode | NumberNode | MacroArgumentNode | CharLiteralNode;
 
 export class UnaryOperatorNode implements BasicNode {
     readonly type = NodeType.UnaryOperator;
@@ -206,6 +217,7 @@ export enum NodeType {
     File = 'File',
     Line = "Line",
     StringLiteral = 'StringLiteral',
+    CharLiteral = 'CharLiteral',
     UnaryOperator = 'UnaryOperator',
     BinaryOperator = 'BinaryOperator',
     Brackets = 'Brackets',

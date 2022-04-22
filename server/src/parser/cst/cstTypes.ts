@@ -132,6 +132,7 @@ export type CommandExtensionCstChildren = {
   wordXExtension?: IToken[];
   wordYExtension?: IToken[];
   zeroPageExtension?: IToken[];
+  swapEndiannessExtension?: IToken[];
 };
 
 export interface ArgumentCstNode extends CstNode {
@@ -232,7 +233,9 @@ export type UnaryExpressionCstChildren = {
   dot?: IToken[];
   doubleDots?: IToken[];
   tripleDots?: IToken[];
+  multiplicationSign?: IToken[];
   macroArgument?: MacroArgumentCstNode[];
+  charLiteral?: IToken[];
 };
 
 export interface RoundBracketsCstNode extends CstNode {
