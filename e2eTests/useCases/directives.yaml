@@ -46,6 +46,7 @@ text: |2
     ds.w 2    ; 4 bytes (2 words) of default value 0
     ds.l 0    ; define no space at all
   
+  eqmlabel = 0
     DV.B  eqmlabel 10,20
   
     HEX 1A45 45 13254F 3E12
