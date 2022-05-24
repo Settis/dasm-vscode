@@ -6,7 +6,7 @@ import { NAMES } from "../dasm/directives";
 import { AddressMode, ArgumentNode, CommandNode, NodeType, NumberNode } from "../parser/ast/nodes";
 
 export function validateGeneralCommand(node: CommandNode): DiagnosticWithURI[] {
-    const commandName = node.name.name.toUpperCase();
+    const commandName = unifyCommandName(node.name.name);
     const operation = operations[commandName];
     if (operation)
         return validateCommandArgs(node, operation);
@@ -16,6 +16,13 @@ export function validateGeneralCommand(node: CommandNode): DiagnosticWithURI[] {
         else
             return [constructError(MSG.UNKNOWN_COMMAND, node.name)];
     }
+}
+
+function unifyCommandName(rawName: string): string {
+    let result = rawName.toUpperCase();
+    if (result.startsWith('.'))
+        result = result.substring(1);
+    return result;
 }
 
 function validateCommandArgs(commandNode: CommandNode, operation: OperationDescription): DiagnosticWithURI[] {
