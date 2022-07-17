@@ -1,5 +1,5 @@
 import assert = require("assert");
-import { copy } from "./objectCopy";
+import { filterByMask } from "./objectCopy";
 
 describe('Testing object copy', () => {
     it('copy the same', () => {
@@ -69,5 +69,5 @@ describe('Testing object copy', () => {
 });
 
 function testCopy(orig: any, mask: any, result: any) {
-    assert.deepStrictEqual(copy(orig, mask), result);
+    assert.deepStrictEqual(filterByMask(orig, mask), result);
 }

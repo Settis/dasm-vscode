@@ -1,4 +1,4 @@
-export function copy(orig: any, mask: any): any {
+export function filterByMask(orig: any, mask: any): any {
     if (!orig) return orig;
     const result = {} as any;
     for (const name of Object.keys(mask)) {
@@ -9,12 +9,12 @@ export function copy(orig: any, mask: any): any {
                     const arrayResult = [];
                     const origField = orig[name] as [];
                     for (const i in origField)
-                        arrayResult.push(copy(origField[i], maskField[i] || {}));
+                        arrayResult.push(filterByMask(origField[i], maskField[i] || {}));
                     result[name] = arrayResult;
                 } else
                     result[name] = orig[name];
             } else
-                result[name] = copy(orig[name], maskField);
+                result[name] = filterByMask(orig[name], maskField);
         } else 
             result[name] = orig[name];
     }

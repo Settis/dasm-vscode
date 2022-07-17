@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import { AddressMode, BinaryOperatorType, IfDirectiveType, NodeType, UnaryOperatorType } from "../../../parser/ast/nodes";
 import { parseText } from "../../../parser/ast/utils";
-import { copy } from "./objectCopy";
+import { filterByMask } from "./objectCopy";
 
 describe('Correct AST for line', () => {
     it('emty text', () => {
@@ -805,7 +805,7 @@ function checkAST(text: string, ...lines: TestLineNode[]) {
         type: NodeType.File,
         lines: lines
     };
-    assert.deepStrictEqual(copy(ast, expectedAst), expectedAst);
+    assert.deepStrictEqual(filterByMask(ast, expectedAst), expectedAst);
 }
 
 type TestFileNode = {
