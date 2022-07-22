@@ -1,9 +1,9 @@
-import { INCBIN, INCDIR, INCLUDE, SUBROUTINE } from "./dasm/directives";
+import { INCBIN, INCDIR, INCLUDE, SET, SUBROUTINE } from "./dasm/directives";
 import { isExists } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
 import { AddressMode, AllComandNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode, StringLiteralNode } from "./parser/ast/nodes";
-import { RelatedContextByName, RelatedContextByNode, RelatedObject } from "./parser/ast/related";
+import { LabelsByName, LabelObject } from "./parser/ast/labels";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
 
 const LOCAL_LABEL_PREFIX = '.';
@@ -13,9 +13,8 @@ export class Program {
         this.folderUri = uri.replace(/[^/]*$/, "");
     }
 
-    public labels: RelatedContextByName = new Map();
-    public localLabels: RelatedContextByName[] = [new Map()];
-    public relatedContexts: RelatedContextByNode = new Map();
+    public globalLabels: LabelsByName = new Map();
+    public localLabels: LabelsByName[] = [new Map()];
     private folderUri: string;
     private includeFolders = new Set<string>();
     public errors: DiagnosticWithURI[] = [];
@@ -37,29 +36,41 @@ export class Program {
 
     private visitLineNode(lineNode: LineNode) {
         if (lineNode.label)
-            this.visitLabelNode(lineNode.label);
+            this.defineLabel(lineNode.label, this.isSetCommand(lineNode.command));
         if (lineNode.command)
             this.visitCommandNode(lineNode.command);
     }
 
-    private visitLabelNode(labelNode: LabelNode) {
-        const relatedObject = this.getRelatedObjectForLabel(labelNode.name.name);
-        const labelNameNode = labelNode.name;
-        relatedObject.definitions.push(labelNameNode);
-        this.relatedContexts.set(labelNameNode, relatedObject);
+    private defineLabel(labelNode: LabelNode, asVariable: boolean) {
+        const lablelObject = this.getLabelObjectByName(labelNode.name.name);
+        lablelObject.definitions.push(labelNode.name);
+        if (asVariable)
+            lablelObject.definedAsVariable = true;
+        else
+            lablelObject.definedAsConstant = true;
     }
 
-    private getRelatedObjectForLabel(name: string): RelatedObject {
-        const context = name.startsWith(LOCAL_LABEL_PREFIX) ? this.localLabels[this.localLabels.length - 1] : this.labels;
-        let object = context.get(name);
-        if (!object) {
-            object = {
+    private isSetCommand(commandNode: AllComandNode | null): boolean {
+        if (commandNode && commandNode.type === NodeType.Command) {
+            return commandNode.name.name.toUpperCase() === SET;
+        }
+        return false;
+    }
+
+    private getLabelObjectByName(name: string): LabelObject {
+        const labelsMap = name.startsWith(LOCAL_LABEL_PREFIX) ? this.localLabels[this.localLabels.length - 1] : this.globalLabels;
+        let label = labelsMap.get(name);
+        if (!label) {
+            label = {
+                name,
+                definedAsConstant: false,
+                definedAsVariable: false,
                 definitions: [],
                 usages: []
             };
-            context.set(name, object);
+            labelsMap.set(name, label);
         }
-        return object;
+        return label;
     }
 
     private visitCommandNode(commandNode: AllComandNode) {
@@ -200,9 +211,8 @@ export class Program {
     }
 
     private visitIdentifier(node: IdentifierNode) {
-        const relatedObject = this.getRelatedObjectForLabel(node.name);
-        relatedObject.usages.push(node);
-        this.relatedContexts.set(node, relatedObject);
+        const lableObject = this.getLabelObjectByName(node.name);
+        lableObject.usages.push(node);
     }
 
     private findFileUri(name: string): string | undefined {

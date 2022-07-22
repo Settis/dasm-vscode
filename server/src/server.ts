@@ -2,7 +2,8 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection, DefinitionParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
 import { ParsedFiles } from './parsedFiles';
-import { RelatedContextByNode } from './parser/ast/related';
+import { LabelObject, LabelsByName } from './parser/ast/labels';
+import { BasicNode } from './parser/ast/nodes';
 import { getNodeByPosition } from './parser/ast/utils';
 import { Program } from './program';
 import { validateLabels } from './validators/general';
@@ -13,7 +14,7 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedFiles = new ParsedFiles(documents);
 const openedDocuments = new Set<string>();
 let lastSendedDiagnostics = new Set<string>();
-let relatedObjects: RelatedContextByNode = new Map();
+let relatedObjects = new Map<BasicNode, LabelObject>();
 
 connection.onInitialize((_: InitializeParams) => {
 	return {
@@ -64,8 +65,8 @@ function rescanDocuments() {
 	const programs = Array.from(openedDocuments).map(uri => new Program(parsedFiles, uri));
 	programs.forEach(program => {
 		program.assemble();
-		for (const node of program.relatedContexts.keys())
-			relatedObjects.set(node, program.relatedContexts.get(node)!);
+		collectLabels(program.globalLabels);
+		program.localLabels.forEach(it => collectLabels(it));
 	});
 	const usedFiles = new Set<string>(openedDocuments);
 	const diagnostics: DiagnosticWithURI[] = [];
@@ -95,6 +96,15 @@ function rescanDocuments() {
 	}
 	for (const uri of diagnosticsToDelete)
 		connection.sendDiagnostics({uri, diagnostics: []});
+}
+
+function collectLabels(labelsMap: LabelsByName) {
+	for (const label of labelsMap.values()) {
+		for (const definition of label.definitions)
+			relatedObjects.set(definition, label);
+		for (const usage of label.usages)
+			relatedObjects.set(usage, label);
+	}
 }
 
 documents.listen(connection);

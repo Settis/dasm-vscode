@@ -1,6 +1,6 @@
 import { MSG } from "../messages";
+import { LabelsByName } from "../parser/ast/labels";
 import { AllComandNode, FileNode, IfDirectiveNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "../parser/ast/nodes";
-import { RelatedContextByName } from "../parser/ast/related";
 import { Program } from "../program";
 import { notEmpty } from "../utils";
 import { validateGeneralCommand } from "./asmCommandValidator";
@@ -12,7 +12,7 @@ export function validateProgram(fileNode: FileNode): DiagnosticWithURI[] {
 
 export function validateLabels(program: Program): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
-    result.push(...validateLabelsInContext(program.labels));
+    result.push(...validateLabelsInContext(program.globalLabels));
     for (const context of program.localLabels)
         result.push(...validateLabelsInContext(context));
     return result;
@@ -51,15 +51,21 @@ function validateMacroCommand(command: MacroDirectiveNode): DiagnosticWithURI[] 
     return validateLines(command.body);
 }
 
-function validateLabelsInContext(context: RelatedContextByName): DiagnosticWithURI[] {
+function validateLabelsInContext(context: LabelsByName): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
     for (const relatedLabel of context.values()) {
         if (relatedLabel.definitions.length == 0)
             for (const usage of relatedLabel.usages)
                 result.push(constructError(MSG.LABEL_NOT_DEFINED, usage));
-        if (relatedLabel.definitions.length > 1)
+        if (relatedLabel.definedAsConstant && relatedLabel.definedAsVariable) {
+            for (const definition of relatedLabel.definitions)
+                result.push(constructError(MSG.LABEL_AS_VAR_AND_CONSTANT, definition));
+            continue;
+        }
+        if (relatedLabel.definitions.length > 1 && relatedLabel.definedAsConstant)
             for (let i = 1; i < relatedLabel.definitions.length; i++)
                 result.push(constructError(MSG.TOO_MANY_DEFINITIONS, relatedLabel.definitions[i]));
+        
     }
     return result;
 }

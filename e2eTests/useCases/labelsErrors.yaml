@@ -12,6 +12,11 @@ text: |2
   .loop JMP .loop
         SUBROUTINE
         JMP {.loop|undefined}
+  VAR SET 0
+  VAR SET 1
+
+  {BAR|varAndConst}:
+  {BAR|varAndConst} SET 0
 actions:
   defined:
     type: Error
@@ -20,4 +25,8 @@ actions:
   undefined:
     type: Error
     message: Label is not defined
+    severity: Error
+  varAndConst:
+    type: Error
+    message: Label is defined as variable and as constant
     severity: Error
