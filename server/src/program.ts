@@ -1,9 +1,9 @@
-import { INCBIN, INCDIR, INCLUDE, SET, SUBROUTINE } from "./dasm/directives";
+import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, SEG, SET, SUBROUTINE } from "./dasm/directives";
 import { isExists } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
-import { AddressMode, AllComandNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode, StringLiteralNode } from "./parser/ast/nodes";
-import { LabelsByName, LabelObject } from "./parser/ast/labels";
+import { AddressMode, AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode, StringLiteralNode } from "./parser/ast/nodes";
+import { LabelsByName, LabelObject, ALIASES } from "./parser/ast/labels";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
 
 const LOCAL_LABEL_PREFIX = '.';
@@ -42,7 +42,9 @@ export class Program {
     }
 
     private defineLabel(labelNode: LabelNode, asVariable: boolean) {
-        const lablelObject = this.getLabelObjectByName(labelNode.name.name);
+        const name = labelNode.name.name;
+        if (ALIASES.has(name)) return;
+        const lablelObject = this.getLabelObjectByName(name);
         lablelObject.definitions.push(labelNode.name);
         if (asVariable)
             lablelObject.definedAsVariable = true;
@@ -121,6 +123,12 @@ export class Program {
             case INCDIR:
                 this.handleIncludeDirCommand(commandNode);
                 break;
+            case LIST:
+                this.handleListCommand(commandNode);
+                break;
+            case SEG:
+                // Just ignore it
+                break;
             default:
                 this.handleOtherCommand(commandNode);
                 break;
@@ -186,10 +194,22 @@ export class Program {
         return argValue as StringLiteralNode;
     }
 
+    private handleListCommand(commandNode: CommandNode) {
+        if (this.isListArgIncorrect(commandNode.args))
+            this.errors.push(constructError(MSG.LIST_ARGS, commandNode));
+    }
+
+    private isListArgIncorrect(args: ArgumentNode[]): boolean {
+        if (args.length != 1) return false;
+        const arg = args[0].value;
+        if (arg.type != NodeType.Identifier) return false;
+        return ! new Set<string>(['ON', 'OFF']).has(arg.name.toUpperCase());
+    }
+
     private handleOtherCommand(commandNode: CommandNode) {
-        for (const arg of commandNode.args) {
-            this.visitExpression(arg.value);
-        }
+        if (NAMES.has(commandNode.name.name.toUpperCase()))
+            for (const arg of commandNode.args)
+                this.visitExpression(arg.value);
     }
 
     private visitExpression(node: ExpressionNode) {
@@ -211,7 +231,9 @@ export class Program {
     }
 
     private visitIdentifier(node: IdentifierNode) {
-        const lableObject = this.getLabelObjectByName(node.name);
+        const name = node.name;
+        if (ALIASES.has(name)) return;
+        const lableObject = this.getLabelObjectByName(name);
         lableObject.usages.push(node);
     }
 
