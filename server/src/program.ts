@@ -6,6 +6,8 @@ import { AddressMode, AllComandNode, ArgumentNode, CommandNode, ExpressionNode, 
 import { LabelsByName, LabelObject, ALIASES } from "./parser/ast/labels";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
 import { operations } from "./dasm/operations";
+import { MacrosByName, MacrosObject } from "./parser/ast/macros";
+import { unifyCommandName } from "./validators/asmCommandValidator";
 
 const LOCAL_LABEL_PREFIX = '.';
 
@@ -16,6 +18,7 @@ export class Program {
 
     public globalLabels: LabelsByName = new Map();
     public localLabels: LabelsByName[] = [new Map()];
+    public macroses: MacrosByName = new Map();
     private folderUri: string;
     private includeFolders = new Set<string>();
     public errors: DiagnosticWithURI[] = [];
@@ -105,6 +108,8 @@ export class Program {
     }
 
     private visitMacroDirectiveNode(commandNode: MacroDirectiveNode) {
+        const name = commandNode.name.name.toUpperCase();
+        this.getMacrosByName(name).definitions.push(commandNode.name);
         this.createSubroutineContext();
         commandNode.body.forEach(line => this.visitLineNode(line));
         this.createSubroutineContext();
@@ -208,10 +213,12 @@ export class Program {
     }
 
     private handleOtherCommand(commandNode: CommandNode) {
-        const name = commandNode.name.name.toUpperCase();
+        const name = unifyCommandName(commandNode.name.name);
         if (NAMES.has(name) || operations[name])
             for (const arg of commandNode.args)
                 this.visitExpression(arg.value);
+        else
+            this.getMacrosByName(name).usages.push(commandNode.name);
     }
 
     private visitExpression(node: ExpressionNode) {
@@ -246,5 +253,18 @@ export class Program {
             fileUri = this.folderUri + folder + '/' + name;
             if (isExists(fileUri)) return fileUri;
         }
+    }
+
+    private getMacrosByName(name: string): MacrosObject {
+        let macros = this.macroses.get(name);
+        if (!macros) {
+            macros = {
+                name,
+                definitions: [],
+                usages: [],
+            };
+            this.macroses.set(name, macros);
+        }
+        return macros;
     }
 }

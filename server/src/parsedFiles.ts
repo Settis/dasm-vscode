@@ -4,7 +4,7 @@ import { DiagnosticWithURI } from './validators/util';
 import { readContent } from './localFiles';
 import { FileNode } from './parser/ast/nodes';
 import { parseText } from './parser/ast/utils';
-import { validateProgram } from './validators/general';
+import { validateFile } from './validators/general';
 
 export class ParsedFiles {
     private cachedAst: { [index: string]: FileNode } = {}
@@ -34,7 +34,7 @@ export class ParsedFiles {
         const fileRoot = parseText(document.uri, document.getText());
         this.cachedAst[uri] = fileRoot.ast;
         this.cachedErrors[uri] = fileRoot.errors;
-        this.cachedErrors[uri].push(...validateProgram(fileRoot.ast));
+        this.cachedErrors[uri].push(...validateFile(fileRoot.ast));
         return fileRoot.ast;
     }
 

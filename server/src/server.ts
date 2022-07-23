@@ -2,19 +2,25 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection, DefinitionParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
 import { ParsedFiles } from './parsedFiles';
-import { LabelObject, LabelsByName } from './parser/ast/labels';
+import { LabelsByName } from './parser/ast/labels';
+import { MacrosByName } from './parser/ast/macros';
 import { BasicNode } from './parser/ast/nodes';
 import { getNodeByPosition } from './parser/ast/utils';
 import { Program } from './program';
-import { validateLabels } from './validators/general';
+import { validateProgram } from './validators/general';
 import { DiagnosticWithURI } from './validators/util';
+
+type RelatedObject = {
+    definitions: BasicNode[],
+    usages: BasicNode[]
+}
 
 const connection = createConnection();
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedFiles = new ParsedFiles(documents);
 const openedDocuments = new Set<string>();
 let lastSendedDiagnostics = new Set<string>();
-let relatedObjects = new Map<BasicNode, LabelObject>();
+let relatedObjects = new Map<BasicNode, RelatedObject>();
 
 connection.onInitialize((_: InitializeParams) => {
 	return {
@@ -67,12 +73,13 @@ function rescanDocuments() {
 		program.assemble();
 		collectLabels(program.globalLabels);
 		program.localLabels.forEach(it => collectLabels(it));
+		collectMacros(program.macroses);
 	});
 	const usedFiles = new Set<string>(openedDocuments);
 	const diagnostics: DiagnosticWithURI[] = [];
 	for (const program of programs) {
 		program.usedFiles.forEach(uri => usedFiles.add(uri));
-		diagnostics.push(...validateLabels(program));
+		diagnostics.push(...validateProgram(program));
 		diagnostics.push(...program.errors);
 	}
 	for (const usedFile of usedFiles)
@@ -104,6 +111,15 @@ function collectLabels(labelsMap: LabelsByName) {
 			relatedObjects.set(definition, label);
 		for (const usage of label.usages)
 			relatedObjects.set(usage, label);
+	}
+}
+
+function collectMacros(macrosMap: MacrosByName) {
+	for (const macro of macrosMap.values()) {
+		for (const definition of macro.definitions)
+			relatedObjects.set(definition, macro);
+		for (const usage of macro.usages)
+			relatedObjects.set(usage, macro);
 	}
 }
 

@@ -12,9 +12,11 @@ text: |2
         ADC #D{|getDDef}ATA
       repend
 
-      macro foo
+      macro {foo|fooDef}
         ADC #DAT{|getDDef}A
       endm
+
+      FO{|getFooDef}O
 actions:
   getEDef:
     type: GetDefinition
@@ -25,4 +27,9 @@ actions:
     type: GetDefinition
     result: dDef
   dDef:
+    type: DefinitionResult
+  getFooDef:
+    type: GetDefinition
+    result: fooDef
+  fooDef:
     type: DefinitionResult

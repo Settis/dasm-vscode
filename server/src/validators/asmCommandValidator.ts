@@ -2,7 +2,6 @@ import { MSG } from "../messages";
 import { ModesSet, OperationDescription, operations } from "../dasm/operations";
 import { OpMode } from "../dasm/opMode";
 import { constructError, DiagnosticWithURI } from "./util";
-import { NAMES } from "../dasm/directives";
 import { AddressMode, ArgumentNode, CommandNode, NodeType, NumberNode } from "../parser/ast/nodes";
 
 export function validateGeneralCommand(node: CommandNode): DiagnosticWithURI[] {
@@ -10,15 +9,10 @@ export function validateGeneralCommand(node: CommandNode): DiagnosticWithURI[] {
     const operation = operations[commandName];
     if (operation)
         return validateCommandArgs(node, operation);
-    else {
-        if (NAMES.has(commandName))
-            return [];
-        else
-            return [constructError(MSG.UNKNOWN_COMMAND, node.name)];
-    }
+    return [];
 }
 
-function unifyCommandName(rawName: string): string {
+export function unifyCommandName(rawName: string): string {
     let result = rawName.toUpperCase();
     if (result.startsWith('.'))
         result = result.substring(1);

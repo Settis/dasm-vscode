@@ -1,20 +1,22 @@
 import { MSG } from "../messages";
 import { LabelsByName } from "../parser/ast/labels";
+import { MacrosByName } from "../parser/ast/macros";
 import { AllComandNode, FileNode, IfDirectiveNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "../parser/ast/nodes";
 import { Program } from "../program";
 import { notEmpty } from "../utils";
 import { validateGeneralCommand } from "./asmCommandValidator";
 import { constructError, DiagnosticWithURI } from "./util";
 
-export function validateProgram(fileNode: FileNode): DiagnosticWithURI[] {
+export function validateFile(fileNode: FileNode): DiagnosticWithURI[] {
     return validateLines(fileNode.lines);
 }
 
-export function validateLabels(program: Program): DiagnosticWithURI[] {
+export function validateProgram(program: Program): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
     result.push(...validateLabelsInContext(program.globalLabels));
     for (const context of program.localLabels)
         result.push(...validateLabelsInContext(context));
+    result.push(...validateMacros(program.macroses));
     return result;
 }
 
@@ -67,5 +69,14 @@ function validateLabelsInContext(context: LabelsByName): DiagnosticWithURI[] {
                 result.push(constructError(MSG.TOO_MANY_DEFINITIONS, relatedLabel.definitions[i]));
         
     }
+    return result;
+}
+
+function validateMacros(macroses: MacrosByName): DiagnosticWithURI[] {
+    const result: DiagnosticWithURI[] = [];
+    for (const macros of macroses.values())
+        if (macros.definitions.length == 0)
+            for (const usage of macros.usages)
+                result.push(constructError(MSG.UNKNOWN_COMMAND, usage));
     return result;
 }
