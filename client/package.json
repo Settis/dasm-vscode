@@ -11,7 +11,7 @@
         "url": "https://github.com/Settis/dasm-vscode"
     },
 	"scripts": {
-		"test": "mocha out/test/useCasesHelper.test.js"
+		"test": "mocha --enable-source-maps out/test/useCasesHelper.test.js"
 	},
     "dependencies": {
         "@types/node": "^16.9.1",

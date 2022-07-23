@@ -1,0 +1,174 @@
+text: |2
+      processor 6502
+      ORG 0
+  symbol EQU 123
+  sym    = 123
+  . = . + 3
+  some EQM "BAR"
+  
+  ; Using SET to do calculations
+  N SET 1
+  SUM SET 0
+      REPEAT 10
+  SUM SET SUM+N
+  N SET N+1
+      REPEND
+      ECHO "Sum of 1 to 10 is", [SUM]d
+  
+  ; Use SETSTR to output a parameter as a sting
+      MAC CALL    ; { 1 } = function name
+  .FNAME  SETSTR {1}
+          ECHO "This is the function name:", .FNAME
+      ENDM
+  
+      CALL HelloWorld         ; test it...
+  
+  Value = 1
+  VectorTable = 2
+  ; various ways of defining data...
+    DC 0,1,2,3
+    BYTE -1,1,2,3, <Value
+    .WORD 100,1000,10000, VectorTable
+    LONG 100000, 50*50*50
+    dc 'a
+    dc.s "unicode"    ; endian-swapped character words
+  
+  ; generate the bytes 0 to 9 inclusive
+  VAL SET 0
+      REPEAT 10
+          .byte VAL
+  VAL SET VAL + 1
+      REPEND
+  
+    ds 2      ; 2 bytes of default value 0
+    ds 2,10   ; 2 bytes of value 10
+    ds 10,2   ; 10 bytes of value 2
+    ds.w 2    ; 4 bytes (2 words) of default value 0
+    ds.l 0    ; define no space at all
+  
+  eqmlabel = 0
+    DV.B  eqmlabel 10,20
+  
+    HEX 1A45 45 13254F 3E12
+  
+  PI = 4
+  
+    IFCONST PI
+      IF PI==3
+        ECHO "Are you sure?"
+      ENDIF
+    ENDIF
+  
+  somesym  ; defined!
+    IFCONST somesym
+      ECHO "Defined!"
+    ENDIF
+  
+    IFNCONST somesym
+      ECHO "Not defined!"
+    ENDIF
+  
+    IF 0
+      ; Disabled block
+    ELSE
+      ; Enabled block
+    EIF
+  
+  YV  SET 2
+      REPEAT 2
+  XV  SET 2
+        REPEAT 4
+          .byte XV, YV, XV*YV
+  XV  SET XV+1
+        REPEND
+  YV  SET YV+1
+      REPEND
+  
+  ; Use SUBROUTINE to delineate local label usage
+  VAL SET 0
+    REPEAT 4
+    SUBROUTINE
+      cmp #VAL
+      bne .reused         ; reused local label
+      ; do something here
+      jmp exit
+  .reused
+  VAL SET VAL+1
+    REPEND
+  exit
+  
+    org 0,255
+    org 100,0
+    org 200
+    dc 23
+  
+  ; Declaration of zero page variables
+    SEG.U variables
+    ORG $80
+  foo1        ds 1
+  bar2        ds 10
+  varn        ds 2
+  
+    ALIGN 256
+  
+    MAC CALLSOME ; function name
+      IFNCONST {1}
+  FNAME SETSTR {1}
+        ECHO FNAME," does not exists!"
+        ERR
+      ELSE
+        jsr {1}
+      ENDIF
+    ENDM
+  
+  test
+  
+    CALLSOME test
+  
+    LIST ON
+    LIST OFF
+  
+  ; Expressions
+  exp SET 1
+  ; Unary operators
+    ECHO ~exp
+    ECHO exp^-1
+    ECHO -exp
+    ECHO [exp^-1]+1
+    ECHO !exp
+    ECHO exp==0
+    ECHO <exp
+    ECHO exp&$FF
+    ECHO >exp
+    ECHO [exp>>8]&$FF
+  ; Binary operators
+    ECHO exp*exp
+    ECHO exp/exp
+    ECHO exp%exp
+    ECHO exp+exp
+    ECHO exp-exp
+    ECHO exp>>exp
+    ECHO exp<<exp
+    ECHO exp>exp
+    ECHO exp>=exp
+    ECHO exp<exp
+    ECHO exp<=exp
+    ECHO exp==exp
+    ECHO exp!=exp
+    ECHO exp&exp
+    ECHO exp^exp
+    ECHO exp|exp
+    ECHO exp&&exp
+    ECHO exp||exp
+    ECHO exp?exp
+  
+  ; Symbols
+    ECHO "Checksum ", ...
+    ECHO "Evaluated value in DV ", ..
+    ECHO "Current program counter ", .
+    ECHO "Synonim for . ", *
+
+  /* 
+    foo bar baz 
+    IFCONST PI
+  */

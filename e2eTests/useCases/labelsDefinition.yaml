@@ -39,4 +39,3 @@ actions:
     result: loopDef
   loopDef:
     type: DefinitionResult
-  

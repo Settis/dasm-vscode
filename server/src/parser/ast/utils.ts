@@ -4,7 +4,7 @@ import { getMessage, MSG } from "../../messages";
 import { DiagnosticWithURI } from "../../validators/util";
 import { DASM_LEXER } from "../cst/lexer";
 import { DASM_PARSER } from "../cst/parser";
-import { BasicNode, FileNode, LineNode } from "./nodes";
+import { BasicNode, FileNode } from "./nodes";
 import { Visitor } from "./visitor";
 
 export function parseText(uri: string, text: string): ParsingResult {
@@ -14,6 +14,7 @@ export function parseText(uri: string, text: string): ParsingResult {
     DASM_PARSER.input = lexerResult.tokens;
     const cst = DASM_PARSER.text();
     errors.push(...DASM_PARSER.errors.map(it => convertParserError(it, uri)));
+    if (errors.length !== 0) return getEmptyResult(uri, errors);
     const visitor = new Visitor(uri);
     return {
         errors,
@@ -26,14 +27,11 @@ export type ParsingResult = {
     ast: FileNode
 }
 
-function getEmptyResult(uri: string): ParsingResult {
+function getEmptyResult(uri: string, errors?: DiagnosticWithURI[]): ParsingResult {
     const location = Location.create(uri, Range.create(0,0,0,0));
-    const ast = new FileNode(
-        location, 
-        [new LineNode(location, null, null)]
-    );
+    const ast = new FileNode(location, []);
     return {
-        errors: [],
+        errors: errors || [],
         ast
     };
 }
@@ -48,15 +46,17 @@ function convertLexingError(error: ILexingError, uri: string): DiagnosticWithURI
 }
 
 function convertParserError(error: IRecognitionException, uri: string): DiagnosticWithURI {
+    let errorToken = error.token;
+    if (isNaN(error.token.startOffset) && 'previousToken' in error) errorToken = (error as any).previousToken;
     return {
         uri,
-        range: createRange(error.token),
+        range: createRange(errorToken),
         message: error.message,
         source: getMessage(MSG.PARSING_ERROR_SOURCE)
     };
 }
 
-export type RangeSource = CstNode | IToken | ILexingError;
+export type RangeSource = BasicNode | CstNode | IToken | ILexingError;
 
 export function createRange(start: RangeSource, end?: RangeSource): Range {
     return Range.create(
@@ -74,6 +74,8 @@ function createStartPosition(src: RangeSource): Position {
     } else if ('startLine' in src) {
         line = src.startLine!;
         character = src.startColumn!;
+    } else if ('type' in src) {
+        return src.location.range.start;
     } else if ('location' in src) {
         const location = src.location!;
         line = location.startLine!;
@@ -91,6 +93,8 @@ function createEndPosition(src: RangeSource): Position {
     } else if ('startLine' in src) {
         line = src.endLine!;
         character = src.endColumn!;
+    } else if ('type' in src) {
+        return src.location.range.end;
     } else if ('location' in src) {
         const location = src.location!;
         line = location.endLine!;

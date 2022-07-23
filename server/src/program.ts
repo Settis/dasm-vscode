@@ -1,10 +1,13 @@
-import { INCBIN, INCDIR, INCLUDE, SUBROUTINE } from "./dasm/directives";
+import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, SEG, SET, SUBROUTINE } from "./dasm/directives";
 import { isExists } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
-import { AddressMode, CommandNode, FileNode, IdentifierNode, LabelNode, LineNode, NodeType, StringLiteralNode } from "./parser/ast/nodes";
-import { RelatedContextByName, RelatedContextByNode, RelatedObject } from "./parser/ast/related";
+import { AddressMode, AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode, StringLiteralNode } from "./parser/ast/nodes";
+import { LabelsByName, LabelObject, ALIASES } from "./parser/ast/labels";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
+import { operations } from "./dasm/operations";
+import { MacrosByName, MacrosObject } from "./parser/ast/macros";
+import { unifyCommandName } from "./validators/asmCommandValidator";
 
 const LOCAL_LABEL_PREFIX = '.';
 
@@ -13,9 +16,9 @@ export class Program {
         this.folderUri = uri.replace(/[^/]*$/, "");
     }
 
-    public labels: RelatedContextByName = new Map();
-    public localLabels: RelatedContextByName[] = [new Map()];
-    public relatedContexts: RelatedContextByNode = new Map();
+    public globalLabels: LabelsByName = new Map();
+    public localLabels: LabelsByName[] = [new Map()];
+    public macroses: MacrosByName = new Map();
     private folderUri: string;
     private includeFolders = new Set<string>();
     public errors: DiagnosticWithURI[] = [];
@@ -37,35 +40,85 @@ export class Program {
 
     private visitLineNode(lineNode: LineNode) {
         if (lineNode.label)
-            this.visitLabelNode(lineNode.label);
+            this.defineLabel(lineNode.label, this.isSetCommand(lineNode.command));
         if (lineNode.command)
             this.visitCommandNode(lineNode.command);
     }
 
-    private visitLabelNode(labelNode: LabelNode) {
-        const relatedObject = this.getRelatedObjectForLabel(labelNode.name.name);
-        const labelNameNode = labelNode.name;
-        relatedObject.definitions.push(labelNameNode);
-        this.relatedContexts.set(labelNameNode, relatedObject);
+    private defineLabel(labelNode: LabelNode, asVariable: boolean) {
+        const name = labelNode.name.name;
+        if (ALIASES.has(name)) return;
+        const lablelObject = this.getLabelObjectByName(name);
+        lablelObject.definitions.push(labelNode.name);
+        if (asVariable)
+            lablelObject.definedAsVariable = true;
+        else
+            lablelObject.definedAsConstant = true;
     }
 
-    private getRelatedObjectForLabel(name: string): RelatedObject {
-        const context = name.startsWith(LOCAL_LABEL_PREFIX) ? this.localLabels[this.localLabels.length - 1] : this.labels;
-        let object = context.get(name);
-        if (!object) {
-            object = {
+    private isSetCommand(commandNode: AllComandNode | null): boolean {
+        if (commandNode && commandNode.type === NodeType.Command) {
+            return commandNode.name.name.toUpperCase() === SET;
+        }
+        return false;
+    }
+
+    private getLabelObjectByName(name: string): LabelObject {
+        const labelsMap = name.startsWith(LOCAL_LABEL_PREFIX) ? this.localLabels[this.localLabels.length - 1] : this.globalLabels;
+        let label = labelsMap.get(name);
+        if (!label) {
+            label = {
+                name,
+                definedAsConstant: false,
+                definedAsVariable: false,
                 definitions: [],
                 usages: []
             };
-            context.set(name, object);
+            labelsMap.set(name, label);
         }
-        return object;
+        return label;
     }
 
-    private visitCommandNode(commandNode: CommandNode) {
+    private visitCommandNode(commandNode: AllComandNode) {
+        switch (commandNode.type) {
+            case NodeType.IfDirective:
+                this.visitIfDirectiveNode(commandNode);
+                break;
+            case NodeType.RepeatDirective:
+                this.visitRepeastDirectiveNode(commandNode);
+                break;
+            case NodeType.MacroDirective:
+                this.visitMacroDirectiveNode(commandNode);
+                break;
+            case NodeType.Command:
+                this.visitGeneralCommandNode(commandNode);
+                break;
+        }
+    }
+
+    private visitIfDirectiveNode(commandNode: IfDirectiveNode) {
+        this.visitExpression(commandNode.condition);
+        commandNode.thenBody.forEach(line => this.visitLineNode(line));
+        commandNode.elseBody.forEach(line => this.visitLineNode(line));
+    }
+
+    private visitRepeastDirectiveNode(commandNode: RepeatDirectiveNode) {
+        this.visitExpression(commandNode.expression);
+        commandNode.body.forEach(line => this.visitLineNode(line));
+    }
+
+    private visitMacroDirectiveNode(commandNode: MacroDirectiveNode) {
+        const name = commandNode.name.name.toUpperCase();
+        this.getMacrosByName(name).definitions.push(commandNode.name);
+        this.createSubroutineContext();
+        commandNode.body.forEach(line => this.visitLineNode(line));
+        this.createSubroutineContext();
+    }
+
+    private visitGeneralCommandNode(commandNode: CommandNode) {
         switch (commandNode.name.name.toUpperCase()) {
             case SUBROUTINE:
-                this.localLabels.push(new Map());
+                this.createSubroutineContext();
                 break;
             case INCLUDE:
                 this.handleIncludeCommand(commandNode);
@@ -76,10 +129,20 @@ export class Program {
             case INCDIR:
                 this.handleIncludeDirCommand(commandNode);
                 break;
+            case LIST:
+                this.handleListCommand(commandNode);
+                break;
+            case SEG:
+                // Just ignore it
+                break;
             default:
                 this.handleOtherCommand(commandNode);
                 break;
         }
+    }
+
+    private createSubroutineContext() {
+        this.localLabels.push(new Map());
     }
 
     private handleIncludeCommand(commandNode: CommandNode) {
@@ -137,18 +200,50 @@ export class Program {
         return argValue as StringLiteralNode;
     }
 
+    private handleListCommand(commandNode: CommandNode) {
+        if (this.isListArgIncorrect(commandNode.args))
+            this.errors.push(constructError(MSG.LIST_ARGS, commandNode));
+    }
+
+    private isListArgIncorrect(args: ArgumentNode[]): boolean {
+        if (args.length != 1) return false;
+        const arg = args[0].value;
+        if (arg.type != NodeType.Identifier) return false;
+        return ! new Set<string>(['ON', 'OFF']).has(arg.name.toUpperCase());
+    }
+
     private handleOtherCommand(commandNode: CommandNode) {
-        for (const arg of commandNode.args) {
-            const value = arg.value;
-            if (value.type === NodeType.Identifier)
-                this.visitLiteral(value as IdentifierNode);
+        const name = unifyCommandName(commandNode.name.name);
+        if (NAMES.has(name) || operations[name])
+            for (const arg of commandNode.args)
+                this.visitExpression(arg.value);
+        else
+            this.getMacrosByName(name).usages.push(commandNode.name);
+    }
+
+    private visitExpression(node: ExpressionNode) {
+        switch (node.type) {
+            case NodeType.Identifier:
+                this.visitIdentifier(node);
+                break;
+            case NodeType.UnaryOperator:
+                this.visitExpression(node.operand);
+                break;
+            case NodeType.BinaryOperator:
+                this.visitExpression(node.left);
+                this.visitExpression(node.right);
+                break;
+            case NodeType.Brackets:
+                this.visitExpression(node.value);
+                break;
         }
     }
 
-    private visitLiteral(node: IdentifierNode) {
-        const relatedObject = this.getRelatedObjectForLabel(node.name);
-        relatedObject.usages.push(node);
-        this.relatedContexts.set(node, relatedObject);
+    private visitIdentifier(node: IdentifierNode) {
+        const name = node.name;
+        if (ALIASES.has(name)) return;
+        const lableObject = this.getLabelObjectByName(name);
+        lableObject.usages.push(node);
     }
 
     private findFileUri(name: string): string | undefined {
@@ -158,5 +253,18 @@ export class Program {
             fileUri = this.folderUri + folder + '/' + name;
             if (isExists(fileUri)) return fileUri;
         }
+    }
+
+    private getMacrosByName(name: string): MacrosObject {
+        let macros = this.macroses.get(name);
+        if (!macros) {
+            macros = {
+                name,
+                definitions: [],
+                usages: [],
+            };
+            this.macroses.set(name, macros);
+        }
+        return macros;
     }
 }

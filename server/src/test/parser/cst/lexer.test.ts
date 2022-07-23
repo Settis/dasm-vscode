@@ -11,7 +11,7 @@ describe('CST lexer tests', () => {
     it('recognize line with inderect addressing and comment', () => {
         checkTokens(
             'LABEL   CMD ARG,X       ; Comment',
-            ['LABEL', '   ', 'CMD', ' ', 'ARG', ',X', '       ', '; Comment']
+            ['LABEL', '   ', 'CMD', ' ', 'ARG', ',X', '       ']
         );
     });
     it('recognize string literal', () => {
@@ -47,7 +47,7 @@ describe('CST lexer tests', () => {
     it('recognize strings and comments', () => {
         checkTokens(
             ' it "the string" ; Comment with "string"',
-            [' ', 'it', ' ', '"the string"', ' ', '; Comment with "string"']
+            [' ', 'it', ' ', '"the string"', ' ']
         );
     });
     it('recognize numbers', () => {
@@ -58,6 +58,21 @@ describe('CST lexer tests', () => {
     });
     it('recognize identifiers statred/ended with X/Y', () => {
         checkTokens(' X Y XOOY YOOX ', [' ', 'X', ' ', 'Y', ' ', 'XOOY', ' ', 'YOOX', ' ']);
+    });
+    it('recognize macros arguments', () => {
+        checkTokens('{1}', ['{', '1', '}']);
+    });
+    it('recognize char literal', () => {
+        checkTokens("'f,oo", ["'f", ',', 'oo']);
+    });
+    it('recognize assignment', () => {
+        checkTokens('foo = 3', ['foo', ' ', '=', ' ', '3']);
+    });
+    it('cut comment', () => {
+        checkTokens(' /* foo */ ', [' ', ' ']);
+    });
+    it('recognize multiline comment', () => {
+        checkTokens('/* some \n second line \n */', []);
     });
 });
 

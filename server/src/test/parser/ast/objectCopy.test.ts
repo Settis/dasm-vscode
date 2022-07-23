@@ -1,5 +1,5 @@
 import assert = require("assert");
-import { copy } from "./objectCopy";
+import { filterByMask } from "./objectCopy";
 
 describe('Testing object copy', () => {
     it('copy the same', () => {
@@ -45,7 +45,16 @@ describe('Testing object copy', () => {
         }, {
             foo: [{f: 1}]
         }, {
-            foo: [{f: 2}, {f: 3}]
+            foo: [{f: 2}, {}]
+        });
+    });
+    it('array with differen objects', () => {
+        testCopy({
+            foo: [{a:1, b:2, c:0}, {c:3, d: 4, a:0}]
+        }, {
+            foo: [{a:0, b:0}, {c:0, d: 0}]
+        }, {
+            foo: [{a:1, b:2}, {c:3, d: 4}]
         });
     });
     it('with null fields', () => {
@@ -60,5 +69,5 @@ describe('Testing object copy', () => {
 });
 
 function testCopy(orig: any, mask: any, result: any) {
-    assert.deepStrictEqual(copy(orig, mask), result);
+    assert.deepStrictEqual(filterByMask(orig, mask), result);
 }

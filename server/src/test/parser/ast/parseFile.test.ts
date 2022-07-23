@@ -1,42 +1,23 @@
 import * as assert from "assert";
-import { AddressMode, NodeType } from "../../../parser/ast/nodes";
+import { AddressMode, BinaryOperatorType, IfDirectiveType, NodeType, UnaryOperatorType } from "../../../parser/ast/nodes";
 import { parseText } from "../../../parser/ast/utils";
-import { copy } from "./objectCopy";
+import { filterByMask } from "./objectCopy";
 
-describe('Correct AST for', () => {
+describe('Correct AST for line', () => {
     it('emty text', () => {
-        checkAST('', {
-                type: NodeType.Line,
-                label: null,
-                command: null
-            });
+        checkAST('');
     });
     it('long line', () => {
-        checkAST('                                 ', 
-            {
-                type: NodeType.Line,
-                label: null,
-                command: null
-            }
-        );
+        checkAST('                                 ');
     });
     it('Two empty lines', () => {
-        checkAST('   \n    ', {
-                type: NodeType.Line,
-                label: null,
-                command: null
-            }, {
-                type: NodeType.Line,
-                label: null,
-                command: null
-            });
+        checkAST('   \n    ');
     });
     it('LABEL                            ', () => {
         checkAST('LABEL                            ', {
             type: NodeType.Line,
             label: {
                 type: NodeType.Label,
-                isLocal: false,
                 name: {
                     type: NodeType.Identifier,
                     name: 'LABEL'
@@ -50,7 +31,6 @@ describe('Correct AST for', () => {
             type: NodeType.Line,
             label: {
                 type: NodeType.Label,
-                isLocal: true,
                 name: {
                     type: NodeType.Identifier,
                     name: '.LABEL'
@@ -60,18 +40,13 @@ describe('Correct AST for', () => {
         });
     });
     it('                        ; Comment', () => {
-        checkAST('                        ; Comment', {
-            type: NodeType.Line,
-            label: null,
-            command: null
-        });
+        checkAST('                        ; Comment');
     });
     it('LABEL                   ; Comment', () => {
         checkAST('LABEL                   ; Comment', {
             type: NodeType.Line,
             label: {
                 type: NodeType.Label,
-                isLocal: false,
                 name: {
                     type: NodeType.Identifier,
                     name: 'LABEL'
@@ -116,7 +91,6 @@ describe('Correct AST for', () => {
             type: NodeType.Line,
             label: {
                 type: NodeType.Label,
-                isLocal: false,
                 name: {
                     type: NodeType.Identifier,
                     name: 'LABEL'
@@ -137,7 +111,6 @@ describe('Correct AST for', () => {
             type: NodeType.Line,
             label: {
                 type: NodeType.Label,
-                isLocal: false,
                 name: {
                     type: NodeType.Identifier,
                     name: 'LABEL'
@@ -198,7 +171,6 @@ describe('Correct AST for', () => {
             type: NodeType.Line,
             label: {
                 type: NodeType.Label,
-                isLocal: false,
                 name: {
                     type: NodeType.Identifier,
                     name: 'LABEL'
@@ -415,6 +387,414 @@ describe('Correct AST for', () => {
     it('   TEST $2A', () => {
         checkAST('   TEST $2A', NUMBER_LINE);
     });
+    it("    dc 'a", () => {
+        checkAST("    dc 'a", {
+            type: NodeType.Line,
+            label: null,
+            command: {
+                type: NodeType.Command,
+                name: {
+                    type: NodeType.Identifier,
+                    name: 'dc'
+                },
+                args: [{
+                    type: NodeType.Argument,
+                    addressMode: AddressMode.None,
+                    value: {
+                        type: NodeType.CharLiteral,
+                        value: 'a'
+                    }
+                }] 
+            }
+        });
+    });
+    it('  dc.s "unicode"', () => {
+        checkAST('  dc.s "unicode"', {
+            type: NodeType.Line,
+            label: null,
+            command: {
+                type: NodeType.Command,
+                name: {
+                    type: NodeType.Identifier,
+                    name: 'dc'
+                },
+                args: [{
+                    type: NodeType.Argument,
+                    addressMode: AddressMode.None,
+                    value: {
+                        type: NodeType.StringLiteral,
+                        text: 'unicode'
+                    }
+                }] 
+            }
+        });
+    });
+    it('  ECHO "Synonim for . ", *', () => {
+        checkAST('  ECHO "Synonim for . ", *', {
+            type: NodeType.Line,
+            label: null,
+            command: {
+                type: NodeType.Command,
+                name: {
+                    type: NodeType.Identifier,
+                    name: 'ECHO'
+                },
+                args: [
+                    {
+                        type: NodeType.Argument,
+                        addressMode: AddressMode.None,
+                        value: {
+                            type: NodeType.StringLiteral,
+                            text: 'Synonim for . '
+                        }
+                    }, {
+                        type: NodeType.Argument,
+                        addressMode: AddressMode.None,
+                        value: {
+                            type: NodeType.Identifier,
+                            name: '*'
+                        }
+                    }
+                ]
+            }
+        });
+    });
+});
+
+describe('Correct AST for expressions', () => {
+    const EXP: TestIdentifierNode = {
+        type: NodeType.Identifier,
+        name: 'exp'
+    };
+    it('  ECHO ~exp', () => {
+        checkEchoExp('  ECHO ~exp', {
+            type: NodeType.UnaryOperator,
+            operatorType: UnaryOperatorType.OneComplement,
+            operand: EXP
+        });
+    });
+    it('  ECHO exp^-1', () => {
+        checkEchoExp('  ECHO exp^-1', {
+            type: NodeType.BinaryOperator,
+            operatorType: BinaryOperatorType.ArithmeticExclusiveOr,
+            left: EXP,
+            right: {
+                type: NodeType.UnaryOperator,
+                operatorType: UnaryOperatorType.Negation,
+                operand: {
+                    type: NodeType.Number,
+                    value: 1
+                }
+            }
+        });
+    });
+    it('  ECHO -exp', () => {
+        checkEchoExp('  ECHO -exp', {
+            type: NodeType.UnaryOperator,
+            operatorType: UnaryOperatorType.Negation,
+            operand: EXP
+        });
+    });
+    it('  ECHO [exp^-1]+1', () => {
+        checkEchoExp('  ECHO [exp^-1]+1', {
+            type: NodeType.BinaryOperator,
+            operatorType: BinaryOperatorType.Addition,
+            left: {
+                type: NodeType.Brackets,
+                value: {
+                    type: NodeType.BinaryOperator,
+                    operatorType: BinaryOperatorType.ArithmeticExclusiveOr,
+                    left: EXP,
+                    right: {
+                        type: NodeType.UnaryOperator,
+                        operatorType: UnaryOperatorType.Negation,
+                        operand: {
+                            type: NodeType.Number,
+                            value: 1
+                        }
+                    }
+                }
+            },
+            right: {
+                type: NodeType.Number,
+                value: 1
+            }
+        });
+    });
+    it('  ECHO !exp', () => {
+        checkEchoExp('  ECHO !exp', {
+            type: NodeType.UnaryOperator,
+            operatorType: UnaryOperatorType.Not,
+            operand: EXP
+        });
+    });
+    it('  ECHO exp==0', () => {
+        checkEchoExp('  ECHO exp==0', {
+            type: NodeType.BinaryOperator,
+            operatorType: BinaryOperatorType.Equal,
+            left: EXP,
+            right: {
+                type: NodeType.Number,
+                value: 0
+            }
+        });
+    });
+    it('  ECHO <exp', () => {
+        checkEchoExp('  ECHO <exp', {
+            type: NodeType.UnaryOperator,
+            operatorType: UnaryOperatorType.TakeLSB,
+            operand: EXP
+        });
+    });
+    it('  ECHO exp&$FF', () => {
+        checkEchoExp('  ECHO exp&$FF', {
+            type: NodeType.BinaryOperator,
+            operatorType: BinaryOperatorType.ArithmeticAnd,
+            left: EXP,
+            right: {
+                type: NodeType.Number,
+                value: 255
+            }
+        });
+    });
+    it('  ECHO >exp', () => {
+        checkEchoExp('  ECHO >exp', {
+            type: NodeType.UnaryOperator,
+            operatorType: UnaryOperatorType.TakeMSB,
+            operand: EXP
+        });
+    });
+    it('  ECHO [exp>>8]&$FF', () => {
+        checkEchoExp('  ECHO [exp>>8]&$FF', {
+            type: NodeType.BinaryOperator,
+            operatorType: BinaryOperatorType.ArithmeticAnd,
+            left: {
+                type: NodeType.Brackets,
+                value: {
+                    type: NodeType.BinaryOperator,
+                    operatorType: BinaryOperatorType.ArithmeticShiftRight,
+                    left: EXP,
+                    right: {
+                        type: NodeType.Number,
+                        value: 8
+                    }
+                }
+            },
+            right: {
+                type: NodeType.Number,
+                value: 255
+            }
+        });
+    });
+    it('  ECHO [ exp >> 8 ] & $FF', () => {
+        checkEchoExp('  ECHO [exp>>8]&$FF', {
+            type: NodeType.BinaryOperator,
+            operatorType: BinaryOperatorType.ArithmeticAnd,
+            left: {
+                type: NodeType.Brackets,
+                value: {
+                    type: NodeType.BinaryOperator,
+                    operatorType: BinaryOperatorType.ArithmeticShiftRight,
+                    left: EXP,
+                    right: {
+                        type: NodeType.Number,
+                        value: 8
+                    }
+                }
+            },
+            right: {
+                type: NodeType.Number,
+                value: 255
+            }
+        });
+    });
+});
+
+function checkEchoExp(text: string, exp: TestExpressionNode) {
+    checkAST(text, {
+        type: NodeType.Line,
+        label: null,
+        command: {
+            type: NodeType.Command,
+            name: {
+                type: NodeType.Identifier,
+                name: 'ECHO'
+            },
+            args: [{
+                type: NodeType.Argument,
+                addressMode: AddressMode.None,
+                value: exp
+            }]
+        }
+    });
+}
+
+describe('Correct AST for multiline directives', () => {
+    it('simple if', () => {
+        checkAST(
+`   IF ARG
+      ADC $1
+    ENDIF`,
+            {
+                type: NodeType.Line,
+                label: null,
+                command: {
+                    type: NodeType.IfDirective,
+                    ifType: IfDirectiveType.If,
+                    condition: {
+                        type: NodeType.Identifier,
+                        name: 'ARG'
+                    },
+                    thenBody: [{
+                        type: NodeType.Line,
+                        label: null,
+                        command: {
+                            type: NodeType.Command,
+                            name: {
+                                type: NodeType.Identifier,
+                                name: 'ADC'
+                            },
+                            args: [{
+                                type: NodeType.Argument,
+                                addressMode: AddressMode.None,
+                                value: {
+                                    type: NodeType.Number,
+                                    value: 1
+                                }
+                            }]
+                        }
+                    }],
+                    elseBody: []
+                }
+            }
+        );
+    });
+    it('if else', () => {
+        checkAST(
+`   IF ARG
+      ADC $1
+    ELSE
+      CLI
+    ENDIF`,
+            {
+                type: NodeType.Line,
+                label: null,
+                command: {
+                    type: NodeType.IfDirective,
+                    ifType: IfDirectiveType.If,
+                    condition: {
+                        type: NodeType.Identifier,
+                        name: 'ARG'
+                    },
+                    thenBody: [{
+                        type: NodeType.Line,
+                        label: null,
+                        command: {
+                            type: NodeType.Command,
+                            name: {
+                                type: NodeType.Identifier,
+                                name: 'ADC'
+                            },
+                            args: [{
+                                type: NodeType.Argument,
+                                addressMode: AddressMode.None,
+                                value: {
+                                    type: NodeType.Number,
+                                    value: 1
+                                }
+                            }]
+                        }
+                    }],
+                    elseBody: [{
+                        type: NodeType.Line,
+                        label: null,
+                        command: {
+                            type: NodeType.Command,
+                            name: {
+                                type: NodeType.Identifier,
+                                name: 'CLI'
+                            },
+                            args: []
+                        }
+                    }]
+                }
+            }
+        );
+    });
+    it('repeat', () => {
+        checkAST(
+`   REPEAT ARG
+      ADC $1
+    REPEND`,
+            {
+                type: NodeType.Line,
+                label: null,
+                command: {
+                    type: NodeType.RepeatDirective,
+                    expression: {
+                        type: NodeType.Identifier,
+                        name: 'ARG'
+                    },
+                    body: [{
+                        type: NodeType.Line,
+                        label: null,
+                        command: {
+                            type: NodeType.Command,
+                            name: {
+                                type: NodeType.Identifier,
+                                name: 'ADC'
+                            },
+                            args: [{
+                                type: NodeType.Argument,
+                                addressMode: AddressMode.None,
+                                value: {
+                                    type: NodeType.Number,
+                                    value: 1
+                                }
+                            }]
+                        }
+                    }]
+                }
+            }
+        );
+    });
+    it('macro', () => {
+        checkAST(
+`   MACRO ARG
+      ADC $1
+    ENDM`,
+            {
+                type: NodeType.Line,
+                label: null,
+                command: {
+                    type: NodeType.MacroDirective,
+                    name: {
+                        type: NodeType.Identifier,
+                        name: 'ARG'
+                    },
+                    body: [{
+                        type: NodeType.Line,
+                        label: null,
+                        command: {
+                            type: NodeType.Command,
+                            name: {
+                                type: NodeType.Identifier,
+                                name: 'ADC'
+                            },
+                            args: [{
+                                type: NodeType.Argument,
+                                addressMode: AddressMode.None,
+                                value: {
+                                    type: NodeType.Number,
+                                    value: 1
+                                }
+                            }]
+                        }
+                    }]
+                }
+            }
+        );
+    });
 });
 
 function checkAST(text: string, ...lines: TestLineNode[]) {
@@ -425,7 +805,7 @@ function checkAST(text: string, ...lines: TestLineNode[]) {
         type: NodeType.File,
         lines: lines
     };
-    assert.deepStrictEqual(copy(ast, expectedAst), expectedAst);
+    assert.deepStrictEqual(filterByMask(ast, expectedAst), expectedAst);
 }
 
 type TestFileNode = {
@@ -436,13 +816,32 @@ type TestFileNode = {
 type TestLineNode = {
     type: NodeType.Line,
     label: TestLabelNode | null,
-    command: TestCommandNode | null
+    command: TestCommandNode | TestIfDirecitveNode | TestRepeatDirecitveNode | TestMacroDirectiveNode | null
 }
 
 type TestLabelNode = {
     type: NodeType.Label,
     name: TestIdentifierNode,
-    isLocal: boolean
+}
+
+type TestIfDirecitveNode = {
+    type: NodeType.IfDirective,
+    ifType: IfDirectiveType,
+    condition: TestExpressionNode,
+    thenBody: TestLineNode[],
+    elseBody: TestLineNode[]
+}
+
+type TestRepeatDirecitveNode = {
+    type: NodeType.RepeatDirective,
+    expression: TestExpressionNode,
+    body: TestLineNode[]
+}
+
+type TestMacroDirectiveNode = {
+    type: NodeType.MacroDirective,
+    name: TestIdentifierNode,
+    body: TestLineNode[]
 }
 
 type TestCommandNode = {
@@ -459,7 +858,28 @@ type TestStringLiteralNode = {
 type TestArgumentNode = {
     type: NodeType.Argument,
     addressMode: AddressMode,
-    value: TestStringLiteralNode | TestIdentifierNode | TestNumberNode
+    value: TestExpressionNode
+}
+
+type TestExpressionNode = TestStringLiteralNode | TestIdentifierNode | TestNumberNode |
+    TestUnaryOperatorNode | TestBinaryOperatorNode | TestBracketsNode | TestCharLiteralNode;
+
+type TestUnaryOperatorNode = {
+    type: NodeType.UnaryOperator,
+    operatorType: UnaryOperatorType,
+    operand: TestExpressionNode
+}
+
+type TestBinaryOperatorNode = {
+    type: NodeType.BinaryOperator,
+    operatorType: BinaryOperatorType,
+    left: TestExpressionNode,
+    right: TestExpressionNode
+}
+
+type TestBracketsNode = {
+    type: NodeType.Brackets,
+    value: TestExpressionNode
 }
 
 type TestNumberNode = {
@@ -470,4 +890,9 @@ type TestNumberNode = {
 type TestIdentifierNode = {
     type: NodeType.Identifier,
     name: string
+}
+
+type TestCharLiteralNode = {
+    type: NodeType.CharLiteral,
+    value: string
 }

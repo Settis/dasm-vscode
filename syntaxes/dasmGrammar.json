@@ -5,6 +5,8 @@
     "patterns": [ {
         "include": "#singleLineComment"
     }, {
+        "include": "#multilineComment"
+    }, {
         "include": "#numericConstants"
     }, {
         "include": "#stringConstant"
@@ -20,6 +22,11 @@
             "begin": ";",
             "end": "$",
             "name": "comment.line.semicolon.dasm"
+        },
+        "multilineComment": {
+            "begin": "/\\*",
+            "end": "\\*/",
+            "name": "comment.multiline.dasm"
         },
         "numericConstants": {
             "patterns": [ {
@@ -50,7 +57,7 @@
             "name": "keyword.operator.dasm"
         },
         "label": {
-            "match": "^\\w+:?",
+            "match": "^\\.?\\w+:?",
             "name": "variable.other.label.dasm"
         }
     }

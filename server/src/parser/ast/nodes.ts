@@ -8,7 +8,7 @@ export interface BasicNode {
 }
 
 export class FileNode implements BasicNode {
-    readonly type: NodeType = NodeType.File;
+    readonly type = NodeType.File;
     constructor(
         readonly location: Location,
         readonly lines: LineNode[]
@@ -19,23 +19,24 @@ export class FileNode implements BasicNode {
 }
 
 export class LineNode implements BasicNode {
-    readonly type: NodeType = NodeType.Line;
+    readonly type = NodeType.Line;
     constructor(
         readonly location: Location,
         readonly label: LabelNode | null,
-        readonly command: CommandNode | null
+        readonly command: AllComandNode | null
     ) {}
     public getChildren(): BasicNode[] {
         return [this.label, this.command].filter(notEmpty);
     }
 }
 
+export type AllComandNode = CommandNode | IfDirectiveNode | RepeatDirectiveNode | MacroDirectiveNode;
+
 export class LabelNode implements BasicNode {
-    readonly type: NodeType = NodeType.Label;
+    readonly type = NodeType.Label;
     constructor(
         readonly location: Location,
-        readonly name: IdentifierNode,
-        readonly isLocal: boolean
+        readonly name: IdentifierNode
     ) {}
     public getChildren(): BasicNode[] {
         return [this.name];
@@ -43,7 +44,7 @@ export class LabelNode implements BasicNode {
 }
 
 export class IdentifierNode implements BasicNode {
-    readonly type: NodeType = NodeType.Identifier;
+    readonly type = NodeType.Identifier;
     constructor(
         readonly location: Location,
         readonly name: string
@@ -53,8 +54,53 @@ export class IdentifierNode implements BasicNode {
     }
 }
 
+export class IfDirectiveNode implements BasicNode {
+    readonly type = NodeType.IfDirective;
+    constructor(
+        readonly location: Location,
+        readonly ifType: IfDirectiveType,
+        readonly condition: ExpressionNode,
+        readonly thenBody: LineNode[],
+        readonly elseBody: LineNode[]
+    ) {}
+    public getChildren(): BasicNode[] {
+        const result: BasicNode[] = [this.condition];
+        result.push(...this.thenBody);
+        result.push(...this.elseBody);
+        return result;
+    }
+}
+
+export class RepeatDirectiveNode implements BasicNode {
+    readonly type = NodeType.RepeatDirective;
+    constructor(
+        readonly location: Location,
+        readonly expression: ExpressionNode,
+        readonly body: LineNode[]
+    ) {}
+    public getChildren(): BasicNode[] {
+        const result: BasicNode[] = [this.expression];
+        result.push(...this.body);
+        return result;
+    }
+}
+
+export class MacroDirectiveNode implements BasicNode {
+    readonly type = NodeType.MacroDirective;
+    constructor(
+        readonly location: Location,
+        readonly name: IdentifierNode,
+        readonly body: LineNode[]
+    ) {}
+    public getChildren(): BasicNode[] {
+        const result: BasicNode[] = [this.name];
+        result.push(...this.body);
+        return result;
+    }
+}
+
 export class CommandNode implements BasicNode {
-    readonly type: NodeType = NodeType.Command;
+    readonly type = NodeType.Command;
     constructor(
         readonly location: Location,
         readonly name: IdentifierNode,
@@ -68,7 +114,7 @@ export class CommandNode implements BasicNode {
 }
 
 export class StringLiteralNode implements BasicNode {
-    readonly type: NodeType = NodeType.StringLiteral;
+    readonly type = NodeType.StringLiteral;
     constructor(
         readonly location: Location,
         readonly text: string
@@ -78,12 +124,23 @@ export class StringLiteralNode implements BasicNode {
     }
 }
 
+export class CharLiteralNode implements BasicNode {
+    readonly type = NodeType.CharLiteral;
+    constructor(
+        readonly location: Location,
+        readonly value: string
+    ) {}
+    public getChildren(): BasicNode[] {
+        return [];
+    }
+}
+
 export class ArgumentNode implements BasicNode {
-    readonly type: NodeType = NodeType.Argument;
+    readonly type = NodeType.Argument;
     constructor(
         readonly location: Location,
         readonly addressMode: AddressMode,
-        readonly value: StringLiteralNode | IdentifierNode | NumberNode 
+        readonly value: ExpressionNode
     ) {}
     public getChildren(): BasicNode[] {
         return [this.value];
@@ -91,10 +148,60 @@ export class ArgumentNode implements BasicNode {
 }
 
 export class NumberNode implements BasicNode {
-    readonly type: NodeType = NodeType.Number;
+    readonly type = NodeType.Number;
     constructor(
         readonly location: Location,
         readonly value: number
+    ) {}
+    public getChildren(): BasicNode[] {
+        return [];
+    }
+}
+
+export type ExpressionNode = UnaryOperatorNode | BinaryOperatorNode | BracketsNode |
+    StringLiteralNode | IdentifierNode | NumberNode | MacroArgumentNode | CharLiteralNode;
+
+export class UnaryOperatorNode implements BasicNode {
+    readonly type = NodeType.UnaryOperator;
+    constructor(
+        readonly location: Location,
+        readonly operatorType: UnaryOperatorType,
+        readonly operand: ExpressionNode
+    ) {}
+    public getChildren(): BasicNode[] {
+        return [this.operand];
+    }
+}
+
+export class BinaryOperatorNode implements BasicNode {
+    readonly type = NodeType.BinaryOperator;
+    constructor(
+        readonly location: Location,
+        readonly operatorType: BinaryOperatorType,
+        readonly left: ExpressionNode,
+        readonly right: ExpressionNode
+    ) {}
+    public getChildren(): BasicNode[] {
+        return [this.left, this.right];
+    }
+}
+
+export class BracketsNode implements BasicNode {
+    readonly type = NodeType.Brackets;
+    constructor(
+        readonly location: Location,
+        readonly value: ExpressionNode
+    ) {}
+    public getChildren(): BasicNode[] {
+        return [this.value];
+    }
+}
+
+export class MacroArgumentNode implements BasicNode {
+    readonly type = NodeType.MacroArgument;
+    constructor(
+        readonly location: Location,
+        readonly number: number
     ) {}
     public getChildren(): BasicNode[] {
         return [];
@@ -110,6 +217,14 @@ export enum NodeType {
     File = 'File',
     Line = "Line",
     StringLiteral = 'StringLiteral',
+    CharLiteral = 'CharLiteral',
+    UnaryOperator = 'UnaryOperator',
+    BinaryOperator = 'BinaryOperator',
+    Brackets = 'Brackets',
+    IfDirective = 'IfDirective',
+    RepeatDirective = 'RepeatDirective',
+    MacroDirective = 'MacroDirective',
+    MacroArgument = 'MacroArgument',
 }
 
 export enum AddressMode {
@@ -120,4 +235,40 @@ export enum AddressMode {
     IndirectX = 'IndirectX',
     IndirectY = 'IndirectY',
     Indirect = 'Indirect',
+}
+
+export enum UnaryOperatorType {
+    OneComplement = 'OneComplement',
+    Negation = 'Negation',
+    Not = 'Not',
+    TakeLSB = 'TakeLSB',
+    TakeMSB = 'TakeMSB'
+}
+
+export enum BinaryOperatorType {
+    Multiplication = 'Multiplication',
+    Division = 'Division',
+    Modulus = 'Modulus',
+    Addition = 'Addition',
+    Subtraction = 'Subtraction',
+    ArithmeticShiftRight = 'ArithmeticShiftRight',
+    ArithmeticShiftLeft = 'ArithmeticShiftLeft',
+    GreatherThan = 'GreatherThan',
+    GreatherThanOrEqual = 'GreatherThanOrEqual',
+    LessThan = 'LessThan',
+    LessThanOrEqual = 'LessThanOrEqual',
+    Equal = 'Equal',
+    NotEqual = 'NotEqual',
+    ArithmeticAnd = 'ArithmeticAnd',
+    ArithmeticExclusiveOr = 'ArithmeticExclusiveOr',
+    ArithmeticOr = 'ArithmeticOr',
+    LogicalAnd = 'LogicalAnd',
+    LogicalOr = 'LogicalOr',
+    InlineIf = 'InlineIf'
+}
+
+export enum IfDirectiveType {
+    If = 'If',
+    IfConst = 'IfConst',
+    IfNConst = 'IfNConst'
 }
