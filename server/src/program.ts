@@ -5,6 +5,7 @@ import { ParsedFiles } from "./parsedFiles";
 import { AddressMode, AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode, StringLiteralNode } from "./parser/ast/nodes";
 import { LabelsByName, LabelObject, ALIASES } from "./parser/ast/labels";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
+import { operations } from "./dasm/operations";
 
 const LOCAL_LABEL_PREFIX = '.';
 
@@ -207,7 +208,8 @@ export class Program {
     }
 
     private handleOtherCommand(commandNode: CommandNode) {
-        if (NAMES.has(commandNode.name.name.toUpperCase()))
+        const name = commandNode.name.name.toUpperCase();
+        if (NAMES.has(name) || operations[name])
             for (const arg of commandNode.args)
                 this.visitExpression(arg.value);
     }
