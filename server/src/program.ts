@@ -30,6 +30,9 @@ export class Program {
 
     public assemble() {
         this.visitFile(this.uri);
+        const macroResult = this.macrosCalls.getMacroResult();
+        this.globalLabels = mergeLabelsMap(this.globalLabels, macroResult.labels);
+        this.errors.push(...macroResult.errors);
     }
 
     private visitFile(uri: string) {
@@ -39,9 +42,6 @@ export class Program {
 
     public visitFileNode(fileNode: FileNode) {
         fileNode.lines.forEach(line => this.visitLineNode(line));
-        const macroResult = this.macrosCalls.getMacroResult();
-        this.globalLabels = mergeLabelsMap(this.globalLabels, macroResult.labels);
-        this.errors.push(...macroResult.errors);
     }
 
     private visitLineNode(lineNode: LineNode) {
@@ -105,7 +105,11 @@ export class Program {
     private visitIfDirectiveNode(commandNode: IfDirectiveNode) {
         this.visitExpression(commandNode.condition);
         commandNode.thenBody.forEach(line => this.visitLineNode(line));
+        // In case when the label is defined in else branch too.
+        const tmpGlobalLabels = this.globalLabels;
+        this.globalLabels = new Map();
         commandNode.elseBody.forEach(line => this.visitLineNode(line));
+        this.globalLabels = tmpGlobalLabels;
     }
 
     private visitRepeastDirectiveNode(commandNode: RepeatDirectiveNode) {
