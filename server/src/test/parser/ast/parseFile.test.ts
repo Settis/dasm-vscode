@@ -772,25 +772,7 @@ describe('Correct AST for multiline directives', () => {
                         type: NodeType.Identifier,
                         name: 'ARG'
                     },
-                    body: [{
-                        type: NodeType.Line,
-                        label: null,
-                        command: {
-                            type: NodeType.Command,
-                            name: {
-                                type: NodeType.Identifier,
-                                name: 'ADC'
-                            },
-                            args: [{
-                                type: NodeType.Argument,
-                                addressMode: AddressMode.None,
-                                value: {
-                                    type: NodeType.Number,
-                                    value: 1
-                                }
-                            }]
-                        }
-                    }]
+                    body: '\n      ADC $1\n    '
                 }
             }
         );
@@ -841,7 +823,7 @@ type TestRepeatDirecitveNode = {
 type TestMacroDirectiveNode = {
     type: NodeType.MacroDirective,
     name: TestIdentifierNode,
-    body: TestLineNode[]
+    body: string
 }
 
 type TestCommandNode = {

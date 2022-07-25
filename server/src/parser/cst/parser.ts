@@ -26,7 +26,7 @@ const SET_OF_BINARY_SIGNS = new Set([
 
 class DasmParser extends CstParser {
     constructor() {
-        super(lexer.ALL_TOKENS, {
+        super(lexer.LEXER_DEFINITION, {
             nodeLocationTracking: "full"
         });
         this.performSelfAnalysis();
@@ -92,9 +92,23 @@ class DasmParser extends CstParser {
     private macroCommand = this.RULE('macroCommand', () => {
         this.CONSUME(lexer.MacroKeyword);
         this.CONSUME1(lexer.Space);
-        this.CONSUME(lexer.Identifier);
-        this.SUBRULE(this.text);
+        this.CONSUME(lexer.NonSpace);
+        this.SUBRULE(this.macroText);
         this.CONSUME(lexer.EndMacroKeyword);
+    })
+
+    private macroText = this.RULE('macroText', () => {
+        this.MANY(() => {
+            this.SUBRULE(this.macroTextPart);
+        });
+    })
+
+    private macroTextPart = this.RULE('macroTextPart', () => {
+        this.OR([
+            {ALT: () => this.CONSUME(lexer.NewLineSeparator)},
+            {ALT: () => this.CONSUME(lexer.Space)},
+            {ALT: () => this.CONSUME(lexer.NonSpace)},
+        ]);
     })
 
     private generalCommand = this.RULE('generalCommand', () => {

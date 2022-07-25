@@ -90,12 +90,10 @@ export class MacroDirectiveNode implements BasicNode {
     constructor(
         readonly location: Location,
         readonly name: IdentifierNode,
-        readonly body: LineNode[]
+        readonly body: string
     ) {}
     public getChildren(): BasicNode[] {
-        const result: BasicNode[] = [this.name];
-        result.push(...this.body);
-        return result;
+        return [this.name];
     }
 }
 

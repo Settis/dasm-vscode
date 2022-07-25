@@ -17,6 +17,7 @@ export enum MSG {
     LEXING_ERROR_SOURCE,
     PARSING_ERROR_SOURCE,
     LIST_ARGS,
+    BAD_MACRO_CALL,
 }
 
 const EN: { [key in MSG]: string } = {
@@ -38,6 +39,7 @@ const EN: { [key in MSG]: string } = {
     [MSG.LEXING_ERROR_SOURCE]: "lexer",
     [MSG.PARSING_ERROR_SOURCE]: "parser",
     [MSG.LIST_ARGS]: "Only ON or OFF allowed as args for 'list'",
+    [MSG.BAD_MACRO_CALL]: "Something wrong in the macro call",
 };
 
 export function getMessage(template: MSG): string {

@@ -50,7 +50,7 @@ function validateRepeatCommand(command: RepeatDirectiveNode): DiagnosticWithURI[
 }
 
 function validateMacroCommand(command: MacroDirectiveNode): DiagnosticWithURI[] {
-    return validateLines(command.body);
+    return [];
 }
 
 function validateLabelsInContext(context: LabelsByName): DiagnosticWithURI[] {

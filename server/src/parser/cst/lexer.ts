@@ -1,6 +1,10 @@
 import { createToken, Lexer } from "chevrotain";
 
+const DEFAULT_MODE = 'defaultMode';
+const MACROS_MODE = 'macrosMode';
+
 export const Space = createToken({ name: 'space', pattern: /[ \f\t\v]+/ });
+export const NonSpace = createToken({ name: 'nonSpace', pattern: /[^ \f\t\v\n]+/ });
 export const Colon = createToken({ name: 'colon', pattern: /:/ });
 export const Sharp = createToken({ name: 'sharp', pattern: /#/ });
 export const Tilde = createToken({ name: 'tilde', pattern: /~/ });
@@ -55,8 +59,9 @@ export const ElseKeyword = createToken({ name: 'elseKeyword', pattern: /else/i }
 export const EndIfKeyword = createToken({ name: 'endIfKeyword', pattern: /e(nd)?if/i });
 export const RepeatKeyword = createToken({ name: 'repeatKeyword', pattern: /repeat/i });
 export const RependKeyword = createToken({ name: 'rependKeyword', pattern: /repend/i });
-export const MacroKeyword = createToken({ name: 'macroKeyword', pattern: /mac(ro)?/i });
-export const EndMacroKeyword = createToken({ name: 'endMacroKeyword', pattern: /endm/i });
+export const MacroKeyword = createToken({ name: 'macroKeyword', pattern: /mac(ro)?/i, push_mode: MACROS_MODE });
+export const RestrictedMacroKeyword = createToken({ name: 'restrictedMacroKeyword', pattern: /mac(ro)?/i });
+export const EndMacroKeyword = createToken({ name: 'endMacroKeyword', pattern: /endm/i, pop_mode: true });
 
 export const HexLine = createToken({ name: 'hexLine', pattern: /hex [^\n\r]*/i, group: Lexer.SKIPPED });
 
@@ -88,96 +93,107 @@ export const MultilineComment = createToken({ name: 'multilineComment', pattern:
 export const StringLiteral = createToken({ name: 'stringLiteral', pattern: /"[^"]*"/ });
 export const CharLiteral = createToken({ name: 'charLiteral', pattern: /'./ });
 
-export const ALL_TOKENS = [
-    MultilineComment,
+export const LEXER_DEFINITION = {
+    modes: {
+        [DEFAULT_MODE]: [
+            MultilineComment,
 
-    Space,
-    Colon,
-    Sharp,
-    Tilde,
-    MinusSign,
-    EqualSign,
-    NotEqualSign,
-    AssignSign,
-    ExclamationMark,
-    GreatherOrEqualSign,
-    LessOrEqualSign,
-    ShiftRightSign,
-    ShiftLeftSign,
-    LessSigh,
-    GreatherSign,
-    MultiplicationSign,
-    DivisionSign,
-    AdditionSign,
-    XorSign,
-    LogicalAndSign,
-    LogicalOrSign,
-    ArithmeticAndSign,
-    ArithmeticOrSign,
-    QuestionMark,
+            Space,
+            Colon,
+            Sharp,
+            Tilde,
+            MinusSign,
+            EqualSign,
+            NotEqualSign,
+            AssignSign,
+            ExclamationMark,
+            GreatherOrEqualSign,
+            LessOrEqualSign,
+            ShiftRightSign,
+            ShiftLeftSign,
+            LessSigh,
+            GreatherSign,
+            MultiplicationSign,
+            DivisionSign,
+            AdditionSign,
+            XorSign,
+            LogicalAndSign,
+            LogicalOrSign,
+            ArithmeticAndSign,
+            ArithmeticOrSign,
+            QuestionMark,
+        
+            IndirectXEnding,
+            IndirectYEnding,
+            AddressXEnding,
+            AddressYEnding,
+            OpenParenthesis,
+            CloseParenthesis,
+            OpenSquareBracket,
+            CloseSquareBracket,
+            OpenCurlyBracket,
+            CloseCurlyBracket,
+            
+            Comma,
+        
+            BinaryNumber,
+            OctalNumber,
+            DecimalNumber,
+            HexadecimalNumber,
+        
+            PercentSign,
+        
+            IfConstKeyword,
+            IfNConstKeyword,
+            IfKeyword,
+            ElseKeyword,
+            EndIfKeyword,
+            RepeatKeyword,
+            RependKeyword,
+            MacroKeyword,
+        
+            HexLine,
+        
+            ImpliedExtension,
+            ImpliedIndexingXExtension,
+            ImpliedIndexingYExtension,
+            AbsoluteExtension,
+            ByteExtension,
+            ByteXExtension,
+            ByteYExtension,
+            DirectExtension,
+            ExtendedExtension,
+            IndirectExtension,
+            LongExtension,
+            RelativeExtension,
+            UninitializedExtension,
+            WordExtension,
+            WordXExtension,
+            WordYExtension,
+            ZeroPageExtension,
+            SwapEndiannessExtension,
+            DecimalFormatFlag,
+            TripleDots,
+            DoubleDots,
+            Identifier,
+            Dot,
+        
+            NewLineSeparator,
+            Comment,
+            StringLiteral,
+            CharLiteral,
+        ],
+        [MACROS_MODE]: [
+            EndMacroKeyword,
+            RestrictedMacroKeyword,
+            Space,
+            NewLineSeparator,
+            NonSpace,
+        ],
+    },
+    defaultMode: DEFAULT_MODE
+};
 
-    IndirectXEnding,
-    IndirectYEnding,
-    AddressXEnding,
-    AddressYEnding,
-    OpenParenthesis,
-    CloseParenthesis,
-    OpenSquareBracket,
-    CloseSquareBracket,
-    OpenCurlyBracket,
-    CloseCurlyBracket,
-    
-    Comma,
-
-    BinaryNumber,
-    OctalNumber,
-    DecimalNumber,
-    HexadecimalNumber,
-
-    PercentSign,
-
-    IfConstKeyword,
-    IfNConstKeyword,
-    IfKeyword,
-    ElseKeyword,
-    EndIfKeyword,
-    RepeatKeyword,
-    RependKeyword,
-    MacroKeyword,
-    EndMacroKeyword,
-
-    HexLine,
-
-    ImpliedExtension,
-    ImpliedIndexingXExtension,
-    ImpliedIndexingYExtension,
-    AbsoluteExtension,
-    ByteExtension,
-    ByteXExtension,
-    ByteYExtension,
-    DirectExtension,
-    ExtendedExtension,
-    IndirectExtension,
-    LongExtension,
-    RelativeExtension,
-    UninitializedExtension,
-    WordExtension,
-    WordXExtension,
-    WordYExtension,
-    ZeroPageExtension,
-    SwapEndiannessExtension,
-    DecimalFormatFlag,
-    TripleDots,
-    DoubleDots,
-    Identifier,
-    Dot,
-
-    NewLineSeparator,
-    Comment,
-    StringLiteral,
-    CharLiteral
-];
-
-export const DASM_LEXER = new Lexer(ALL_TOKENS, {
+export const DASM_LEXER = new Lexer(LEXER_DEFINITION, {
     positionTracking: 'full'
 });

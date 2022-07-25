@@ -1,0 +1,15 @@
+text: |2
+      MAC newLab
+  LAB_{1}:
+      CLC
+      ENDM
+
+      {newLab foo|def}
+
+      JMP LA{|getDef}B_foo
+actions:
+  def:
+    type: DefinitionResult
+  getDef:
+    type: GetDefinition
+    result: def
