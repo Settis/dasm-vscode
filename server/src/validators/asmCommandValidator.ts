@@ -12,7 +12,9 @@ export function validateGeneralCommand(node: CommandNode): DiagnosticWithURI[] {
     return [];
 }
 
-export function unifyCommandName(rawName: string): string {
+export type UnifiedCommandName = string;
+
+export function unifyCommandName(rawName: string): UnifiedCommandName {
     let result = rawName.toUpperCase();
     if (result.startsWith('.'))
         result = result.substring(1);

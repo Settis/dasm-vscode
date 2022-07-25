@@ -1,3 +1,4 @@
+import { UnifiedCommandName } from "../validators/asmCommandValidator";
 import { OpMode } from "./opMode";
 
 const BranchDescription = 'Branches are dependant on the status of the flag bits when the op code is encountered. A branch not taken requires two machine cycles. Add one if the branch is taken and add one more if the branch crosses a page boundary.';
@@ -1273,7 +1274,7 @@ export const operations: OperationsSet = {
 };
 
 type OperationsSet = {
-    [name: string]: OperationDescription
+    [name: UnifiedCommandName]: OperationDescription
 }
 
 export type OperationDescription = {

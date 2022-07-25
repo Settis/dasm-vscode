@@ -70,9 +70,24 @@ export class Visitor {
     private convertMacroCommand(command: cst.MacroCommandCstNode): ast.MacroDirectiveNode {
         return new ast.MacroDirectiveNode(
             this.createLocation(command),
-            this.convertIdentifier(command.children.identifier[0]),
-            this.constructAst(command.children.text[0]).lines
+            this.convertIdentifier(command.children.nonSpace[0]),
+            this.convertMacroText(command.children.macroText[0])
         );
+    }
+
+    private convertMacroText(macroText: cst.MacroTextCstNode): string {
+        return (macroText.children.macroTextPart || []).map(this.convertMacroTextPart).join('');
+    }
+
+    private convertMacroTextPart(macroTestPart: cst.MacroTextPartCstNode): string {
+        const childern = macroTestPart.children;
+        if (childern.newLineSeprarator)
+            return childern.newLineSeprarator[0].image;
+        if (childern.nonSpace)
+            return childern.nonSpace[0].image;
+        if (childern.space)
+            return childern.space[0].image;
+        return "";
     }
 
     private convertGeneralCommand(command: cst.GeneralCommandCstNode): ast.CommandNode | null {

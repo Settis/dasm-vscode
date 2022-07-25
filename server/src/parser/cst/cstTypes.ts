@@ -81,9 +81,29 @@ export interface MacroCommandCstNode extends CstNode {
 export type MacroCommandCstChildren = {
   macroKeyword: IToken[];
   space: IToken[];
-  identifier: IToken[];
-  text: TextCstNode[];
+  nonSpace: IToken[];
+  macroText: MacroTextCstNode[];
   endMacroKeyword: IToken[];
+};
+
+export interface MacroTextCstNode extends CstNode {
+  name: "macroText";
+  children: MacroTextCstChildren;
+}
+
+export type MacroTextCstChildren = {
+  macroTextPart?: MacroTextPartCstNode[];
+};
+
+export interface MacroTextPartCstNode extends CstNode {
+  name: "macroTextPart";
+  children: MacroTextPartCstChildren;
+}
+
+export type MacroTextPartCstChildren = {
+  newLineSeprarator?: IToken[];
+  space?: IToken[];
+  nonSpace?: IToken[];
 };
 
 export interface GeneralCommandCstNode extends CstNode {
@@ -322,6 +342,8 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   ifCommand(children: IfCommandCstChildren, param?: IN): OUT;
   repeatCommand(children: RepeatCommandCstChildren, param?: IN): OUT;
   macroCommand(children: MacroCommandCstChildren, param?: IN): OUT;
+  macroText(children: MacroTextCstChildren, param?: IN): OUT;
+  macroTextPart(children: MacroTextPartCstChildren, param?: IN): OUT;
   generalCommand(children: GeneralCommandCstChildren, param?: IN): OUT;
   commandName(children: CommandNameCstChildren, param?: IN): OUT;
   commandExtension(children: CommandExtensionCstChildren, param?: IN): OUT;

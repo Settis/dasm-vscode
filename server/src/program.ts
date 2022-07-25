@@ -1,19 +1,21 @@
-import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, SEG, SET, SUBROUTINE } from "./dasm/directives";
+import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, SEG, SET, SETSTR, SUBROUTINE } from "./dasm/directives";
 import { isExists } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
 import { AddressMode, AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode, StringLiteralNode } from "./parser/ast/nodes";
-import { LabelsByName, LabelObject, ALIASES } from "./parser/ast/labels";
+import { LabelsByName, LabelObject, ALIASES, mergeLabelsMap } from "./parser/ast/labels";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
 import { operations } from "./dasm/operations";
 import { MacrosByName, MacrosObject } from "./parser/ast/macros";
-import { unifyCommandName } from "./validators/asmCommandValidator";
+import { UnifiedCommandName, unifyCommandName } from "./validators/asmCommandValidator";
+import { parseText } from "./parser/ast/utils";
 
 const LOCAL_LABEL_PREFIX = '.';
 
 export class Program {
     constructor(private parsedFiles: ParsedFiles, private uri: string) {
         this.folderUri = uri.replace(/[^/]*$/, "");
+        this.macrosCalls = new MacrosCalls(parsedFiles, uri);
     }
 
     public globalLabels: LabelsByName = new Map();
@@ -24,6 +26,7 @@ export class Program {
     public errors: DiagnosticWithURI[] = [];
     public usedFiles = new Set<string>();
     private currentlyIncludedStack = new Set<string>();
+    private macrosCalls: MacrosCalls;
 
     public assemble() {
         this.visitFile(this.uri);
@@ -34,8 +37,11 @@ export class Program {
         if (ast) this.visitFileNode(ast);
     }
 
-    private visitFileNode(fileNode: FileNode) {
+    public visitFileNode(fileNode: FileNode) {
         fileNode.lines.forEach(line => this.visitLineNode(line));
+        const macroResult = this.macrosCalls.getMacroResult();
+        this.globalLabels = mergeLabelsMap(this.globalLabels, macroResult.labels);
+        this.errors.push(...macroResult.errors);
     }
 
     private visitLineNode(lineNode: LineNode) {
@@ -108,15 +114,15 @@ export class Program {
     }
 
     private visitMacroDirectiveNode(commandNode: MacroDirectiveNode) {
-        const name = commandNode.name.name.toUpperCase();
-        this.getMacrosByName(name).definitions.push(commandNode.name);
-        this.createSubroutineContext();
-        commandNode.body.forEach(line => this.visitLineNode(line));
+        const name = unifyCommandName(commandNode.name.name);
+        const macros = this.getMacrosByName(name);
+        macros.definitions.push(commandNode.name);
+        this.macrosCalls.addMacrosDefinition(name, commandNode.body);
         this.createSubroutineContext();
     }
 
     private visitGeneralCommandNode(commandNode: CommandNode) {
-        switch (commandNode.name.name.toUpperCase()) {
+        switch (unifyCommandName(commandNode.name.name.toUpperCase())) {
             case SUBROUTINE:
                 this.createSubroutineContext();
                 break;
@@ -133,6 +139,7 @@ export class Program {
                 this.handleListCommand(commandNode);
                 break;
             case SEG:
+            case SETSTR:
                 // Just ignore it
                 break;
             default:
@@ -217,8 +224,10 @@ export class Program {
         if (NAMES.has(name) || operations[name])
             for (const arg of commandNode.args)
                 this.visitExpression(arg.value);
-        else
+        else {
             this.getMacrosByName(name).usages.push(commandNode.name);
+            this.macrosCalls.addMacrosUsage(commandNode);
+        }
     }
 
     private visitExpression(node: ExpressionNode) {
@@ -255,7 +264,7 @@ export class Program {
         }
     }
 
-    private getMacrosByName(name: string): MacrosObject {
+    private getMacrosByName(name: UnifiedCommandName): MacrosObject {
         let macros = this.macroses.get(name);
         if (!macros) {
             macros = {
@@ -267,4 +276,85 @@ export class Program {
         }
         return macros;
     }
+}
+
+class MacrosCalls {
+    constructor(private parsedFiles: ParsedFiles, private uri: string) {}
+
+    private macrosDefinitions = new Map<UnifiedCommandName, string>();
+    private macrosUsages: CommandNode[] = [];
+
+    public addMacrosDefinition(name: UnifiedCommandName, text: string) {
+        this.macrosDefinitions.set(name, text);
+    }
+
+    public addMacrosUsage(commandNode: CommandNode) {
+        this.macrosUsages.push(commandNode);
+    }
+
+    public getMacroResult(): MacroResult {
+        const result: MacroResult = {
+            labels: new Map(),
+            errors: []
+        };
+        for (const command of this.macrosUsages) {
+            const macroResult = this.getGlobalVariablesFromCommand(command);
+            result.labels = mergeLabelsMap(result.labels, macroResult.labels);
+            result.errors.push(...macroResult.errors);
+        }
+        return result;
+    }
+
+    private getGlobalVariablesFromCommand(commandNode: CommandNode): MacroResult {
+        const code = this.preprocMacroCall(commandNode);
+        const fileRoot = parseText(commandNode.location.uri, code);
+        if (fileRoot.errors.length != 0)
+            return {
+                labels: new Map(),
+                errors: [constructError(MSG.BAD_MACRO_CALL, commandNode)]
+            };
+        const program = new Program(this.parsedFiles, this.uri);
+        program.visitFileNode(fileRoot.ast);
+        const result: MacroResult = {
+            labels: program.globalLabels,
+            errors: []
+        };
+        if (program.errors.length != 0)
+            result.errors = [constructError(MSG.BAD_MACRO_CALL, commandNode)];
+        for (const label of result.labels.values()) {
+            if (label.definitions.length != 0)
+                label.definitions = [commandNode];
+            if (label.usages.length != 0)
+                label.usages = [commandNode];
+        }
+        return result;
+    }
+
+    
+    private preprocMacroCall(commandNode: CommandNode): string {
+        let result = this.macrosDefinitions.get(unifyCommandName(commandNode.name.name));
+        if (!result) return '';
+        const args = this.extractArgs(commandNode);
+        for (let i=0; i<args.length; i++) {
+            const searchString = `{${i+1}}`;
+            result = result?.replace(searchString, args[i]);
+        }
+        return result;
+    }
+
+    private extractArgs(commandNode: CommandNode): string[] {
+        return commandNode.args.map(this.extractArg);
+    }
+
+    private extractArg(argumentNode: ArgumentNode): string {
+        const value = argumentNode.value;
+        if (value.type == NodeType.Identifier) return value.name;
+        // Instead of calculating real value because it's not improtant for error checking
+        return '1';
+    }
+}
+
+type MacroResult = {
+    labels: LabelsByName,
+    errors: DiagnosticWithURI[]
 }

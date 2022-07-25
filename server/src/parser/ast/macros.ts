@@ -1,9 +1,10 @@
+import { UnifiedCommandName } from "../../validators/asmCommandValidator";
 import { BasicNode } from "./nodes";
 
-export type MacrosByName = Map<string, MacrosObject>
+export type MacrosByName = Map<UnifiedCommandName, MacrosObject>
 
 export type MacrosObject = {
-    name: string,
+    name: UnifiedCommandName,
     definitions: BasicNode[],
-    usages: BasicNode[]
+    usages: BasicNode[],
 }
