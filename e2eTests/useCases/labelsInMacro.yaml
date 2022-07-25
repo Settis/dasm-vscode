@@ -7,6 +7,16 @@ text: |2
       {newLab foo|def}
 
       JMP LA{|getDef}B_foo
+
+      MAC const
+  CONST_{1} = {2}+3
+  CONST_{1}_qwe = {2}+5
+      ENDM
+      
+      const BAR, %0101
+
+      STA CONST_BAR
+
 actions:
   def:
     type: DefinitionResult

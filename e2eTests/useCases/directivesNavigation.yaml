@@ -5,7 +5,7 @@ text: |2
       IF E{|getEDef}XP
         ADC #D{|getDDef}ATA
       else
-        ADC #DAT{|getDDef}A
+        ADC #DATA
       endif
 
       repeat EX{|getEDef}P
