@@ -337,7 +337,7 @@ class MacrosCalls {
         const args = this.extractArgs(commandNode);
         for (let i=0; i<args.length; i++) {
             const searchString = `{${i+1}}`;
-            result = result?.replace(searchString, args[i]);
+            result = result?.replaceAll(searchString, args[i]);
         }
         return result;
     }
