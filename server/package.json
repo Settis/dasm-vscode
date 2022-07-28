@@ -18,7 +18,9 @@
 	},
 	"scripts": {
 		"test": "mocha --enable-source-maps out/test/**/*.test.js",
-		"coverage": "nyc mocha out/test",
+		"coverage": "npm run coverage:unit && npm run coverage:report",
+		"coverage:unit": "nyc mocha out/test/**/*.test.js",
+		"coverage:report": "nyc report --reporter=lcov --reporter=text",
 		"generateParserTypes": "node out/parser/cst/writeCstTypes.js"
 	},
 	"devDependencies": {
