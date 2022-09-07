@@ -5,6 +5,7 @@
 import * as path from 'path';
 import * as Mocha from 'mocha';
 import * as glob from 'glob';
+import { flushCodeCoverage } from './vscodeHelper';
 
 export function run(): Promise<void> {
 	// Create the mocha test
@@ -17,7 +18,7 @@ export function run(): Promise<void> {
 	const testsRoot = __dirname;
 
 	return new Promise((resolve, reject) => {
-		glob('e2e.test.js', { cwd: testsRoot }, (err, files) => {
+		glob('e2e.test.js', { cwd: testsRoot }, async (err, files) => {
 			if (err) {
 				return reject(err);
 			}
@@ -37,6 +38,8 @@ export function run(): Promise<void> {
 			} catch (error) {
 				console.error(error);
 				reject(error);
+			} finally {
+				await flushCodeCoverage();
 			}
 		});
 	});

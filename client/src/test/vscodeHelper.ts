@@ -53,3 +53,7 @@ export function constructRange(lineNumber: number, startChar: number, length: nu
         new vscode.Position(lineNumber, startChar + length)
     );
 }
+
+export async function flushCodeCoverage() {
+    await vscode.commands.executeCommand('dasm.flashCodeCoverage');
+}

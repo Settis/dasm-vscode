@@ -11,9 +11,11 @@ import {
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
-    const serverModule = context.asAbsolutePath(
-		path.join('out', 'server.js')
-	);
+	let serverModulePath = path.join('out', 'server.js');
+	if (process.env.COLLECT_COVERAGE === 'true') {
+		serverModulePath = path.join('server', 'out', 'serverWithCoverage.js');
+	}
+    const serverModule = context.asAbsolutePath(serverModulePath);
     const debugOptions = {execArgv: ['--nolazy', '--inspect=6009', '--enable-source-maps']};
     const serverOptions: ServerOptions = {
 		run: {module: serverModule, transport: TransportKind.ipc},
