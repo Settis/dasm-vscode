@@ -15,7 +15,7 @@ type RelatedObject = {
     usages: BasicNode[]
 }
 
-const connection = createConnection();
+export const connection = createConnection();
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedFiles = new ParsedFiles(documents);
 const openedDocuments = new Set<string>();

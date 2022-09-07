@@ -29,12 +29,15 @@ jobs:
     - name: Test compile
       run: npm run test-compile
     - name: Server unit tests
-      run: npm run coverage
+      run: npm run coverage:unit
       working-directory: server
     - name: Run e2e tests
       uses: GabrielBB/xvfb-action@v1
       with:
         run: npm test
+    - name: Report code coverage
+      run: npm run coverage:report
+      working-directory: server
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
       env:
