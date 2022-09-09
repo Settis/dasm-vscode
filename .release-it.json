@@ -1,9 +1,23 @@
 {
   "github": {
-    "release": true
+    "release": true,
+    "assets": ["*.vsix"]
   },
   "npm": {
     "publish": false
+  },
+  "hooks": {
+    "before:init": [
+      "npm run clean", 
+      "npm run lint",
+      "npm run compile",
+      "npm run test-compile",
+      "cd client && npm run test",
+      "cd server && npm run test",
+      "npm run test"
+    ],
+    "after:bump": "npm run package",
+    "after:release": "echo publish it in market"
   },
   "plugins": {
     "@release-it/keep-a-changelog": {
