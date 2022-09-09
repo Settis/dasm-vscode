@@ -4,6 +4,7 @@
 .gitignore
 **/tsconfig.json
 **/tsconfig.base.json
+**/tsconfig.tsbuildinfo
 coverage
 e2eTests
 .github
@@ -13,3 +14,5 @@ client
 server
 .eslintignore
 .gitpod.yml
+node_modules
+sonar-project.properties
