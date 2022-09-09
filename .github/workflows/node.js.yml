@@ -31,6 +31,9 @@ jobs:
     - name: Server unit tests
       run: npm run coverage:unit
       working-directory: server
+    - name: Client test of e2e tests
+      run: npm run test
+      working-directory: client
     - name: Run e2e tests
       uses: GabrielBB/xvfb-action@v1
       with:
