@@ -2,13 +2,13 @@
 This is a VSCode extension for programming in dasm.
 Only 6502 is supported.
 
-*Note:* you steel need a separate dasm assembler to generate binaries.
+*Note:* you still need a separate dasm assembler to generate binaries.
 
 ## Features
 - syntax highlighting
 - error checking
 - include & include dir support
-- navigating by lables (like go to definition)
+- navigating by labels (like go to definition)
 
 ## Plans
 - type-matching completion

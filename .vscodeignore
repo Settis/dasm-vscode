@@ -16,3 +16,4 @@ server
 .gitpod.yml
 node_modules
 sonar-project.properties
+.release-it.json
