@@ -19,7 +19,8 @@
     ],
     "after:bump": [
       "rm -f *.vsix",
-      "npm run package"
+      "npm run package",
+      "sed -i 's/sonar.projectVersion=.*/sonar.projectVersion=${version}/' sonar-project.properties"
     ],
     "after:release": "npx vsce publish"
   },
