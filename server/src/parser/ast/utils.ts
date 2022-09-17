@@ -4,7 +4,7 @@ import { getMessage, MSG } from "../../messages";
 import { DiagnosticWithURI } from "../../validators/util";
 import { DASM_LEXER } from "../cst/lexer";
 import { DASM_PARSER } from "../cst/parser";
-import { BasicNode, FileNode } from "./nodes";
+import { AstNode, FileNode } from "./nodes";
 import { Visitor } from "./visitor";
 
 export function parseText(uri: string, text: string): ParsingResult {
@@ -56,7 +56,7 @@ function convertParserError(error: IRecognitionException, uri: string): Diagnost
     };
 }
 
-export type RangeSource = BasicNode | CstNode | IToken | ILexingError;
+export type RangeSource = AstNode | CstNode | IToken | ILexingError;
 
 export function createRange(start: RangeSource, end?: RangeSource): Range {
     return Range.create(
@@ -107,16 +107,25 @@ interface PositionWithUri extends Position {
     uri: string
 }
 
-export function getNodeByPosition(startingNode: BasicNode, position: PositionWithUri): BasicNode | undefined {
+/**
+ * Returns a list of nodes by position. Child will be first.
+ * @param startingNode 
+ * @param position 
+ * @returns a list of BasicNodes or undefined
+ */
+export function getNodeByPosition(startingNode: AstNode, position: PositionWithUri): AstNode[] | undefined {
     if (!isPositionInsideNode(position, startingNode)) return;
     for (const child of startingNode.getChildren()) {
         const result = getNodeByPosition(child, position);
-        if (result) return result;
+        if (result) {
+            result.push(startingNode);
+            return result;
+        }
     }
-    return startingNode;
+    return [startingNode];
 }
 
-export function isPositionInsideNode(position: PositionWithUri, node: BasicNode): boolean {
+export function isPositionInsideNode(position: PositionWithUri, node: AstNode): boolean {
     return position.uri === node.location.uri 
         && compare(node.location.range.start, position) < 1 
         && compare(position, node.location.range.end) < 1;

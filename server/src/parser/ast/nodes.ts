@@ -1,11 +1,13 @@
 import { Location } from "vscode-languageserver";
 import { notEmpty } from "../../utils";
 
-export interface BasicNode {
+interface BasicNode {
     readonly type: NodeType
     readonly location: Location
-    getChildren(): BasicNode[]
+    getChildren(): AstNode[]
 }
+
+export type AstNode = AllComandNode | ExpressionNode | FileNode | LineNode | LabelNode | ArgumentNode;
 
 export class FileNode implements BasicNode {
     readonly type = NodeType.File;
@@ -13,7 +15,7 @@ export class FileNode implements BasicNode {
         readonly location: Location,
         readonly lines: LineNode[]
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return this.lines;
     }
 }
@@ -25,7 +27,7 @@ export class LineNode implements BasicNode {
         readonly label: LabelNode | null,
         readonly command: AllComandNode | null
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [this.label, this.command].filter(notEmpty);
     }
 }
@@ -38,7 +40,7 @@ export class LabelNode implements BasicNode {
         readonly location: Location,
         readonly name: IdentifierNode
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [this.name];
     }
 }
@@ -49,7 +51,7 @@ export class IdentifierNode implements BasicNode {
         readonly location: Location,
         readonly name: string
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [];
     }
 }
@@ -63,8 +65,8 @@ export class IfDirectiveNode implements BasicNode {
         readonly thenBody: LineNode[],
         readonly elseBody: LineNode[]
     ) {}
-    public getChildren(): BasicNode[] {
-        const result: BasicNode[] = [this.condition];
+    public getChildren(): AstNode[] {
+        const result: AstNode[] = [this.condition];
         result.push(...this.thenBody);
         result.push(...this.elseBody);
         return result;
@@ -78,8 +80,8 @@ export class RepeatDirectiveNode implements BasicNode {
         readonly expression: ExpressionNode,
         readonly body: LineNode[]
     ) {}
-    public getChildren(): BasicNode[] {
-        const result: BasicNode[] = [this.expression];
+    public getChildren(): AstNode[] {
+        const result: AstNode[] = [this.expression];
         result.push(...this.body);
         return result;
     }
@@ -92,7 +94,7 @@ export class MacroDirectiveNode implements BasicNode {
         readonly name: IdentifierNode,
         readonly body: string
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [this.name];
     }
 }
@@ -104,8 +106,8 @@ export class CommandNode implements BasicNode {
         readonly name: IdentifierNode,
         readonly args: ArgumentNode[]
     ) {}
-    public getChildren(): BasicNode[] {
-        const result: BasicNode[] = [this.name];
+    public getChildren(): AstNode[] {
+        const result: AstNode[] = [this.name];
         result.push(...this.args);
         return result;
     }
@@ -117,7 +119,7 @@ export class StringLiteralNode implements BasicNode {
         readonly location: Location,
         readonly text: string
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [];
     }
 }
@@ -128,7 +130,7 @@ export class CharLiteralNode implements BasicNode {
         readonly location: Location,
         readonly value: string
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [];
     }
 }
@@ -140,7 +142,7 @@ export class ArgumentNode implements BasicNode {
         readonly addressMode: AddressMode,
         readonly value: ExpressionNode
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [this.value];
     }
 }
@@ -151,7 +153,7 @@ export class NumberNode implements BasicNode {
         readonly location: Location,
         readonly value: number
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [];
     }
 }
@@ -166,7 +168,7 @@ export class UnaryOperatorNode implements BasicNode {
         readonly operatorType: UnaryOperatorType,
         readonly operand: ExpressionNode
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [this.operand];
     }
 }
@@ -179,7 +181,7 @@ export class BinaryOperatorNode implements BasicNode {
         readonly left: ExpressionNode,
         readonly right: ExpressionNode
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [this.left, this.right];
     }
 }
@@ -190,7 +192,7 @@ export class BracketsNode implements BasicNode {
         readonly location: Location,
         readonly value: ExpressionNode
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [this.value];
     }
 }
@@ -201,7 +203,7 @@ export class MacroArgumentNode implements BasicNode {
         readonly location: Location,
         readonly number: number
     ) {}
-    public getChildren(): BasicNode[] {
+    public getChildren(): AstNode[] {
         return [];
     }
 }
