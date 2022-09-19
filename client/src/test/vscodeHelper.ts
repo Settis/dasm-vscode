@@ -28,6 +28,7 @@ export async function getErrors(uri: vscode.Uri, expectedCount: number) {
     do {
         await sleep(waitTime);
         errors = vscode.languages.getDiagnostics(uri);
+        console.log(`Errors expected: ${expectedCount}, and received: ${errors.length}`);
         attemptsCount++;
     } while (attemptsCount < waitAttempts && errors.length != expectedCount);
     return errors;
