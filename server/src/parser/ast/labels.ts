@@ -1,4 +1,4 @@
-import { BasicNode } from "./nodes";
+import { AstNode } from "./nodes";
 
 export const ALIASES = new Set<string>(['...', '..', '.', '*']);
 
@@ -8,8 +8,8 @@ export type LabelObject = {
     name: string,
     definedAsConstant: boolean,
     definedAsVariable: boolean,
-    definitions: BasicNode[],
-    usages: BasicNode[]
+    definitions: AstNode[],
+    usages: AstNode[]
 }
 
 export function mergeLabelsMap(first: LabelsByName, second: LabelsByName): LabelsByName {

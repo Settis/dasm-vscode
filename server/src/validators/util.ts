@@ -1,20 +1,20 @@
 import { Diagnostic, DiagnosticSeverity, DocumentUri } from "vscode-languageserver";
 import { getMessage, MSG } from "../messages";
-import { BasicNode } from "../parser/ast/nodes";
+import { AstNode } from "../parser/ast/nodes";
 
 export interface DiagnosticWithURI extends Diagnostic {
     uri: DocumentUri
 }
 
-export function constructError(msg: MSG, fromNode: BasicNode, toNode?: BasicNode): DiagnosticWithURI {
+export function constructError(msg: MSG, fromNode: AstNode, toNode?: AstNode): DiagnosticWithURI {
     return constructDiagnostic(msg, DiagnosticSeverity.Error, fromNode, toNode);
 }
 
-export function constructWarning(msg: MSG, fromNode: BasicNode, toNode?: BasicNode): DiagnosticWithURI {
+export function constructWarning(msg: MSG, fromNode: AstNode, toNode?: AstNode): DiagnosticWithURI {
     return constructDiagnostic(msg, DiagnosticSeverity.Warning, fromNode, toNode);
 }
 
-function constructDiagnostic(msg:MSG, severity: DiagnosticSeverity, fromNode: BasicNode, toNode?: BasicNode): DiagnosticWithURI {
+function constructDiagnostic(msg:MSG, severity: DiagnosticSeverity, fromNode: AstNode, toNode?: AstNode): DiagnosticWithURI {
     return {
         uri: fromNode.location.uri,
         range: {

@@ -1,18 +1,19 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
-	createConnection, DefinitionParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
+	createConnection, DefinitionParams, HoverParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
+import { getHover } from './hovering/basic';
 import { ParsedFiles } from './parsedFiles';
 import { LabelsByName } from './parser/ast/labels';
 import { MacrosByName } from './parser/ast/macros';
-import { BasicNode } from './parser/ast/nodes';
+import { AstNode } from './parser/ast/nodes';
 import { getNodeByPosition } from './parser/ast/utils';
 import { Program } from './program';
 import { validateProgram } from './validators/general';
 import { DiagnosticWithURI } from './validators/util';
 
 type RelatedObject = {
-    definitions: BasicNode[],
-    usages: BasicNode[]
+    definitions: AstNode[],
+    usages: AstNode[]
 }
 
 export const connection = createConnection();
@@ -20,7 +21,7 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const parsedFiles = new ParsedFiles(documents);
 const openedDocuments = new Set<string>();
 let lastSendedDiagnostics = new Set<string>();
-let relatedObjects = new Map<BasicNode, RelatedObject>();
+let relatedObjects = new Map<AstNode, RelatedObject>();
 
 connection.onInitialize((_: InitializeParams) => {
 	return {
@@ -28,6 +29,7 @@ connection.onInitialize((_: InitializeParams) => {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
 			definitionProvider: true,
 			referencesProvider: true,
+			hoverProvider: true
 		}
 	};
 });
@@ -40,15 +42,19 @@ connection.onReferences((params: ReferenceParams) => {
 	return getRelatedObject(params)?.usages.map(it => it.location);
 });
 
-function getRelatedObject(params: TextDocumentPositionParams) {
+function getNodeByDocumentPosition(params: TextDocumentPositionParams) {
 	const programNode = parsedFiles.getFileAst(params.textDocument.uri);
 	if (programNode === undefined) return;
-	const nodeByPosition = getNodeByPosition(programNode, {
+	return getNodeByPosition(programNode, {
 		...params.position,
 		uri: params.textDocument.uri
 	});
+}
+
+function getRelatedObject(params: TextDocumentPositionParams) {
+	const nodeByPosition = getNodeByDocumentPosition(params);
 	if (nodeByPosition)
-		return relatedObjects.get(nodeByPosition);
+		return relatedObjects.get(nodeByPosition[0]);
 }
 
 documents.onDidOpen(event => {
@@ -63,6 +69,12 @@ documents.onDidChangeContent(_ => {
 documents.onDidClose(change => {
 	openedDocuments.delete(change.document.uri);
 	rescanDocuments();
+});
+
+connection.onHover((params: HoverParams) => {
+	const nodes = getNodeByDocumentPosition(params);
+	if (nodes) return getHover(nodes);
+	return null;
 });
 
 function rescanDocuments() {

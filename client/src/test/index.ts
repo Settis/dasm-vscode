@@ -5,7 +5,6 @@
 import * as path from 'path';
 import * as Mocha from 'mocha';
 import * as glob from 'glob';
-import { flushCodeCoverage } from './vscodeHelper';
 
 export function run(): Promise<void> {
 	// Create the mocha test
@@ -38,8 +37,6 @@ export function run(): Promise<void> {
 			} catch (error) {
 				console.error(error);
 				reject(error);
-			} finally {
-				await flushCodeCoverage();
 			}
 		});
 	});

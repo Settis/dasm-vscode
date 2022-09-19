@@ -204,11 +204,11 @@ export class Program {
             this.errors.push(constructError(MSG.STRING_LITERAL_EXPECTED, argValue));
             return;
         }
-        if ((argValue as StringLiteralNode).text.length === 0) {
+        if (argValue.text.length === 0) {
             this.errors.push(constructError(MSG.EMPTY_STRING, arg0));
             return;
         }
-        return argValue as StringLiteralNode;
+        return argValue ;
     }
 
     private handleListCommand(commandNode: CommandNode) {
