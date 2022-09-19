@@ -111,7 +111,7 @@ class UseCaseLine {
 }
 
 export function constructUseCase(fileName: string) {
-    const name = fileName.substr(0, fileName.length - 5);
+    const name = fileName.substring(0, fileName.length - 5);
     const caseFileContent = fs.readFileSync(path.resolve(useCasesFolder, fileName), 'utf8');
     const description = yaml.load(caseFileContent) as UseCaseDescription;
     return new UseCase(name, description);
@@ -134,7 +134,7 @@ type UseCaseDescription = {
     actions: { [actions: string]: UseCaseAction }
 }
 
-type UseCaseAction = ErrorAction | GetDefinitionAction | DefinitionResultAction | GetUsagesAction | UsagesResultAction
+type UseCaseAction = ErrorAction | GetDefinitionAction | DefinitionResultAction | GetUsagesAction | UsagesResultAction | HoveringAction
 
 export type ErrorAction = {
     type: 'Error',
@@ -158,4 +158,10 @@ export type GetUsagesAction = {
 
 type UsagesResultAction = {
     type: 'UsagesResult'
+}
+
+export type HoveringAction = {
+    type: 'Hovering',
+    text: string,
+    not?: boolean
 }

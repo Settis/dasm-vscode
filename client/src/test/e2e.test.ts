@@ -1,8 +1,8 @@
-import { ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
+import { ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, HoveringAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
 import { constructRange, getDocUri, getErrors, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
-import { Range, DiagnosticSeverity, commands, Location } from "vscode";
+import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString } from "vscode";
 
 const useCases = readUseCases();
 
@@ -25,6 +25,9 @@ suite('Description is valid for:', () => {
                     case "DefinitionResult":
                     case "UsagesResult":
                         // Nothing to check here
+                        break;
+                    case 'Hovering':
+                        assert.ok('text' in action, `Action ${annotation.name} has no text`);
                         break;
                     default:
                         assert.fail(`Unknown action ${JSON.stringify(action)}`);
@@ -90,6 +93,25 @@ for (const useCase of useCases) {
                 const expectedReferences = annotations.filter(it => it.name === getRefResult);
 
                 checkDefRef(useCase, expectedReferences, actualReferences, 'reference');
+            }
+        });
+
+        test("check hovering", async () => {
+            for (const getHoveringAnnotation of annotations.filter(it => it.action.type === 'Hovering')) {
+                const text = (getHoveringAnnotation.action as HoveringAction).text;
+                const notMatch = (getHoveringAnnotation.action as HoveringAction).not || false;
+                const hover = await commands.executeCommand<Hover[]>('vscode.executeHoverProvider', mainUri, {
+                    line: getHoveringAnnotation.range.line,
+                    character: getHoveringAnnotation.range.startChar,
+                });
+                if (hover.length == 0) {
+                    if (notMatch) return;
+                    assert.fail(`Hovering is expected here, but there is no any.\n ${printLineWithRange(useCase, getRange(getHoveringAnnotation))}`);
+                }
+                const message = (hover[0].contents[0] as MarkdownString).value;
+                const matched = message.includes(text);
+                if (matched == notMatch)
+                    assert.fail(`Hovering has something not expected.\n ${printLineWithRange(useCase, getRange(getHoveringAnnotation))}\n Expected: ${text}, but was: ${message}`);
             }
         });
 

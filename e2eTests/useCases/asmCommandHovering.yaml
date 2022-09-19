@@ -1,0 +1,11 @@
+text: |2
+  LD{|noHover}A:
+    L{|hover}DA L{|noHover}DA
+actions:
+  hover:
+    type: Hovering
+    text: LoaD Accumulator
+  noHover:
+    type: Hovering
+    text: LoaD Accumulator
+    not: True
