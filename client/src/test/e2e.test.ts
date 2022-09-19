@@ -1,10 +1,16 @@
 import { ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, HoveringAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
-import { constructRange, getDocUri, getErrors, openUseCaseFile } from './vscodeHelper';
+import { constructRange, flushCodeCoverage, getDocUri, getErrors, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
 import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString } from "vscode";
 
 const useCases = readUseCases();
+
+export const mochaHooks = {
+    async afterAll() {
+      await flushCodeCoverage();
+    }
+};
 
 suite('Description is valid for:', () => {
     for (const useCase of useCases) {
@@ -105,7 +111,7 @@ for (const useCase of useCases) {
                     character: getHoveringAnnotation.range.startChar,
                 });
                 if (hover.length == 0) {
-                    if (notMatch) return;
+                    if (notMatch) continue;
                     assert.fail(`Hovering is expected here, but there is no any.\n ${printLineWithRange(useCase, getRange(getHoveringAnnotation))}`);
                 }
                 const message = (hover[0].contents[0] as MarkdownString).value;
