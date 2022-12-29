@@ -52,16 +52,16 @@ export const TripleDots = createToken({ name: 'tripleDots', pattern: /\.\.\./ })
 export const DoubleDots = createToken({ name: 'doubleDots', pattern: /\.\./ });
 export const Dot = createToken({ name: 'dot', pattern: /\./ });
 
-export const IfConstKeyword = createToken({ name: 'ifConstKeyword', pattern: /ifconst/i });
-export const IfNConstKeyword = createToken({ name: 'ifNConstKeyword', pattern: /ifnconst/i });
-export const IfKeyword = createToken({ name: 'ifKeyword', pattern: /if/i });
-export const ElseKeyword = createToken({ name: 'elseKeyword', pattern: /else/i });
-export const EndIfKeyword = createToken({ name: 'endIfKeyword', pattern: /e(nd)?if/i });
-export const RepeatKeyword = createToken({ name: 'repeatKeyword', pattern: /repeat/i });
-export const RependKeyword = createToken({ name: 'rependKeyword', pattern: /repend/i });
-export const MacroKeyword = createToken({ name: 'macroKeyword', pattern: /mac(ro)?/i, push_mode: MACROS_MODE });
-export const RestrictedMacroKeyword = createToken({ name: 'restrictedMacroKeyword', pattern: /mac(ro)?/i });
-export const EndMacroKeyword = createToken({ name: 'endMacroKeyword', pattern: /endm/i, pop_mode: true });
+export const IfConstKeyword = createToken({ name: 'ifConstKeyword', pattern: /ifconst\b/i });
+export const IfNConstKeyword = createToken({ name: 'ifNConstKeyword', pattern: /ifnconst\b/i });
+export const IfKeyword = createToken({ name: 'ifKeyword', pattern: /if\b/i });
+export const ElseKeyword = createToken({ name: 'elseKeyword', pattern: /else\b/i });
+export const EndIfKeyword = createToken({ name: 'endIfKeyword', pattern: /e(nd)?if\b/i });
+export const RepeatKeyword = createToken({ name: 'repeatKeyword', pattern: /repeat\b/i });
+export const RependKeyword = createToken({ name: 'rependKeyword', pattern: /repend\b/i });
+export const MacroKeyword = createToken({ name: 'macroKeyword', pattern: /mac(ro)?\b/i, push_mode: MACROS_MODE });
+export const RestrictedMacroKeyword = createToken({ name: 'restrictedMacroKeyword', pattern: /mac(ro)?\b/i });
+export const EndMacroKeyword = createToken({ name: 'endMacroKeyword', pattern: /endm\b/i, pop_mode: true });
 
 export const HexLine = createToken({ name: 'hexLine', pattern: /hex [^\n\r]*/i, group: Lexer.SKIPPED });
 

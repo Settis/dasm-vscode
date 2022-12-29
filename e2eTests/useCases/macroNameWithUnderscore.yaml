@@ -1,0 +1,9 @@
+text: |2
+    processor 6502
+    org $200
+
+    MAC IF_EQ
+    
+    ENDM
+
+    IF_EQ

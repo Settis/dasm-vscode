@@ -779,6 +779,23 @@ describe('Correct AST for multiline directives', () => {
     });
 });
 
+describe('Other cases', () => {
+    it('IF_EQ macro name', () => {
+        checkAST('  IF_EQ', {
+            type: NodeType.Line,
+            label: null,
+            command: {
+                type: NodeType.Command,
+                name: {
+                    name: 'IF_EQ',
+                    type: NodeType.Identifier
+                },
+                args: []
+            }
+        });
+    });
+});
+
 function checkAST(text: string, ...lines: TestLineNode[]) {
     const actualResult = parseText('', text);
     assert.ok(actualResult.errors.length == 0, "Unexpected errors");

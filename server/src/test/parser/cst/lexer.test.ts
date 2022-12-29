@@ -74,6 +74,9 @@ describe('CST lexer tests', () => {
     it('recognize multiline comment', () => {
         checkTokens('/* some \n second line \n */', []);
     });
+    it('recognize macros with underscore', () => {
+        checkTokens('  IF_EQ ', ['  ', 'IF_EQ', ' ']);
+    });
 });
 
 function checkTokens(text: string, expectedTokens: string[]) {
