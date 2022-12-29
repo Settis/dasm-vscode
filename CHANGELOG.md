@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Added
 - hovering on asm mnemonics
+- completion for asm mnemonics
 
 ## [1.0.0] - 2022-09-09
 ### Added
