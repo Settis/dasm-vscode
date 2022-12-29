@@ -1,8 +1,8 @@
-import { ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, HoveringAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
+import { CompletionAction, ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, HoveringAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
 import { constructRange, flushCodeCoverage, getDocUri, getErrors, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
-import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString } from "vscode";
+import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionItem, CompletionList } from "vscode";
 
 const useCases = readUseCases();
 
@@ -33,6 +33,9 @@ suite('Description is valid for:', () => {
                         // Nothing to check here
                         break;
                     case 'Hovering':
+                        assert.ok('text' in action, `Action ${annotation.name} has no text`);
+                        break;
+                    case 'Completion':
                         assert.ok('text' in action, `Action ${annotation.name} has no text`);
                         break;
                     default:
@@ -120,6 +123,25 @@ for (const useCase of useCases) {
                     assert.fail(`Hovering has something not expected.\n ${printLineWithRange(useCase, getRange(getHoveringAnnotation))}\n Expected: ${text}, but was: ${message}`);
             }
         });
+
+        test("check completion",async () => {
+            for (const getCompletionAnnotation of annotations.filter(it => it.action.type === 'Completion')) {
+                const text = (getCompletionAnnotation.action as CompletionAction).text;
+                const notMatch = (getCompletionAnnotation.action as CompletionAction).not || false;
+                const completionList = await commands.executeCommand<CompletionList>('vscode.executeCompletionItemProvider', mainUri, {
+                    line: getCompletionAnnotation.range.line,
+                    character: getCompletionAnnotation.range.startChar,
+                });
+                const completions = completionList.items
+                if (completions.length == 0) {
+                    if (notMatch) continue;
+                    assert.fail(`Item ${text} is expected here, but there is no any.\n ${printLineWithRange(useCase, getRange(getCompletionAnnotation))}`);
+                }
+                const matched = completions.filter(item => item.label === text).length > 0;
+                if (matched == notMatch)
+                    assert.fail(`Completion has something not expected.\n ${printLineWithRange(useCase, getRange(getCompletionAnnotation))}\n Expected: ${text}, but was: ${completions.map(it => it.label)}`);
+            }
+        })
 
         // all vscode commands here https://code.visualstudio.com/api/references/commands
     });

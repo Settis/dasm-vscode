@@ -1,0 +1,13 @@
+text: |2
+  FOO:
+    {|inst}
+    A{|inst}ND #$44
+    {|noFoo}
+actions:
+  inst:
+    type: Completion
+    text: ADC
+  noFoo:
+    type: Completion
+    text: FOO
+    not: True

@@ -1,6 +1,7 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
 	createConnection, DefinitionParams, HoverParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
+import { onCompletionImpl, onCompletionResolveImpl } from './completion/basic';
 import { getHover } from './hovering/basic';
 import { ParsedFiles } from './parsedFiles';
 import { LabelsByName } from './parser/ast/labels';
@@ -17,8 +18,8 @@ type RelatedObject = {
 }
 
 export const connection = createConnection();
-const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
-const parsedFiles = new ParsedFiles(documents);
+export const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
+export const parsedFiles = new ParsedFiles(documents);
 const openedDocuments = new Set<string>();
 let lastSendedDiagnostics = new Set<string>();
 let relatedObjects = new Map<AstNode, RelatedObject>();
@@ -29,7 +30,8 @@ connection.onInitialize((_: InitializeParams) => {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
 			definitionProvider: true,
 			referencesProvider: true,
-			hoverProvider: true
+			hoverProvider: true,
+			completionProvider: { resolveProvider: true }
 		}
 	};
 });
@@ -76,6 +78,9 @@ connection.onHover((params: HoverParams) => {
 	if (nodes) return getHover(nodes);
 	return null;
 });
+
+connection.onCompletion(onCompletionImpl);
+connection.onCompletionResolve(onCompletionResolveImpl);
 
 function rescanDocuments() {
 	parsedFiles.clean();
