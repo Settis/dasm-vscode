@@ -8,7 +8,7 @@
   },
   "hooks": {
     "before:init": [
-      "npx vsce ls-publishers | grep settis",
+      "npx vsce ls-publishers | grep Settis",
       "npm run clean", 
       "npm run lint",
       "npm run compile",
