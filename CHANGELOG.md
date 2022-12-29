@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.0] - 2022-12-29
 ### Added
 - hovering on asm mnemonics
 - completion for asm mnemonics
