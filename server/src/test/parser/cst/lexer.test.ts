@@ -76,7 +76,7 @@ describe('CST lexer tests', () => {
     });
     it('recognize macros with underscore', () => {
         checkTokens('  IF_EQ ', ['  ', 'IF_EQ', ' ']);
-    })
+    });
 });
 
 function checkTokens(text: string, expectedTokens: string[]) {
