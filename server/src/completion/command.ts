@@ -7,5 +7,5 @@ export function onCommandCompletion(): CompletionItem[] {
             label: key,
             kind: CompletionItemKind.Keyword,
             documentation: value.title
-        }});
+        };});
 }

@@ -132,7 +132,7 @@ for (const useCase of useCases) {
                     line: getCompletionAnnotation.range.line,
                     character: getCompletionAnnotation.range.startChar,
                 });
-                const completions = completionList.items
+                const completions = completionList.items;
                 if (completions.length == 0) {
                     if (notMatch) continue;
                     assert.fail(`Item ${text} is expected here, but there is no any.\n ${printLineWithRange(useCase, getRange(getCompletionAnnotation))}`);
@@ -141,7 +141,7 @@ for (const useCase of useCases) {
                 if (matched == notMatch)
                     assert.fail(`Completion has something not expected.\n ${printLineWithRange(useCase, getRange(getCompletionAnnotation))}\n Expected: ${text}, but was: ${completions.map(it => it.label)}`);
             }
-        })
+        });
 
         // all vscode commands here https://code.visualstudio.com/api/references/commands
     });
