@@ -134,7 +134,8 @@ type UseCaseDescription = {
     actions: { [actions: string]: UseCaseAction }
 }
 
-type UseCaseAction = ErrorAction | GetDefinitionAction | DefinitionResultAction | GetUsagesAction | UsagesResultAction | HoveringAction
+type UseCaseAction = ErrorAction | GetDefinitionAction | DefinitionResultAction | GetUsagesAction | UsagesResultAction 
+    | HoveringAction | CompletionAction
 
 export type ErrorAction = {
     type: 'Error',
@@ -162,6 +163,12 @@ type UsagesResultAction = {
 
 export type HoveringAction = {
     type: 'Hovering',
+    text: string,
+    not?: boolean
+}
+
+export type CompletionAction = {
+    type: 'Completion',
     text: string,
     not?: boolean
 }

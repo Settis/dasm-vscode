@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 const waitTime = 100;
-const waitAttempts = 20;
+const waitAttempts = 100;
 
 export function getDocUri(file: string) {
     return vscode.Uri.file(file);
