@@ -302,7 +302,7 @@ function getBinaryOperatorType(node: cst.BinarySignCstNode): ast.BinaryOperatorT
         case childern.logicalAndSign: return ast.BinaryOperatorType.LogicalAnd;
         case childern.logicalOrSign: return ast.BinaryOperatorType.LogicalOr;
         default: return ast.BinaryOperatorType.InlineIf;
-    };
+    }
 }
 
 function getUnaryOperatorType(node: cst.UnaryOperatorCstNode): ast.UnaryOperatorType {
