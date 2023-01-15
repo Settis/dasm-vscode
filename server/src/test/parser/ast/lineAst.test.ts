@@ -1,5 +1,5 @@
 import { AddressMode, NodeType } from "../../../parser/ast/nodes";
-import { checkAST, TestArgumentNode, TestCommandNode, TestExpressionNode, TestLabelNode, TestLineNode } from "./utils";
+import { checkAST, TestArgumentNode, TestCommandNode, TestLabelNode, TestLineNode } from "./utils";
 
 describe('Correct AST for line', () => {
     it('emty text', () => {
