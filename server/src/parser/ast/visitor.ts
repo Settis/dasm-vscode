@@ -44,7 +44,7 @@ export class Visitor {
 
     private convertDynamicLabel(dynamicLabel: cst.DynamicLabelCstNode | cst.DynamicLabelDefinitionCstNode): ast.IdentifierNode | ast.DynamicLabelNode {
         const childern = dynamicLabel.children;
-        const identifiers = childern.identifier!.map(it => this.convertIdentifier(it));
+        const identifiers = childern.identifier.map(it => this.convertIdentifier(it));
         if (identifiers.length == 1)
             return identifiers[0];
         return new ast.DynamicLabelNode(

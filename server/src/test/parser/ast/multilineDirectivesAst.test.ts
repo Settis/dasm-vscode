@@ -1,5 +1,5 @@
 import { NodeType, IfDirectiveType, AddressMode } from "../../../parser/ast/nodes";
-import { checkAST } from "./utils";
+import { checkAST, TestLineNode } from "./utils";
 
 describe('Correct AST for multiline directives', () => {
     it('simple if', () => {
@@ -7,39 +7,7 @@ describe('Correct AST for multiline directives', () => {
 `   IF ARG
       ADC $1
     ENDIF`,
-            {
-                type: NodeType.Line,
-                label: null,
-                command: {
-                    type: NodeType.IfDirective,
-                    ifType: IfDirectiveType.If,
-                    condition: {
-                        type: NodeType.Identifier,
-                        name: 'ARG'
-                    },
-                    thenBody: [{
-                        type: NodeType.Line,
-                        label: null,
-                        command: {
-                            type: NodeType.Command,
-                            name: {
-                                type: NodeType.Identifier,
-                                name: 'ADC'
-                            },
-                            args: [{
-                                type: NodeType.Argument,
-                                addressMode: AddressMode.None,
-                                value: {
-                                    type: NodeType.Number,
-                                    value: 1
-                                }
-                            }]
-                        }
-                    }],
-                    elseBody: []
-                }
-            }
-        );
+            createIfDirectiveAst(false));
     });
     it('if else', () => {
         checkAST(
@@ -48,50 +16,7 @@ describe('Correct AST for multiline directives', () => {
     ELSE
       CLI
     ENDIF`,
-            {
-                type: NodeType.Line,
-                label: null,
-                command: {
-                    type: NodeType.IfDirective,
-                    ifType: IfDirectiveType.If,
-                    condition: {
-                        type: NodeType.Identifier,
-                        name: 'ARG'
-                    },
-                    thenBody: [{
-                        type: NodeType.Line,
-                        label: null,
-                        command: {
-                            type: NodeType.Command,
-                            name: {
-                                type: NodeType.Identifier,
-                                name: 'ADC'
-                            },
-                            args: [{
-                                type: NodeType.Argument,
-                                addressMode: AddressMode.None,
-                                value: {
-                                    type: NodeType.Number,
-                                    value: 1
-                                }
-                            }]
-                        }
-                    }],
-                    elseBody: [{
-                        type: NodeType.Line,
-                        label: null,
-                        command: {
-                            type: NodeType.Command,
-                            name: {
-                                type: NodeType.Identifier,
-                                name: 'CLI'
-                            },
-                            args: []
-                        }
-                    }]
-                }
-            }
-        );
+            createIfDirectiveAst(true));
     });
     it('repeat', () => {
         checkAST(
@@ -150,3 +75,52 @@ describe('Correct AST for multiline directives', () => {
         );
     });
 });
+
+function createIfDirectiveAst(withElse: boolean): TestLineNode {
+    let elseBody: TestLineNode[] = [];
+    if (withElse) 
+        elseBody = [{
+            type: NodeType.Line,
+            label: null,
+            command: {
+                type: NodeType.Command,
+                name: {
+                    type: NodeType.Identifier,
+                    name: 'CLI'
+                },
+                args: []
+            }
+        }];
+    return {
+        type: NodeType.Line,
+        label: null,
+        command: {
+            type: NodeType.IfDirective,
+            ifType: IfDirectiveType.If,
+            condition: {
+                type: NodeType.Identifier,
+                name: 'ARG'
+            },
+            thenBody: [{
+                type: NodeType.Line,
+                label: null,
+                command: {
+                    type: NodeType.Command,
+                    name: {
+                        type: NodeType.Identifier,
+                        name: 'ADC'
+                    },
+                    args: [{
+                        type: NodeType.Argument,
+                        addressMode: AddressMode.None,
+                        value: {
+                            type: NodeType.Number,
+                            value: 1
+                        }
+                    }]
+                }
+            }],
+            elseBody: elseBody
+        }
+    };
+}
