@@ -52,6 +52,7 @@ export class Program {
     }
 
     private defineLabel(labelNode: LabelNode, asVariable: boolean) {
+        if (labelNode.name.type == NodeType.DynamicLabel) return; // ignore it
         const name = labelNode.name.name;
         if (ALIASES.has(name)) return;
         const lablelObject = this.getLabelObjectByName(name);

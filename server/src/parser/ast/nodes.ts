@@ -7,7 +7,7 @@ interface BasicNode {
     getChildren(): AstNode[]
 }
 
-export type AstNode = AllComandNode | ExpressionNode | FileNode | LineNode | LabelNode | ArgumentNode;
+export type AstNode = AllComandNode | ExpressionNode | FileNode | LineNode | LabelNode | ArgumentNode | DynamicLabelNode;
 
 export class FileNode implements BasicNode {
     readonly type = NodeType.File;
@@ -38,10 +38,21 @@ export class LabelNode implements BasicNode {
     readonly type = NodeType.Label;
     constructor(
         readonly location: Location,
-        readonly name: IdentifierNode
+        readonly name: IdentifierNode | DynamicLabelNode
     ) {}
     public getChildren(): AstNode[] {
         return [this.name];
+    }
+}
+
+export class DynamicLabelNode implements BasicNode {
+    readonly type = NodeType.DynamicLabel;
+    constructor(
+        readonly location: Location,
+        readonly identifiers: IdentifierNode[]
+    ) {}
+    public getChildren(): AstNode[] {
+        return this.identifiers;
     }
 }
 
@@ -159,7 +170,7 @@ export class NumberNode implements BasicNode {
 }
 
 export type ExpressionNode = UnaryOperatorNode | BinaryOperatorNode | BracketsNode |
-    StringLiteralNode | IdentifierNode | NumberNode | MacroArgumentNode | CharLiteralNode;
+    StringLiteralNode | IdentifierNode | NumberNode | MacroArgumentNode | CharLiteralNode | DynamicLabelNode;
 
 export class UnaryOperatorNode implements BasicNode {
     readonly type = NodeType.UnaryOperator;
@@ -225,6 +236,7 @@ export enum NodeType {
     RepeatDirective = 'RepeatDirective',
     MacroDirective = 'MacroDirective',
     MacroArgument = 'MacroArgument',
+    DynamicLabel = 'DynamicLabel',
 }
 
 export enum AddressMode {

@@ -49,11 +49,20 @@ class DasmParser extends CstParser {
     })
 
     private label = this.RULE('label', () => {
-        this.OR([
-            {ALT: () => this.CONSUME(lexer.Identifier)},
-            {ALT: () => this.CONSUME(lexer.Dot)}
-        ]);
+        this.SUBRULE(this.dynamicLabelDefinition);
         this.OPTION(() => this.CONSUME(lexer.Colon));
+    })
+
+    private dynamicLabelDefinition = this.RULE('dynamicLabelDefinition', () => {
+        this.AT_LEAST_ONE_SEP({
+            SEP: lexer.Comma,
+            DEF: () => { 
+                this.OR([
+                    {ALT: () => this.CONSUME(lexer.Identifier)},
+                    {ALT: () => this.CONSUME(lexer.Dot)}
+                ]);
+            }
+        });
     })
 
     private command = this.RULE('command', () => {
@@ -256,14 +265,25 @@ class DasmParser extends CstParser {
             {ALT: () => this.SUBRULE(this.unaryOperator)},
             {ALT: () => this.CONSUME(lexer.StringLiteral)},
             {ALT: () => this.SUBRULE(this.number)},
-            {ALT: () => this.CONSUME(lexer.Identifier)},
-            {ALT: () => this.CONSUME(lexer.Dot)},
+            {ALT: () => this.SUBRULE(this.dynamicLabel)},
             {ALT: () => this.CONSUME(lexer.DoubleDots)},
             {ALT: () => this.CONSUME(lexer.TripleDots)},
             {ALT: () => this.CONSUME(lexer.MultiplicationSign)},
             {ALT: () => this.SUBRULE(this.macroArgument)},
             {ALT: () => this.CONSUME(lexer.CharLiteral)},
         ]);
+    })
+
+    private dynamicLabel = this.RULE('dynamicLabel', () => {
+        this.AT_LEAST_ONE_SEP({
+            SEP: lexer.DynamicLabelSeparator,
+            DEF: () => { 
+                this.OR([
+                    {ALT: () => this.CONSUME(lexer.Identifier)},
+                    {ALT: () => this.CONSUME(lexer.Dot)}
+                ]);
+            }
+        });
     })
 
     private roundBrackets = this.RULE('roundBrackets', () => {

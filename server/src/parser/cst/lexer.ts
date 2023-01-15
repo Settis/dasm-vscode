@@ -36,6 +36,7 @@ export const OpenSquareBracket = createToken({ name: 'openSquareBracket', patter
 export const CloseSquareBracket = createToken({ name: 'closeSquareBracket', pattern: /\]/ });
 export const OpenCurlyBracket = createToken({ name: 'openCurlyBracket', pattern: /{/ });
 export const CloseCurlyBracket = createToken({ name: 'closeCurlyBracket', pattern: /}/ });
+export const DynamicLabelSeparator = createToken({ name: 'dynamicLabelSeparator', pattern: /<\/>/});
 
 export const BinaryNumber = createToken({ name: 'binaryNumber', pattern: /%[01]+/ });
 export const OctalNumber = createToken({ name: 'octalNumber', pattern: /0[0-7]+/ });
@@ -98,6 +99,7 @@ export const LEXER_DEFINITION = {
         [DEFAULT_MODE]: [
             MultilineComment,
 
+            DynamicLabelSeparator,
             Space,
             Colon,
             Sharp,

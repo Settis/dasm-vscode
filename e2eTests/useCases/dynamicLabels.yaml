@@ -1,0 +1,20 @@
+text: |2
+      processor 6502
+    org $200
+
+  FOO SET 1
+
+    MACRO SOME_JMP
+    JMP SOME_</>FOO
+    ENDM
+
+    MACRO SOME_LABEL
+  SOME_,FOO
+    ENDM
+
+    SOME_JMP
+    SOME_LABEL
+
+  BAR SET 5
+    JMP ANOTHER_</>BAR
+  ANOTHER_,BAR
