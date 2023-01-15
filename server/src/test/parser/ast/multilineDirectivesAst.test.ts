@@ -90,7 +90,7 @@ function createIfDirectiveAst(withElse: boolean): TestLineNode {
                 },
                 args: []
             }
-        }]
+        }];
     return {
         type: NodeType.Line,
         label: null,
@@ -122,5 +122,5 @@ function createIfDirectiveAst(withElse: boolean): TestLineNode {
             }],
             elseBody: elseBody
         }
-    }
+    };
 }

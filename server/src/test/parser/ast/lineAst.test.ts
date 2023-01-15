@@ -222,7 +222,7 @@ function aLine(labelName?:string, commandName?: string, ...args: TestArgumentNod
                 type: NodeType.Identifier,
                 name: labelName
             }
-        }
+        };
     let commandNode: TestCommandNode | null = null;
     if (commandName)
         commandNode = {
@@ -232,7 +232,7 @@ function aLine(labelName?:string, commandName?: string, ...args: TestArgumentNod
                 name: commandName
             },
             args: args
-        }
+        };
     return {
         type: NodeType.Line,
         label: labelNode,
@@ -248,5 +248,5 @@ function anArg(name: string, addressMode?: AddressMode): TestArgumentNode {
             type: NodeType.Identifier,
             name: name
         }
-    }
+    };
 }
