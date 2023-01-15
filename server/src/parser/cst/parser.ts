@@ -60,7 +60,7 @@ class DasmParser extends CstParser {
         this.AT_LEAST_ONE_SEP({
             SEP: lexer.Comma,
             DEF: () => { 
-                this.CONSUME(lexer.Identifier)
+                this.CONSUME(lexer.Identifier);
             }
         });
     })
@@ -129,7 +129,7 @@ class DasmParser extends CstParser {
                 this.SUBRULE(this.argument);
                 this.OPTION2(() => this.CONSUME2(lexer.Space));
             }
-        })
+        });
         this.OPTION3(() => this.CONSUME3(lexer.Space));
     })
 
@@ -264,7 +264,7 @@ class DasmParser extends CstParser {
         this.AT_LEAST_ONE_SEP({
             SEP: lexer.DynamicLabelSeparator,
             DEF: () => { 
-                this.CONSUME(lexer.Identifier)
+                this.CONSUME(lexer.Identifier);
             }
         });
     })
