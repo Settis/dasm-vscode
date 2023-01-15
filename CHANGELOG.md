@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- dynamic labels parsing
+
 ## [1.1.1] - 2022-12-30
 ### Fixed
 - macros name can have a directive prefix

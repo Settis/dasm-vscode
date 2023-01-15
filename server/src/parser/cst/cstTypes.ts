@@ -27,9 +27,19 @@ export interface LabelCstNode extends CstNode {
 }
 
 export type LabelCstChildren = {
+  dynamicLabelDefinition: DynamicLabelDefinitionCstNode[];
+  colon?: IToken[];
+};
+
+export interface DynamicLabelDefinitionCstNode extends CstNode {
+  name: "dynamicLabelDefinition";
+  children: DynamicLabelDefinitionCstChildren;
+}
+
+export type DynamicLabelDefinitionCstChildren = {
   identifier?: IToken[];
   dot?: IToken[];
-  colon?: IToken[];
+  comma?: IToken[];
 };
 
 export interface CommandCstNode extends CstNode {
@@ -249,13 +259,23 @@ export type UnaryExpressionCstChildren = {
   unaryOperator?: UnaryOperatorCstNode[];
   stringLiteral?: IToken[];
   number?: NumberCstNode[];
-  identifier?: IToken[];
-  dot?: IToken[];
+  dynamicLabel?: DynamicLabelCstNode[];
   doubleDots?: IToken[];
   tripleDots?: IToken[];
   multiplicationSign?: IToken[];
   macroArgument?: MacroArgumentCstNode[];
   charLiteral?: IToken[];
+};
+
+export interface DynamicLabelCstNode extends CstNode {
+  name: "dynamicLabel";
+  children: DynamicLabelCstChildren;
+}
+
+export type DynamicLabelCstChildren = {
+  identifier?: IToken[];
+  dot?: IToken[];
+  dynamicLabelSeparator?: IToken[];
 };
 
 export interface RoundBracketsCstNode extends CstNode {
@@ -338,6 +358,7 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   text(children: TextCstChildren, param?: IN): OUT;
   line(children: LineCstChildren, param?: IN): OUT;
   label(children: LabelCstChildren, param?: IN): OUT;
+  dynamicLabelDefinition(children: DynamicLabelDefinitionCstChildren, param?: IN): OUT;
   command(children: CommandCstChildren, param?: IN): OUT;
   ifCommand(children: IfCommandCstChildren, param?: IN): OUT;
   repeatCommand(children: RepeatCommandCstChildren, param?: IN): OUT;
@@ -354,6 +375,7 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   expression(children: ExpressionCstChildren, param?: IN): OUT;
   binarySign(children: BinarySignCstChildren, param?: IN): OUT;
   unaryExpression(children: UnaryExpressionCstChildren, param?: IN): OUT;
+  dynamicLabel(children: DynamicLabelCstChildren, param?: IN): OUT;
   roundBrackets(children: RoundBracketsCstChildren, param?: IN): OUT;
   squareBrackets(children: SquareBracketsCstChildren, param?: IN): OUT;
   unaryOperator(children: UnaryOperatorCstChildren, param?: IN): OUT;
