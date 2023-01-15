@@ -27,7 +27,8 @@ export interface LabelCstNode extends CstNode {
 }
 
 export type LabelCstChildren = {
-  dynamicLabelDefinition: DynamicLabelDefinitionCstNode[];
+  dot?: IToken[];
+  dynamicLabelDefinition?: DynamicLabelDefinitionCstNode[];
   colon?: IToken[];
 };
 
@@ -37,8 +38,7 @@ export interface DynamicLabelDefinitionCstNode extends CstNode {
 }
 
 export type DynamicLabelDefinitionCstChildren = {
-  identifier?: IToken[];
-  dot?: IToken[];
+  identifier: IToken[];
   comma?: IToken[];
 };
 
@@ -124,7 +124,7 @@ export interface GeneralCommandCstNode extends CstNode {
 export type GeneralCommandCstChildren = {
   commandName: CommandNameCstNode[];
   space?: (IToken)[];
-  argument?: (ArgumentCstNode)[];
+  argument?: ArgumentCstNode[];
   comma?: IToken[];
 };
 
@@ -260,6 +260,7 @@ export type UnaryExpressionCstChildren = {
   stringLiteral?: IToken[];
   number?: NumberCstNode[];
   dynamicLabel?: DynamicLabelCstNode[];
+  dot?: IToken[];
   doubleDots?: IToken[];
   tripleDots?: IToken[];
   multiplicationSign?: IToken[];
@@ -273,8 +274,7 @@ export interface DynamicLabelCstNode extends CstNode {
 }
 
 export type DynamicLabelCstChildren = {
-  identifier?: IToken[];
-  dot?: IToken[];
+  identifier: IToken[];
   dynamicLabelSeparator?: IToken[];
 };
 

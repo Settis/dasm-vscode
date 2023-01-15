@@ -47,7 +47,8 @@ text: |2
     ds.l 0    ; define no space at all
   
   eqmlabel = 0
-    DV.B  eqmlabel 10,20
+  ;  DV.B  eqmlabel 10,20
+  ; Not sure here ^^^
   
     HEX 1A45 45 13254F 3E12
   

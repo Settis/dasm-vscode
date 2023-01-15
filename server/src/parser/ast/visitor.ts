@@ -31,15 +31,19 @@ export class Visitor {
     private convertLabel(label?: cst.LabelCstNode[]): ast.LabelNode | null {
         if (!label) return null;
         const childern = label[0].children;
+        let labelNameNode;
+        if (childern.dot) 
+            labelNameNode = this.convertIdentifier(childern.dot[0]);
+        else
+            labelNameNode = this.convertDynamicLabel(childern.dynamicLabelDefinition![0]);
         return new ast.LabelNode(
             this.createLocation(label[0]),
-            this.convertDynamicLabel(childern.dynamicLabelDefinition![0])
+            labelNameNode
         );
     }
 
     private convertDynamicLabel(dynamicLabel: cst.DynamicLabelCstNode | cst.DynamicLabelDefinitionCstNode): ast.IdentifierNode | ast.DynamicLabelNode {
         const childern = dynamicLabel.children;
-        if (childern.dot) return this.convertIdentifier(childern.dot[0]);
         const identifiers = childern.identifier!.map(it => this.convertIdentifier(it));
         if (identifiers.length == 1)
             return identifiers[0];
@@ -177,6 +181,7 @@ export class Visitor {
     private convertUnaryExpression(expression: cst.UnaryExpressionCstNode): ast.ExpressionNode {
         const childern = expression.children;
         if (childern.dynamicLabel) return this.convertDynamicLabel(childern.dynamicLabel[0]);
+        if (childern.dot) return this.convertIdentifier(childern.dot[0]);
         if (childern.doubleDots) return this.convertIdentifier(childern.doubleDots[0]);
         if (childern.tripleDots) return this.convertIdentifier(childern.tripleDots[0]);
         if (childern.multiplicationSign) return this.convertIdentifier(childern.multiplicationSign[0]);
