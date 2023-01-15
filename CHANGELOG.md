@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.1.2] - 2023-01-15
 
 ### Fixed
 - dynamic labels parsing
