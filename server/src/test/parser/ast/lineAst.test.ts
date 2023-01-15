@@ -53,8 +53,8 @@ describe('Correct AST for line', () => {
             command: null
         });
     });
-    it('        CMD ARG,X ARG2           ', () => {
-        checkAST('        CMD ARG,X ARG2           ', {
+    it('        CMD ARG,X,ARG2           ', () => {
+        checkAST('        CMD ARG,X,ARG2           ', {
             type: NodeType.Line,
             label: null,
             command: {
@@ -133,8 +133,8 @@ describe('Correct AST for line', () => {
             }
         });
     });
-    it('        CMD ARG   ARG2  ; Comment', () => {
-        checkAST('        CMD ARG   ARG2  ; Comment', {
+    it('        CMD ARG,  ARG2  ; Comment', () => {
+        checkAST('        CMD ARG,  ARG2  ; Comment', {
             type: NodeType.Line,
             label: null,
             command: {
@@ -164,8 +164,8 @@ describe('Correct AST for line', () => {
             }
         });
     });
-    it('LABEL   CMD ARG,X ARG2  ; Comment', () => {
-        checkAST('LABEL   CMD ARG,X ARG2  ; Comment', {
+    it('LABEL   CMD ARG,X,ARG2  ; Comment', () => {
+        checkAST('LABEL   CMD ARG,X,ARG2  ; Comment', {
             type: NodeType.Line,
             label: {
                 type: NodeType.Label,

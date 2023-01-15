@@ -49,7 +49,10 @@ class DasmParser extends CstParser {
     })
 
     private label = this.RULE('label', () => {
-        this.SUBRULE(this.dynamicLabelDefinition);
+        this.OR([
+            {ALT: () => this.CONSUME(lexer.Dot)},
+            {ALT: () => this.SUBRULE(this.dynamicLabelDefinition)}
+        ]);
         this.OPTION(() => this.CONSUME(lexer.Colon));
     })
 
@@ -57,10 +60,7 @@ class DasmParser extends CstParser {
         this.AT_LEAST_ONE_SEP({
             SEP: lexer.Comma,
             DEF: () => { 
-                this.OR([
-                    {ALT: () => this.CONSUME(lexer.Identifier)},
-                    {ALT: () => this.CONSUME(lexer.Dot)}
-                ]);
+                this.CONSUME(lexer.Identifier)
             }
         });
     })
@@ -122,31 +122,16 @@ class DasmParser extends CstParser {
 
     private generalCommand = this.RULE('generalCommand', () => {
         this.SUBRULE(this.commandName);
-        this.OPTION(() => {
-            this.CONSUME2(lexer.Space);
-            this.SUBRULE1(this.argument);
-            this.MANY({
-                GATE: () => this.isArgumentsAvailable(),
-                DEF: () => {
-                    this.OR([
-                        {ALT: () => this.CONSUME3(lexer.Space)},
-                        {ALT: () => {
-                            this.CONSUME(lexer.Comma);
-                            this.OPTION2(() => this.CONSUME4(lexer.Space));
-                        }}
-                    ]);
-                    this.SUBRULE2(this.argument);
-                }
-            });
-        });
-        this.OPTION3(() => this.CONSUME(lexer.Space));
+        this.MANY_SEP({
+            SEP: lexer.Comma,
+            DEF: () => {
+                this.OPTION1(() => this.CONSUME1(lexer.Space));
+                this.SUBRULE(this.argument);
+                this.OPTION2(() => this.CONSUME2(lexer.Space));
+            }
+        })
+        this.OPTION3(() => this.CONSUME3(lexer.Space));
     })
-
-    private isArgumentsAvailable() {
-        const tokenType = this.LA(2).tokenType;
-        return tokenType !== lexer.NewLineSeparator
-            && tokenType.name !== 'EOF';
-    }
 
     private commandName = this.RULE('commandName', () => {
         this.OR([
@@ -266,6 +251,7 @@ class DasmParser extends CstParser {
             {ALT: () => this.CONSUME(lexer.StringLiteral)},
             {ALT: () => this.SUBRULE(this.number)},
             {ALT: () => this.SUBRULE(this.dynamicLabel)},
+            {ALT: () => this.CONSUME(lexer.Dot)},
             {ALT: () => this.CONSUME(lexer.DoubleDots)},
             {ALT: () => this.CONSUME(lexer.TripleDots)},
             {ALT: () => this.CONSUME(lexer.MultiplicationSign)},
@@ -278,10 +264,7 @@ class DasmParser extends CstParser {
         this.AT_LEAST_ONE_SEP({
             SEP: lexer.DynamicLabelSeparator,
             DEF: () => { 
-                this.OR([
-                    {ALT: () => this.CONSUME(lexer.Identifier)},
-                    {ALT: () => this.CONSUME(lexer.Dot)}
-                ]);
+                this.CONSUME(lexer.Identifier)
             }
         });
     })
