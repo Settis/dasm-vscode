@@ -75,7 +75,7 @@ function validateCommandAddressMode(operation: OperationDescription, arg: Argume
     let mode = TYPE_TO_MODE[arg.addressMode] || OpMode.Address;
     if (arg.value.type === NodeType.Number) {
         if (mode in MODE_CONVERSOIN) {
-            if ((arg.value as NumberNode ).value > 0xFF)
+            if (arg.value.value > 0xFF)
                 mode = MODE_CONVERSOIN[mode]!.absolute;
             else
                 mode = MODE_CONVERSOIN[mode]!.zp;

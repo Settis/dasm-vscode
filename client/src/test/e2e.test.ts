@@ -2,7 +2,7 @@ import { CompletionAction, ErrorAction, fixturesFolder, GetDefinitionAction, Get
 import { constructRange, flushCodeCoverage, getDocUri, getErrors, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
-import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionItem, CompletionList } from "vscode";
+import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList } from "vscode";
 
 const useCases = readUseCases();
 

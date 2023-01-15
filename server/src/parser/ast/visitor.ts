@@ -282,25 +282,27 @@ function getAdressXYMode(node: cst.AddressXYArgumentCstChildren): ast.AddressMod
 
 function getBinaryOperatorType(node: cst.BinarySignCstNode): ast.BinaryOperatorType {
     const childern = node.children;
-    if (childern.multiplicationSign) return ast.BinaryOperatorType.Multiplication;
-    if (childern.divisionSign) return ast.BinaryOperatorType.Division;
-    if (childern.percentSign) return ast.BinaryOperatorType.Modulus;
-    if (childern.additionSign) return ast.BinaryOperatorType.Addition;
-    if (childern.minusSign) return ast.BinaryOperatorType.Subtraction;
-    if (childern.shiftRightSign) return ast.BinaryOperatorType.ArithmeticShiftRight;
-    if (childern.shiftLeftSign) return ast.BinaryOperatorType.ArithmeticShiftLeft;
-    if (childern.greatherSign) return ast.BinaryOperatorType.GreatherThan;
-    if (childern.greatherOrEqualSign) return ast.BinaryOperatorType.GreatherThanOrEqual;
-    if (childern.lessSign) return ast.BinaryOperatorType.LessThan;
-    if (childern.lessOrEqualSign) return ast.BinaryOperatorType.LessThanOrEqual;
-    if (childern.equalSigh) return ast.BinaryOperatorType.Equal;
-    if (childern.notEqualSign) return ast.BinaryOperatorType.NotEqual;
-    if (childern.arithmeticAndSign) return ast.BinaryOperatorType.ArithmeticAnd;
-    if (childern.xorSign) return ast.BinaryOperatorType.ArithmeticExclusiveOr;
-    if (childern.arithmeticOrSign) return ast.BinaryOperatorType.ArithmeticOr;
-    if (childern.logicalAndSign) return ast.BinaryOperatorType.LogicalAnd;
-    if (childern.logicalOrSign) return ast.BinaryOperatorType.LogicalOr;
-    return ast.BinaryOperatorType.InlineIf;
+    switch (childern) {
+        case childern.multiplicationSign: return ast.BinaryOperatorType.Multiplication;
+        case childern.divisionSign: return ast.BinaryOperatorType.Division;
+        case childern.percentSign: return ast.BinaryOperatorType.Modulus;
+        case childern.additionSign: return ast.BinaryOperatorType.Addition;
+        case childern.minusSign: return ast.BinaryOperatorType.Subtraction;
+        case childern.shiftRightSign: return ast.BinaryOperatorType.ArithmeticShiftRight;
+        case childern.shiftLeftSign: return ast.BinaryOperatorType.ArithmeticShiftLeft;
+        case childern.greatherSign: return ast.BinaryOperatorType.GreatherThan;
+        case childern.greatherOrEqualSign: return ast.BinaryOperatorType.GreatherThanOrEqual;
+        case childern.lessSign: return ast.BinaryOperatorType.LessThan;
+        case childern.lessOrEqualSign: return ast.BinaryOperatorType.LessThanOrEqual;
+        case childern.equalSigh: return ast.BinaryOperatorType.Equal;
+        case childern.notEqualSign: return ast.BinaryOperatorType.NotEqual;
+        case childern.arithmeticAndSign: return ast.BinaryOperatorType.ArithmeticAnd;
+        case childern.xorSign: return ast.BinaryOperatorType.ArithmeticExclusiveOr;
+        case childern.arithmeticOrSign: return ast.BinaryOperatorType.ArithmeticOr;
+        case childern.logicalAndSign: return ast.BinaryOperatorType.LogicalAnd;
+        case childern.logicalOrSign: return ast.BinaryOperatorType.LogicalOr;
+        default: return ast.BinaryOperatorType.InlineIf;
+    };
 }
 
 function getUnaryOperatorType(node: cst.UnaryOperatorCstNode): ast.UnaryOperatorType {
