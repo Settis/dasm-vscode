@@ -281,26 +281,25 @@ function getAdressXYMode(node: cst.AddressXYArgumentCstChildren): ast.AddressMod
 }
 
 function getBinaryOperatorType(node: cst.BinarySignCstNode): ast.BinaryOperatorType {
-    const childern = node.children;
-    switch (childern) {
-        case childern.multiplicationSign: return ast.BinaryOperatorType.Multiplication;
-        case childern.divisionSign: return ast.BinaryOperatorType.Division;
-        case childern.percentSign: return ast.BinaryOperatorType.Modulus;
-        case childern.additionSign: return ast.BinaryOperatorType.Addition;
-        case childern.minusSign: return ast.BinaryOperatorType.Subtraction;
-        case childern.shiftRightSign: return ast.BinaryOperatorType.ArithmeticShiftRight;
-        case childern.shiftLeftSign: return ast.BinaryOperatorType.ArithmeticShiftLeft;
-        case childern.greatherSign: return ast.BinaryOperatorType.GreatherThan;
-        case childern.greatherOrEqualSign: return ast.BinaryOperatorType.GreatherThanOrEqual;
-        case childern.lessSign: return ast.BinaryOperatorType.LessThan;
-        case childern.lessOrEqualSign: return ast.BinaryOperatorType.LessThanOrEqual;
-        case childern.equalSigh: return ast.BinaryOperatorType.Equal;
-        case childern.notEqualSign: return ast.BinaryOperatorType.NotEqual;
-        case childern.arithmeticAndSign: return ast.BinaryOperatorType.ArithmeticAnd;
-        case childern.xorSign: return ast.BinaryOperatorType.ArithmeticExclusiveOr;
-        case childern.arithmeticOrSign: return ast.BinaryOperatorType.ArithmeticOr;
-        case childern.logicalAndSign: return ast.BinaryOperatorType.LogicalAnd;
-        case childern.logicalOrSign: return ast.BinaryOperatorType.LogicalOr;
+    switch (Object.keys(node.children)[0]) {
+        case 'multiplicationSign': return ast.BinaryOperatorType.Multiplication;
+        case 'divisionSign': return ast.BinaryOperatorType.Division;
+        case 'percentSign': return ast.BinaryOperatorType.Modulus;
+        case 'additionSign': return ast.BinaryOperatorType.Addition;
+        case 'minusSign': return ast.BinaryOperatorType.Subtraction;
+        case 'shiftRightSign': return ast.BinaryOperatorType.ArithmeticShiftRight;
+        case 'shiftLeftSign': return ast.BinaryOperatorType.ArithmeticShiftLeft;
+        case 'greatherSign': return ast.BinaryOperatorType.GreatherThan;
+        case 'greatherOrEqualSign': return ast.BinaryOperatorType.GreatherThanOrEqual;
+        case 'lessSign': return ast.BinaryOperatorType.LessThan;
+        case 'lessOrEqualSign': return ast.BinaryOperatorType.LessThanOrEqual;
+        case 'equalSigh': return ast.BinaryOperatorType.Equal;
+        case 'notEqualSign': return ast.BinaryOperatorType.NotEqual;
+        case 'arithmeticAndSign': return ast.BinaryOperatorType.ArithmeticAnd;
+        case 'xorSign': return ast.BinaryOperatorType.ArithmeticExclusiveOr;
+        case 'arithmeticOrSign': return ast.BinaryOperatorType.ArithmeticOr;
+        case 'logicalAndSign': return ast.BinaryOperatorType.LogicalAnd;
+        case 'logicalOrSign': return ast.BinaryOperatorType.LogicalOr;
         default: return ast.BinaryOperatorType.InlineIf;
     }
 }
