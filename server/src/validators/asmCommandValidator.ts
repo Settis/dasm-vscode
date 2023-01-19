@@ -2,7 +2,7 @@ import { MSG } from "../messages";
 import { ModesSet, OperationDescription, operations } from "../dasm/operations";
 import { OpMode } from "../dasm/opMode";
 import { constructError, DiagnosticWithURI } from "./util";
-import { AddressMode, ArgumentNode, CommandNode, NodeType, NumberNode } from "../parser/ast/nodes";
+import { AddressMode, ArgumentNode, CommandNode, NodeType } from "../parser/ast/nodes";
 
 export function validateGeneralCommand(node: CommandNode): DiagnosticWithURI[] {
     const commandName = unifyCommandName(node.name.name);
@@ -75,7 +75,7 @@ function validateCommandAddressMode(operation: OperationDescription, arg: Argume
     let mode = TYPE_TO_MODE[arg.addressMode] || OpMode.Address;
     if (arg.value.type === NodeType.Number) {
         if (mode in MODE_CONVERSOIN) {
-            if ((arg.value as NumberNode ).value > 0xFF)
+            if (arg.value.value > 0xFF)
                 mode = MODE_CONVERSOIN[mode]!.absolute;
             else
                 mode = MODE_CONVERSOIN[mode]!.zp;

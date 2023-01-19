@@ -66,7 +66,7 @@ export const EndMacroKeyword = createToken({ name: 'endMacroKeyword', pattern: /
 
 export const HexLine = createToken({ name: 'hexLine', pattern: /hex [^\n\r]*/i, group: Lexer.SKIPPED });
 
-export const ImpliedExtension = createToken({ name: 'impliedExtension', pattern: /\.(0|i)/i, longer_alt: Identifier });
+export const ImpliedExtension = createToken({ name: 'impliedExtension', pattern: /\.[0i]/i, longer_alt: Identifier });
 export const ImpliedIndexingXExtension = createToken({ name: 'impliedIndexingXExtension', pattern: /\.0x/i, longer_alt: Identifier });
 export const ImpliedIndexingYExtension = createToken({ name: 'impliedIndexingYExtension', pattern: /\.0y/i, longer_alt: Identifier });
 export const AbsoluteExtension = createToken({ name: 'absoluteExtension', pattern: /\.a/i, longer_alt: Identifier });
