@@ -2,7 +2,7 @@ import { MSG } from "../messages";
 import { ModesSet, OperationDescription, operations } from "../dasm/operations";
 import { OpMode } from "../dasm/opMode";
 import { constructError, DiagnosticWithURI } from "./util";
-import { AddressMode, ArgumentNode, CommandNode, NodeType, NumberNode } from "../parser/ast/nodes";
+import { AddressMode, ArgumentNode, CommandNode, NodeType } from "../parser/ast/nodes";
 
 export function validateGeneralCommand(node: CommandNode): DiagnosticWithURI[] {
     const commandName = unifyCommandName(node.name.name);

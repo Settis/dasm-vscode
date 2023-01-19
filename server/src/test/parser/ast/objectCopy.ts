@@ -2,21 +2,27 @@ export function filterByMask(orig: any, mask: any): any {
     if (!orig) return orig;
     const result = {} as any;
     for (const name of Object.keys(mask)) {
-        const maskField = mask[name];
-        if (typeof maskField === 'object') {
-            if (Array.isArray(maskField)) {
-                if (typeof maskField[0] === 'object') {
-                    const arrayResult = [];
-                    const origField = orig[name] as [];
-                    for (const i in origField)
-                        arrayResult.push(filterByMask(origField[i], maskField[i] || {}));
-                    result[name] = arrayResult;
-                } else
-                    result[name] = orig[name];
-            } else
-                result[name] = filterByMask(orig[name], maskField);
-        } else 
-            result[name] = orig[name];
+        result[name] = getFieldByMask(orig[name], mask[name]);
     }
     return result;
+}
+
+function getFieldByMask(originalField: any, fieldMask: any): any {
+    if (typeof fieldMask === 'object')
+        if (Array.isArray(fieldMask))
+            return getArrayFieldByMack(originalField, fieldMask);
+        else
+            return filterByMask(originalField, fieldMask);
+    else
+        return originalField;
+}
+
+function getArrayFieldByMack(originalField: any[], fieldMask: any[]): any[] {
+    if (typeof fieldMask[0] === 'object') {
+        const arrayResult = [];
+        for (const i in originalField)
+            arrayResult.push(filterByMask(originalField[i], fieldMask[i] || {}));
+        return arrayResult;
+    } else
+        return originalField;
 }

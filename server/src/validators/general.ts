@@ -1,5 +1,5 @@
 import { MSG } from "../messages";
-import { LabelsByName } from "../parser/ast/labels";
+import { LabelObject, LabelsByName } from "../parser/ast/labels";
 import { MacrosByName } from "../parser/ast/macros";
 import { AllComandNode, FileNode, IfDirectiveNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "../parser/ast/nodes";
 import { Program } from "../program";
@@ -56,19 +56,34 @@ function validateMacroCommand(command: MacroDirectiveNode): DiagnosticWithURI[] 
 function validateLabelsInContext(context: LabelsByName): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
     for (const relatedLabel of context.values()) {
-        if (relatedLabel.definitions.length == 0)
-            for (const usage of relatedLabel.usages)
-                result.push(constructError(MSG.LABEL_NOT_DEFINED, usage));
-        if (relatedLabel.definedAsConstant && relatedLabel.definedAsVariable) {
-            for (const definition of relatedLabel.definitions)
-                result.push(constructError(MSG.LABEL_AS_VAR_AND_CONSTANT, definition));
-            continue;
-        }
-        if (relatedLabel.definitions.length > 1 && relatedLabel.definedAsConstant)
-            for (let i = 1; i < relatedLabel.definitions.length; i++)
-                result.push(constructError(MSG.TOO_MANY_DEFINITIONS, relatedLabel.definitions[i]));
-        
+        result.push(...getLabelNotDefinedErrors(relatedLabel));
+        result.push(...getLabelAsVarAndConstantErrors(relatedLabel));
+        result.push(...getLabelTooManyDefinitionsErrors(relatedLabel));
     }
+    return result;
+}
+
+function getLabelNotDefinedErrors(label: LabelObject): DiagnosticWithURI[] {
+    const result: DiagnosticWithURI[] = [];
+    if (label.definitions.length == 0)
+            for (const usage of label.usages)
+                result.push(constructError(MSG.LABEL_NOT_DEFINED, usage));
+    return result;
+}
+
+function getLabelAsVarAndConstantErrors(label: LabelObject): DiagnosticWithURI[] {
+    const result: DiagnosticWithURI[] = [];
+    if (label.definedAsConstant && label.definedAsVariable)
+        for (const definition of label.definitions)
+            result.push(constructError(MSG.LABEL_AS_VAR_AND_CONSTANT, definition));
+    return result;
+}
+
+function getLabelTooManyDefinitionsErrors(label: LabelObject): DiagnosticWithURI[] {
+    const result: DiagnosticWithURI[] = [];
+    if (label.definitions.length > 1 && label.definedAsConstant)
+            for (let i = 1; i < label.definitions.length; i++)
+                result.push(constructError(MSG.TOO_MANY_DEFINITIONS, label.definitions[i]));
     return result;
 }
 
