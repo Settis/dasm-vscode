@@ -14,7 +14,8 @@
 		"chevrotain": "^10.1.2",
 		"mocha": "^9.1.1",
 		"vscode-languageserver": "^7.0.0",
-		"vscode-languageserver-textdocument": "^1.0.1"
+		"vscode-languageserver-textdocument": "^1.0.1",
+		"vscode-uri": "^3.0.7"
 	},
 	"scripts": {
 		"test": "mocha --enable-source-maps out/test/**/*.test.js",

@@ -5,6 +5,7 @@
 ### Fixed
 - label name can contain a dot in the middle
 - include directives works without quotes
+- include directives works on Windows
 
 ## [1.1.2] - 2023-01-15
 
