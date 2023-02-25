@@ -15,10 +15,7 @@ export function validateGeneralCommand(node: CommandNode): DiagnosticWithURI[] {
 export type UnifiedCommandName = string;
 
 export function unifyCommandName(rawName: string): UnifiedCommandName {
-    let result = rawName.toUpperCase();
-    if (result.startsWith('.'))
-        result = result.substring(1);
-    return result;
+    return rawName.toUpperCase();
 }
 
 function validateCommandArgs(commandNode: CommandNode, operation: OperationDescription): DiagnosticWithURI[] {

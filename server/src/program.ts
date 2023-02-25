@@ -2,7 +2,7 @@ import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, SEG, SET, SETSTR, SUBROUTINE } fr
 import { isExists } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
-import { AddressMode, AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode, StringLiteralNode } from "./parser/ast/nodes";
+import { AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "./parser/ast/nodes";
 import { LabelsByName, LabelObject, ALIASES, mergeLabelsMap } from "./parser/ast/labels";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
 import { operations } from "./dasm/operations";
@@ -158,9 +158,8 @@ export class Program {
     }
 
     private handleIncludeCommand(commandNode: CommandNode) {
-        const fileNameNode = this.getRequiredStringArg(commandNode);
-        if (!fileNameNode) return;
-        const fileUri = this.findFileUri(fileNameNode.text);
+        const fileNameNode = commandNode.args[0].value;
+        const fileUri = this.findFileUri(this.extractFineName(fileNameNode));
         if (fileUri) {
             if (this.currentlyIncludedStack.has(fileUri)) {
                 this.errors.push(constructError(MSG.CIRCULAR_INCLUDE, fileNameNode));
@@ -175,41 +174,26 @@ export class Program {
     }
 
     private handleIncludeBinCommand(commandNode: CommandNode) {
-        const fileNameNode = this.getRequiredStringArg(commandNode);
-        if (!fileNameNode) return;
-        const fileUri = this.findFileUri(fileNameNode.text);
+        const fileNameNode = commandNode.args[0].value;
+        const fileUri = this.findFileUri(this.extractFineName(fileNameNode));
         if (!fileUri)
             this.errors.push(constructError(MSG.FILE_NOT_RESOLVABLE, fileNameNode));
     }
 
     private handleIncludeDirCommand(commandNode: CommandNode) {
-        const dirNameNode = this.getRequiredStringArg(commandNode);
-        if (!dirNameNode) return;
-        this.includeFolders.add(dirNameNode.text);
-        if (!isExists(this.folderUri + dirNameNode.text))
+        const dirNameNode = commandNode.args[0].value;
+        const dirName = this.extractFineName(dirNameNode);
+        this.includeFolders.add(dirName);
+        if (!isExists(this.folderUri + dirName))
             this.errors.push(constructWarning(MSG.FILE_NOT_RESOLVABLE, dirNameNode));
     }
 
-    private getRequiredStringArg(commandNode: CommandNode): StringLiteralNode | undefined {
-        if (commandNode.args.length != 1) {
-            this.errors.push(constructError(MSG.STRING_LITERAL_EXPECTED, commandNode));
-            return;
-        }
-        const arg0 = commandNode.args[0];
-        if (arg0.addressMode !== AddressMode.None) {
-            this.errors.push(constructError(MSG.STRING_LITERAL_EXPECTED, arg0));
-            return;
-        }
-        const argValue = arg0.value;
-        if (argValue.type !== NodeType.StringLiteral) {
-            this.errors.push(constructError(MSG.STRING_LITERAL_EXPECTED, argValue));
-            return;
-        }
-        if (argValue.text.length === 0) {
-            this.errors.push(constructError(MSG.EMPTY_STRING, arg0));
-            return;
-        }
-        return argValue ;
+    private extractFineName(expressionNode: ExpressionNode): string {
+        if (expressionNode.type == NodeType.StringLiteral)
+            return expressionNode.text;
+        if (expressionNode.type == NodeType.Identifier)
+            return expressionNode.name;
+        throw new Error("Error in include parsing");
     }
 
     private handleListCommand(commandNode: CommandNode) {

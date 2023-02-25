@@ -60,6 +60,9 @@ export const RependKeyword = createToken({ name: 'rependKeyword', pattern: /repe
 export const MacroKeyword = createToken({ name: 'macroKeyword', pattern: /mac(ro)?\b/i, push_mode: MACROS_MODE });
 export const RestrictedMacroKeyword = createToken({ name: 'restrictedMacroKeyword', pattern: /mac(ro)?\b/i });
 export const EndMacroKeyword = createToken({ name: 'endMacroKeyword', pattern: /endm\b/i, pop_mode: true });
+export const IncludeKeyword = createToken({ name: 'includeKeyword', pattern: /include\b/i });
+export const IncdirKeyword = createToken({ name: 'incdirKeyword', pattern: /incdir\b/i });
+export const IncbinKeyword = createToken({ name: 'incbinKeyword', pattern: /incbin\b/i });
 
 export const HexLine = createToken({ name: 'hexLine', pattern: /hex [^\n\r]*/i, group: Lexer.SKIPPED });
 
@@ -131,6 +134,9 @@ export const LEXER_DEFINITION = {
             RepeatKeyword,
             RependKeyword,
             MacroKeyword,
+            IncludeKeyword,
+            IncdirKeyword,
+            IncbinKeyword,
         
             HexLine,
         

@@ -50,6 +50,7 @@ export type CommandCstChildren = {
   ifCommand?: IfCommandCstNode[];
   repeatCommand?: RepeatCommandCstNode[];
   macroCommand?: MacroCommandCstNode[];
+  includeCommand?: IncludeCommandCstNode[];
   generalCommand?: GeneralCommandCstNode[];
 };
 
@@ -113,6 +114,30 @@ export type MacroTextPartCstChildren = {
   newLineSeprarator?: IToken[];
   space?: IToken[];
   nonSpace?: IToken[];
+};
+
+export interface IncludeCommandCstNode extends CstNode {
+  name: "includeCommand";
+  children: IncludeCommandCstChildren;
+}
+
+export type IncludeCommandCstChildren = {
+  includeKeyword?: IToken[];
+  incbinKeyword?: IToken[];
+  incdirKeyword?: IToken[];
+  space: IToken[];
+  stringLiteral?: IToken[];
+  filePath?: FilePathCstNode[];
+};
+
+export interface FilePathCstNode extends CstNode {
+  name: "filePath";
+  children: FilePathCstChildren;
+}
+
+export type FilePathCstChildren = {
+  identifier: IToken[];
+  divisionSign?: IToken[];
 };
 
 export interface GeneralCommandCstNode extends CstNode {
@@ -334,6 +359,8 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   macroCommand(children: MacroCommandCstChildren, param?: IN): OUT;
   macroText(children: MacroTextCstChildren, param?: IN): OUT;
   macroTextPart(children: MacroTextPartCstChildren, param?: IN): OUT;
+  includeCommand(children: IncludeCommandCstChildren, param?: IN): OUT;
+  filePath(children: FilePathCstChildren, param?: IN): OUT;
   generalCommand(children: GeneralCommandCstChildren, param?: IN): OUT;
   commandName(children: CommandNameCstChildren, param?: IN): OUT;
   argument(children: ArgumentCstChildren, param?: IN): OUT;

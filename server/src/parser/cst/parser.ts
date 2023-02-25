@@ -67,6 +67,7 @@ class DasmParser extends CstParser {
             {ALT: () => this.SUBRULE(this.ifCommand)},
             {ALT: () => this.SUBRULE(this.repeatCommand)},
             {ALT: () => this.SUBRULE(this.macroCommand)},
+            {ALT: () => this.SUBRULE(this.includeCommand)},
             {ALT: () => this.SUBRULE(this.generalCommand)}
         ]);
     })
@@ -115,6 +116,26 @@ class DasmParser extends CstParser {
             {ALT: () => this.CONSUME(lexer.Space)},
             {ALT: () => this.CONSUME(lexer.NonSpace)},
         ]);
+    })
+
+    private includeCommand = this.RULE('includeCommand', () => {
+        this.OR1([
+            {ALT: () => this.CONSUME(lexer.IncludeKeyword)},
+            {ALT: () => this.CONSUME(lexer.IncbinKeyword)},
+            {ALT: () => this.CONSUME(lexer.IncdirKeyword)},
+        ]);
+        this.CONSUME(lexer.Space);
+        this.OR2([
+            {ALT: () => this.CONSUME(lexer.StringLiteral)},
+            {ALT: () => this.SUBRULE(this.filePath)},
+        ]);
+    })
+
+    private filePath = this.RULE('filePath', () => {
+        this.AT_LEAST_ONE_SEP({
+            SEP: lexer.DivisionSign,
+            DEF: () => this.CONSUME(lexer.Identifier)
+        });
     })
 
     private generalCommand = this.RULE('generalCommand', () => {

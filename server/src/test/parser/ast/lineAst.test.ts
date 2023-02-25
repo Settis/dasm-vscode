@@ -66,6 +66,18 @@ describe('Correct AST for line', () => {
             })
         );
     });
+    it('    INCLUDE DIR/FILE.ASM', () => {
+        checkAST('    INCLUDE DIR/FILE.ASM',
+            aLine(undefined, 'INCLUDE', {
+                type: NodeType.Argument,
+                addressMode: AddressMode.None,
+                value: {
+                    type: NodeType.Identifier,
+                    name: 'DIR/FILE.ASM'
+                }
+            })
+        );
+    });
     // Check address parsing
     it('  LDX #$44', () => {
         checkAST('  LDX #$44',
