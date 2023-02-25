@@ -21,5 +21,5 @@ export function readContent(uri: string): string | undefined {
 }
 
 export function getFolder(uri: string): string {
-    return path.parse(URI.parse(uri).fsPath).dir
+    return URI.file(path.parse(URI.parse(uri).fsPath).dir).toString()
 }
