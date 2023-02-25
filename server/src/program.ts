@@ -1,5 +1,5 @@
 import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, SEG, SET, SETSTR, SUBROUTINE } from "./dasm/directives";
-import { isExists } from "./localFiles";
+import { getFolder, isExists, joinUri } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
 import { AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "./parser/ast/nodes";
@@ -14,7 +14,7 @@ const LOCAL_LABEL_PREFIX = '.';
 
 export class Program {
     constructor(private parsedFiles: ParsedFiles, private uri: string) {
-        this.folderUri = uri.replace(/[^/]*$/, "");
+        this.folderUri = getFolder(uri);
         this.macrosCalls = new MacrosCalls(parsedFiles, uri);
     }
 
@@ -184,7 +184,7 @@ export class Program {
         const dirNameNode = commandNode.args[0].value;
         const dirName = this.extractFineName(dirNameNode);
         this.includeFolders.add(dirName);
-        if (!isExists(this.folderUri + dirName))
+        if (!isExists(joinUri(this.folderUri, dirName)))
             this.errors.push(constructWarning(MSG.FILE_NOT_RESOLVABLE, dirNameNode));
     }
 
@@ -245,10 +245,10 @@ export class Program {
     }
 
     private findFileUri(name: string): string | undefined {
-        let fileUri = this.folderUri + name;
+        let fileUri = joinUri(this.folderUri, name);
         if (isExists(fileUri)) return fileUri;
         for (const folder of this.includeFolders) {
-            fileUri = this.folderUri + folder + '/' + name;
+            fileUri = joinUri(this.folderUri, folder, name);
             if (isExists(fileUri)) return fileUri;
         }
     }
