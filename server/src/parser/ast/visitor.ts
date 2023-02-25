@@ -126,7 +126,7 @@ export class Visitor {
         // Command name can contain extension like: ds.w
         const splitedName = identifierToken.image.split('.');
         // Command also can start with leading dot, like: .WORD
-        let commandNameWithoutExtension = splitedName[0] ? splitedName[0] : splitedName[1];
+        const commandNameWithoutExtension = splitedName[0] ? splitedName[0] : splitedName[1];
         return new ast.IdentifierNode(
             this.createLocation(identifierToken),
             commandNameWithoutExtension
