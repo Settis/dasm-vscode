@@ -9,7 +9,6 @@ import { operations } from "./dasm/operations";
 import { MacrosByName, MacrosObject } from "./parser/ast/macros";
 import { UnifiedCommandName, unifyCommandName } from "./validators/asmCommandValidator";
 import { parseText } from "./parser/ast/utils";
-import * as path from 'path';
 
 const LOCAL_LABEL_PREFIX = '.';
 

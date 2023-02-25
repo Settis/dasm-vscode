@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { URI } from 'vscode-uri'
+import { URI } from 'vscode-uri';
 import * as path from 'path';
 
 export function isExists(uri: string): boolean {
@@ -27,5 +27,5 @@ export function joinUri(uri: string, ...paths: string[]): string {
 }
 
 export function getFolder(uri: string): string {
-    return URI.file(path.parse(URI.parse(uri).fsPath).dir).toString(true)
+    return URI.file(path.parse(URI.parse(uri).fsPath).dir).toString(true);
 }
