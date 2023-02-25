@@ -2,7 +2,7 @@ name: End to end testing on windows
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, testOnOtherPlatforms ]
   workflow_dispatch:
   
 
