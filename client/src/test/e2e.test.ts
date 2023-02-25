@@ -173,6 +173,13 @@ suite('Test include', () => {
         assert.deepEqual(anotherDefinition.range, constructRange(0, 0, 7));
     });
 
+    test('Include working with non string literals',async () => {
+        const mainUri = getDocUri(path.resolve(includeFolder, 'simpleWithoutQuotes.asm'));
+        await openUseCaseFile(mainUri);
+        const actualErrors = await getErrors(mainUri, 0);
+        assert.deepEqual(actualErrors, []);
+    })
+
     // There is a bug in VSCode with cleaning diagnostics
     test.skip('Errors dissapear on closing', async () => {
         const mainUri = getDocUri(path.resolve(includeFolder, 'withError.asm'));
