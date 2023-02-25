@@ -49,10 +49,7 @@ class DasmParser extends CstParser {
     })
 
     private label = this.RULE('label', () => {
-        this.OR([
-            {ALT: () => this.CONSUME(lexer.Dot)},
-            {ALT: () => this.SUBRULE(this.dynamicLabelDefinition)}
-        ]);
+        this.SUBRULE(this.dynamicLabelDefinition);
         this.OPTION(() => this.CONSUME(lexer.Colon));
     })
 
@@ -137,30 +134,6 @@ class DasmParser extends CstParser {
         this.OR([
             {ALT: () => this.CONSUME(lexer.AssignSign)},
             {ALT: () => this.CONSUME(lexer.Identifier)}
-        ]);
-        this.OPTION(() => this.SUBRULE(this.commandExtension));
-    })
-
-    private commandExtension = this.RULE('commandExtension', () => {
-        this.OR([
-            {ALT: () => this.CONSUME(lexer.ImpliedExtension)},
-            {ALT: () => this.CONSUME(lexer.ImpliedIndexingXExtension)},
-            {ALT: () => this.CONSUME(lexer.ImpliedIndexingYExtension)},
-            {ALT: () => this.CONSUME(lexer.AbsoluteExtension)},
-            {ALT: () => this.CONSUME(lexer.ByteExtension)},
-            {ALT: () => this.CONSUME(lexer.ByteXExtension)},
-            {ALT: () => this.CONSUME(lexer.ByteYExtension)},
-            {ALT: () => this.CONSUME(lexer.DirectExtension)},
-            {ALT: () => this.CONSUME(lexer.ExtendedExtension)},
-            {ALT: () => this.CONSUME(lexer.IndirectExtension)},
-            {ALT: () => this.CONSUME(lexer.LongExtension)},
-            {ALT: () => this.CONSUME(lexer.RelativeExtension)},
-            {ALT: () => this.CONSUME(lexer.UninitializedExtension)},
-            {ALT: () => this.CONSUME(lexer.WordExtension)},
-            {ALT: () => this.CONSUME(lexer.WordXExtension)},
-            {ALT: () => this.CONSUME(lexer.WordYExtension)},
-            {ALT: () => this.CONSUME(lexer.ZeroPageExtension)},
-            {ALT: () => this.CONSUME(lexer.SwapEndiannessExtension)},
         ]);
     })
 
@@ -251,9 +224,6 @@ class DasmParser extends CstParser {
             {ALT: () => this.CONSUME(lexer.StringLiteral)},
             {ALT: () => this.SUBRULE(this.number)},
             {ALT: () => this.SUBRULE(this.dynamicLabel)},
-            {ALT: () => this.CONSUME(lexer.Dot)},
-            {ALT: () => this.CONSUME(lexer.DoubleDots)},
-            {ALT: () => this.CONSUME(lexer.TripleDots)},
             {ALT: () => this.CONSUME(lexer.MultiplicationSign)},
             {ALT: () => this.SUBRULE(this.macroArgument)},
             {ALT: () => this.CONSUME(lexer.CharLiteral)},

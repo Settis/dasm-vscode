@@ -27,8 +27,7 @@ export interface LabelCstNode extends CstNode {
 }
 
 export type LabelCstChildren = {
-  dot?: IToken[];
-  dynamicLabelDefinition?: DynamicLabelDefinitionCstNode[];
+  dynamicLabelDefinition: DynamicLabelDefinitionCstNode[];
   colon?: IToken[];
 };
 
@@ -136,33 +135,6 @@ export interface CommandNameCstNode extends CstNode {
 export type CommandNameCstChildren = {
   assignSign?: IToken[];
   identifier?: IToken[];
-  commandExtension?: CommandExtensionCstNode[];
-};
-
-export interface CommandExtensionCstNode extends CstNode {
-  name: "commandExtension";
-  children: CommandExtensionCstChildren;
-}
-
-export type CommandExtensionCstChildren = {
-  impliedExtension?: IToken[];
-  impliedIndexingXExtension?: IToken[];
-  impliedIndexingYExtension?: IToken[];
-  absoluteExtension?: IToken[];
-  byteExtension?: IToken[];
-  byteXExtension?: IToken[];
-  byteYExtension?: IToken[];
-  directExtension?: IToken[];
-  extendedExtension?: IToken[];
-  indirectExtension?: IToken[];
-  longExtension?: IToken[];
-  relativeExtension?: IToken[];
-  uninitializedExtension?: IToken[];
-  wordExtension?: IToken[];
-  wordXExtension?: IToken[];
-  wordYExtension?: IToken[];
-  zeroPageExtension?: IToken[];
-  swapEndiannessExtension?: IToken[];
 };
 
 export interface ArgumentCstNode extends CstNode {
@@ -260,9 +232,6 @@ export type UnaryExpressionCstChildren = {
   stringLiteral?: IToken[];
   number?: NumberCstNode[];
   dynamicLabel?: DynamicLabelCstNode[];
-  dot?: IToken[];
-  doubleDots?: IToken[];
-  tripleDots?: IToken[];
   multiplicationSign?: IToken[];
   macroArgument?: MacroArgumentCstNode[];
   charLiteral?: IToken[];
@@ -367,7 +336,6 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   macroTextPart(children: MacroTextPartCstChildren, param?: IN): OUT;
   generalCommand(children: GeneralCommandCstChildren, param?: IN): OUT;
   commandName(children: CommandNameCstChildren, param?: IN): OUT;
-  commandExtension(children: CommandExtensionCstChildren, param?: IN): OUT;
   argument(children: ArgumentCstChildren, param?: IN): OUT;
   immediateArgument(children: ImmediateArgumentCstChildren, param?: IN): OUT;
   addressXYArgument(children: AddressXYArgumentCstChildren, param?: IN): OUT;

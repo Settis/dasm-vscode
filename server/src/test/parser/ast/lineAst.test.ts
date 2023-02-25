@@ -183,7 +183,7 @@ describe('Correct AST for line', () => {
     });
     it('  dc.s "unicode"', () => {
         checkAST('  dc.s "unicode"', 
-            aLine(undefined, 'dc', {
+            aLine(undefined, 'dc.s', {
                 type: NodeType.Argument,
                 addressMode: AddressMode.None,
                 value: {

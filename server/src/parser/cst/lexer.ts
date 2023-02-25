@@ -48,10 +48,7 @@ export const AddressYEnding = createToken({ name: 'addressYEnding', pattern: /,[
 export const IndirectXEnding = createToken({ name: 'indirectXEnding', pattern: /,[Xx]\)/ });
 export const IndirectYEnding = createToken({ name: 'indirectYEnding', pattern: /\),[Yy]\b/ });
 
-export const Identifier = createToken({ name: 'identifier', pattern: /\.?\w+/ });
-export const TripleDots = createToken({ name: 'tripleDots', pattern: /\.\.\./ });
-export const DoubleDots = createToken({ name: 'doubleDots', pattern: /\.\./ });
-export const Dot = createToken({ name: 'dot', pattern: /\./ });
+export const Identifier = createToken({ name: 'identifier', pattern: /[\.\w]+/ });
 
 export const IfConstKeyword = createToken({ name: 'ifConstKeyword', pattern: /ifconst\b/i });
 export const IfNConstKeyword = createToken({ name: 'ifNConstKeyword', pattern: /ifnconst\b/i });
@@ -65,25 +62,6 @@ export const RestrictedMacroKeyword = createToken({ name: 'restrictedMacroKeywor
 export const EndMacroKeyword = createToken({ name: 'endMacroKeyword', pattern: /endm\b/i, pop_mode: true });
 
 export const HexLine = createToken({ name: 'hexLine', pattern: /hex [^\n\r]*/i, group: Lexer.SKIPPED });
-
-export const ImpliedExtension = createToken({ name: 'impliedExtension', pattern: /\.[0i]/i, longer_alt: Identifier });
-export const ImpliedIndexingXExtension = createToken({ name: 'impliedIndexingXExtension', pattern: /\.0x/i, longer_alt: Identifier });
-export const ImpliedIndexingYExtension = createToken({ name: 'impliedIndexingYExtension', pattern: /\.0y/i, longer_alt: Identifier });
-export const AbsoluteExtension = createToken({ name: 'absoluteExtension', pattern: /\.a/i, longer_alt: Identifier });
-export const ByteExtension = createToken({ name: 'byteExtension', pattern: /\.b/i, longer_alt: Identifier });
-export const ByteXExtension = createToken({ name: 'byteXExtension', pattern: /\.bx/i, longer_alt: Identifier });
-export const ByteYExtension = createToken({ name: 'byteYExtension', pattern: /\.by/i, longer_alt: Identifier });
-export const DirectExtension = createToken({ name: 'directExtension', pattern: /\.d/i, longer_alt: Identifier });
-export const ExtendedExtension = createToken({ name: 'extendedExtension', pattern: /\.e/i, longer_alt: Identifier });
-export const IndirectExtension = createToken({ name: 'indirectExtension', pattern: /\.ind/i, longer_alt: Identifier });
-export const LongExtension = createToken({ name: 'longExtension', pattern: /\.l/i, longer_alt: Identifier });
-export const RelativeExtension = createToken({ name: 'relativeExtension', pattern: /\.r/i, longer_alt: Identifier });
-export const UninitializedExtension = createToken({ name: 'uninitializedExtension', pattern: /\.u/i, longer_alt: Identifier });
-export const WordExtension = createToken({ name: 'wordExtension', pattern: /\.w/i, longer_alt: Identifier });
-export const WordXExtension = createToken({ name: 'wordXExtension', pattern: /\.wx/i, longer_alt: Identifier });
-export const WordYExtension = createToken({ name: 'wordYExtension', pattern: /\.wy/i, longer_alt: Identifier });
-export const ZeroPageExtension = createToken({ name: 'zeroPageExtension', pattern: /\.z/i, longer_alt: Identifier });
-export const SwapEndiannessExtension = createToken({ name: 'swapEndiannessExtension', pattern: /\.s/i, longer_alt: Identifier });
 
 export const DecimalFormatFlag = createToken({ name: 'decimalFormatFlag', pattern: /d/, longer_alt: Identifier });
 
@@ -156,29 +134,8 @@ export const LEXER_DEFINITION = {
         
             HexLine,
         
-            ImpliedExtension,
-            ImpliedIndexingXExtension,
-            ImpliedIndexingYExtension,
-            AbsoluteExtension,
-            ByteExtension,
-            ByteXExtension,
-            ByteYExtension,
-            DirectExtension,
-            ExtendedExtension,
-            IndirectExtension,
-            LongExtension,
-            RelativeExtension,
-            UninitializedExtension,
-            WordExtension,
-            WordXExtension,
-            WordYExtension,
-            ZeroPageExtension,
-            SwapEndiannessExtension,
             DecimalFormatFlag,
-            TripleDots,
-            DoubleDots,
             Identifier,
-            Dot,
         
             NewLineSeparator,
             Comment,
