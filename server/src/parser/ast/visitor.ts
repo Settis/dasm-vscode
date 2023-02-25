@@ -55,6 +55,7 @@ export class Visitor {
         if (commandChildren.ifCommand) return this.convertIfCommand(commandChildren.ifCommand[0]);
         if (commandChildren.repeatCommand) return this.convertRepeatCommand(commandChildren.repeatCommand[0]);
         if (commandChildren.macroCommand) return this.convertMacroCommand(commandChildren.macroCommand[0]);
+        if (commandChildren.includeCommand) return this.convertIncludeCommand(commandChildren.includeCommand[0]);
         return this.convertGeneralCommand(commandChildren.generalCommand![0]);
     }
 
@@ -100,6 +101,35 @@ export class Visitor {
         if (childern.space)
             return childern.space[0].image;
         return "";
+    }
+
+    private convertIncludeCommand(command: cst.IncludeCommandCstNode): ast.CommandNode {
+        const children = command.children;
+        let commandName: ast.IdentifierNode;
+        if (children.includeKeyword) commandName = this.convertIdentifier(children.includeKeyword[0]);
+        else if (children.incbinKeyword) commandName = this.convertIdentifier(children.incbinKeyword[0]);
+        else if (children.incdirKeyword) commandName = this.convertIdentifier(children.incdirKeyword[0]);
+        else throw new Error("Error in include command name parser");
+        let fileName: ast.ExpressionNode;
+        if (children.stringLiteral) fileName = this.convertStringLiteral(children.stringLiteral[0]);
+        else if (children.filePath) fileName = this.convertFilePath(children.filePath[0]);
+        else throw new Error("Error in include command arg parser");
+        return new ast.CommandNode(
+            this.createLocation(command),
+            commandName,
+            [new ast.ArgumentNode(
+                fileName.location,
+                ast.AddressMode.None,
+                fileName
+            )]
+        );
+    }
+
+    private convertFilePath(filePath: cst.FilePathCstNode): ast.IdentifierNode {
+        return new ast.IdentifierNode(
+            this.createLocation(filePath),
+            filePath.children.identifier.map(it => it.image).join('/')
+        );
     }
 
     private convertGeneralCommand(command: cst.GeneralCommandCstNode): ast.CommandNode | null {

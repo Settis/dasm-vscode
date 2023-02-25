@@ -178,7 +178,7 @@ suite('Test include', () => {
         await openUseCaseFile(mainUri);
         const actualErrors = await getErrors(mainUri, 0);
         assert.deepEqual(actualErrors, []);
-    })
+    });
 
     // There is a bug in VSCode with cleaning diagnostics
     test.skip('Errors dissapear on closing', async () => {
