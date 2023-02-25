@@ -1,8 +1,8 @@
-name: End to end testing on windows
+name: End to end testing on Mac OS
 
 on:
   push:
-    branches: [ main, testOnOtherPlatforms ]
+    branches: [ main ]
   workflow_dispatch:
   
 
