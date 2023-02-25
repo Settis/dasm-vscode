@@ -31,11 +31,7 @@ export class Visitor {
     private convertLabel(label?: cst.LabelCstNode[]): ast.LabelNode | null {
         if (!label) return null;
         const childern = label[0].children;
-        let labelNameNode;
-        if (childern.dot) 
-            labelNameNode = this.convertIdentifier(childern.dot[0]);
-        else
-            labelNameNode = this.convertDynamicLabel(childern.dynamicLabelDefinition![0]);
+        const labelNameNode = this.convertDynamicLabel(childern.dynamicLabelDefinition[0]);
         return new ast.LabelNode(
             this.createLocation(label[0]),
             labelNameNode
@@ -126,7 +122,15 @@ export class Visitor {
                 this.createLocation(childern.assignSign[0]),
                 EQU
             );
-        return this.convertIdentifier(childern.identifier![0]);
+        const identifierToken = childern.identifier![0];
+        // Command name can contain extension like: ds.w
+        const splitedName = identifierToken.image.split('.');
+        // Command also can start with leading dot, like: .WORD
+        const commandNameWithoutExtension = splitedName[0] ? splitedName[0] : splitedName[1];
+        return new ast.IdentifierNode(
+            this.createLocation(identifierToken),
+            commandNameWithoutExtension
+        );
     }
 
     private convertArgument(argumentNode: cst.ArgumentCstNode): ast.ArgumentNode {
@@ -181,9 +185,6 @@ export class Visitor {
     private convertUnaryExpression(expression: cst.UnaryExpressionCstNode): ast.ExpressionNode {
         const childern = expression.children;
         if (childern.dynamicLabel) return this.convertDynamicLabel(childern.dynamicLabel[0]);
-        if (childern.dot) return this.convertIdentifier(childern.dot[0]);
-        if (childern.doubleDots) return this.convertIdentifier(childern.doubleDots[0]);
-        if (childern.tripleDots) return this.convertIdentifier(childern.tripleDots[0]);
         if (childern.multiplicationSign) return this.convertIdentifier(childern.multiplicationSign[0]);
         if (childern.number) return this.convertNumber(childern.number[0]);
         if (childern.roundBrackets) return this.convertBrackets(childern.roundBrackets[0]);

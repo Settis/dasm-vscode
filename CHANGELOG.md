@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- label name can contain a dot in the middle
+
 ## [1.1.2] - 2023-01-15
 
 ### Fixed
