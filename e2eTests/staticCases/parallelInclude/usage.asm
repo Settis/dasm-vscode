@@ -1,0 +1,1 @@
+    LDA #THE_VAR

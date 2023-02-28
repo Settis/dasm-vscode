@@ -195,6 +195,19 @@ suite('Test include', () => {
         errors = await getErrors(includeUri, 0);
         assert.equal(errors.length, 0);
     });
+
+    const parallelIncludeFolder = path.resolve(fixturesFolder, 'parallelInclude');
+
+    test('Include files in parallel', async () => {
+        const mainUri = getDocUri(path.resolve(parallelIncludeFolder, 'main.asm'));
+        await openUseCaseFile(mainUri);
+        const mainErrors = await getErrors(mainUri, 0);
+        assert.equal(mainErrors.length, 0);
+        const usageUri = getDocUri(path.resolve(parallelIncludeFolder, 'usage.asm'));
+        await openUseCaseFile(usageUri);
+        const usageErrors = await getErrors(usageUri, 0);
+        assert.equal(usageErrors.length, 0);
+    });
 });
 
 function printLineWithRange(useCase: UseCase, range: Range): string {
