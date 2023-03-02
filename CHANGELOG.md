@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- label name with dot is properly highlighted
+
 ## [1.1.3] - 2023-02-26
 
 ### Fixed
