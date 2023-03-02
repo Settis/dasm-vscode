@@ -57,7 +57,7 @@
             "name": "keyword.operator.dasm"
         },
         "label": {
-            "match": "^[\\.\\w]+:?",
+            "match": "^[.\\w]+:?",
             "name": "variable.other.label.dasm"
         }
     }
