@@ -20,6 +20,8 @@ export const SEG = 'SEG';
 export const ALIGN = 'ALIGN';
 export const ERR = 'ERR';
 export const LIST = 'LIST';
+export const RORG = 'RORG';
+export const REND = 'REND';
 
 export const NAMES = new Set([
     SUBROUTINE,
@@ -44,4 +46,6 @@ export const NAMES = new Set([
     ALIGN,
     ERR,
     LIST,
+    RORG,
+    REND,
 ]);

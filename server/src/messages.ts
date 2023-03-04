@@ -18,6 +18,9 @@ export enum MSG {
     PARSING_ERROR_SOURCE,
     LIST_ARGS,
     BAD_MACRO_CALL,
+    RORG_TWICE_OPENED,
+    NO_RORG_SECTION,
+    NO_ARG,
 }
 
 const EN: { [key in MSG]: string } = {
@@ -40,6 +43,9 @@ const EN: { [key in MSG]: string } = {
     [MSG.PARSING_ERROR_SOURCE]: "parser",
     [MSG.LIST_ARGS]: "Only ON or OFF allowed as args for 'list'",
     [MSG.BAD_MACRO_CALL]: "Something wrong in the macro call",
+    [MSG.RORG_TWICE_OPENED]: "The previous RORG was not closed",
+    [MSG.NO_RORG_SECTION]: "There is no actual RORG section opened",
+    [MSG.NO_ARG]: "The directive must have an argument",
 };
 
 export function getMessage(template: MSG): string {

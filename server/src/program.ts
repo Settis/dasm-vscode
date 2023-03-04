@@ -1,4 +1,4 @@
-import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, SEG, SET, SETSTR, SUBROUTINE } from "./dasm/directives";
+import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, REND, RORG, SEG, SET, SETSTR, SUBROUTINE } from "./dasm/directives";
 import { getFolder, isExists, joinUri } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
@@ -21,6 +21,7 @@ export class Program {
     public globalLabels: LabelsByName = new Map();
     public localLabels: LabelsByName[] = [new Map()];
     public macroses: MacrosByName = new Map();
+    public relocatableDirectives: CommandNode[] = [];
     private folderUri: string;
     private includeFolders = new Set<string>();
     public errors: DiagnosticWithURI[] = [];
@@ -127,7 +128,7 @@ export class Program {
     }
 
     private visitGeneralCommandNode(commandNode: CommandNode) {
-        switch (unifyCommandName(commandNode.name.name.toUpperCase())) {
+        switch (unifyCommandName(commandNode.name.name)) {
             case SUBROUTINE:
                 this.createSubroutineContext();
                 break;
@@ -146,6 +147,10 @@ export class Program {
             case SEG:
             case SETSTR:
                 // Just ignore it
+                break;
+            case RORG:
+            case REND:
+                this.relocatableDirectives.push(commandNode);
                 break;
             default:
                 this.handleOtherCommand(commandNode);

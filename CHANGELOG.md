@@ -6,6 +6,7 @@
 
 - label name with dot is properly highlighted
 - file does not show errors if it is included in a correct program
+- RORG keyword is properly recognized
 
 ## [1.1.3] - 2023-02-26
 
