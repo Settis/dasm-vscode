@@ -1,4 +1,7 @@
 # dasm language support for VSCode
+
+**[Documentation](https://github.com/Settis/dasm-vscode/wiki)**
+
 This is a VSCode extension for programming in dasm.
 Only 6502 is supported.
 
