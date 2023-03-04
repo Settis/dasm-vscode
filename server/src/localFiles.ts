@@ -23,13 +23,13 @@ export function readContent(uri: string): string | undefined {
 export function joinUri(uri: string, ...paths: string[]): string {
     const fsPath = URI.parse(uri).fsPath;
     const fullPath = path.join(fsPath, ...paths);
-    return URI.file(fullPath).toString(true);
+    return URI.file(fullPath).toString(false);
 }
 
 export function getFolder(uri: string): string {
-    return URI.file(path.parse(URI.parse(uri).fsPath).dir).toString(true);
+    return URI.file(path.parse(URI.parse(uri).fsPath).dir).toString(false);
 }
 
 export function unifyUri(uri: string): string {
-    return URI.file(URI.parse(uri).fsPath).toString(true);
+    return URI.file(URI.parse(uri).fsPath).toString(false);
 }
