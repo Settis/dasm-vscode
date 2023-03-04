@@ -1,0 +1,22 @@
+text: |2
+      RORG $1000
+      REND
+
+      {REND|noRorg}
+      RORG $1000
+      {RORG $1000|twiceOpen}
+      REND
+      {RORG|noArg}
+actions:
+  twiceOpen:
+    type: Error
+    message: The previous RORG was not closed
+    severity: Warning
+  noRorg:
+    type: Error
+    message: There is no actual RORG section opened
+    severity: Warning
+  noArg:
+    type: Error
+    message: The directive must have an argument
+    severity: Warning

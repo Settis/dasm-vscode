@@ -1,11 +1,12 @@
+import { RORG } from "../dasm/directives";
 import { MSG } from "../messages";
 import { LabelObject, LabelsByName } from "../parser/ast/labels";
 import { MacrosByName } from "../parser/ast/macros";
-import { AllComandNode, FileNode, IfDirectiveNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "../parser/ast/nodes";
+import { AllComandNode, CommandNode, FileNode, IfDirectiveNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "../parser/ast/nodes";
 import { Program } from "../program";
 import { notEmpty } from "../utils";
-import { validateGeneralCommand } from "./asmCommandValidator";
-import { constructError, DiagnosticWithURI } from "./util";
+import { unifyCommandName, validateGeneralCommand } from "./asmCommandValidator";
+import { constructError, constructWarning, DiagnosticWithURI } from "./util";
 
 export function validateFile(fileNode: FileNode): DiagnosticWithURI[] {
     return validateLines(fileNode.lines);
@@ -17,6 +18,7 @@ export function validateProgram(program: Program): DiagnosticWithURI[] {
     for (const context of program.localLabels)
         result.push(...validateLabelsInContext(context));
     result.push(...validateMacros(program.macroses));
+    result.push(...validateRelocatableDirectives(program.relocatableDirectives));
     return result;
 }
 
@@ -93,5 +95,23 @@ function validateMacros(macroses: MacrosByName): DiagnosticWithURI[] {
         if (macros.definitions.length == 0)
             for (const usage of macros.usages)
                 result.push(constructError(MSG.UNKNOWN_COMMAND, usage));
+    return result;
+}
+
+function validateRelocatableDirectives(directives: CommandNode[]): DiagnosticWithURI[] {
+    const result: DiagnosticWithURI[] = [];
+    let hasRelocatableSection = false;
+    for (const command of directives)
+        if (unifyCommandName(command.name.name) === RORG) {
+            if (command.args.length == 0) 
+                result.push(constructWarning(MSG.NO_ARG, command));
+            if (hasRelocatableSection)
+                result.push(constructWarning(MSG.RORG_TWICE_OPENED, command));
+            hasRelocatableSection = true;
+        } else {
+            if (!hasRelocatableSection)
+                result.push(constructWarning(MSG.NO_RORG_SECTION, command));
+            hasRelocatableSection = false;
+        }
     return result;
 }
