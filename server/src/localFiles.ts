@@ -29,3 +29,7 @@ export function joinUri(uri: string, ...paths: string[]): string {
 export function getFolder(uri: string): string {
     return URI.file(path.parse(URI.parse(uri).fsPath).dir).toString(true);
 }
+
+export function unifyUri(uri: string): string {
+    return URI.file(URI.parse(uri).fsPath).toString(true);
+}
