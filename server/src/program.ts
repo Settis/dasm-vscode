@@ -1,5 +1,5 @@
 import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, REND, RORG, SEG, SET, SETSTR, SUBROUTINE } from "./dasm/directives";
-import { getFolder, isExists, joinUri } from "./localFiles";
+import { getFolder, isExists, joinUri, unifyUri } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
 import { AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "./parser/ast/nodes";
@@ -13,11 +13,13 @@ import { parseText } from "./parser/ast/utils";
 const LOCAL_LABEL_PREFIX = '.';
 
 export class Program {
-    constructor(private parsedFiles: ParsedFiles, public uri: string) {
+    constructor(private parsedFiles: ParsedFiles, uri: string) {
+        this.uri = unifyUri(uri);
         this.folderUri = getFolder(uri);
         this.macrosCalls = new MacrosCalls(parsedFiles, uri);
     }
 
+    public uri: string;
     public globalLabels: LabelsByName = new Map();
     public localLabels: LabelsByName[] = [new Map()];
     public macroses: MacrosByName = new Map();
