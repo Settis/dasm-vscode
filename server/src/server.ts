@@ -92,13 +92,17 @@ function rescanDocuments() {
 		program.localLabels.forEach(it => collectLabels(it));
 		collectMacros(program.macroses);
 	});
-	const usedFiles = new Set<string>(openedDocuments);
+	const usedFiles = new Set<string>();
 	const diagnostics: DiagnosticWithURI[] = [];
 	for (const program of programs) {
 		program.usedFiles.forEach(uri => usedFiles.add(uri));
+	}
+	for (const program of programs) {
+		if (usedFiles.has(program.uri)) continue;
 		diagnostics.push(...validateProgram(program));
 		diagnostics.push(...program.errors);
 	}
+	openedDocuments.forEach(uri => usedFiles.add(uri));
 	for (const usedFile of usedFiles)
 		diagnostics.push(...parsedFiles.getFileDiagnostics(usedFile));
 	const errorMap = new Map<string,DiagnosticWithURI[]>();

@@ -13,7 +13,7 @@ import { parseText } from "./parser/ast/utils";
 const LOCAL_LABEL_PREFIX = '.';
 
 export class Program {
-    constructor(private parsedFiles: ParsedFiles, private uri: string) {
+    constructor(private parsedFiles: ParsedFiles, public uri: string) {
         this.folderUri = getFolder(uri);
         this.macrosCalls = new MacrosCalls(parsedFiles, uri);
     }
