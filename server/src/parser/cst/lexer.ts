@@ -4,7 +4,7 @@ const DEFAULT_MODE = 'defaultMode';
 const MACROS_MODE = 'macrosMode';
 
 export const Space = createToken({ name: 'space', pattern: /[ \f\t\v]+/ });
-export const NonSpace = createToken({ name: 'nonSpace', pattern: /[^ \f\t\v\n]+/ });
+export const NonSpace = createToken({ name: 'nonSpace', pattern: /[^ \f\t\v\r\n]+/ });
 export const Colon = createToken({ name: 'colon', pattern: /:/ });
 export const Sharp = createToken({ name: 'sharp', pattern: /#/ });
 export const Tilde = createToken({ name: 'tilde', pattern: /~/ });
@@ -68,7 +68,7 @@ export const HexLine = createToken({ name: 'hexLine', pattern: /hex [^\n\r]*/i, 
 
 export const DecimalFormatFlag = createToken({ name: 'decimalFormatFlag', pattern: /d/, longer_alt: Identifier });
 
-export const NewLineSeparator = createToken({ name: 'newLineSeprarator', pattern: /\n|\r\n?/, line_breaks: true });
+export const NewLineSeparator = createToken({ name: 'newLineSeparator', pattern: /\n|\r\n?/, line_breaks: true });
 export const Comment = createToken({ name: 'comment', pattern: /;[^\n\r]*/, group: Lexer.SKIPPED });
 export const MultilineComment = createToken({ name: 'multilineComment', pattern: /\/\*[^*]*\*+([^/*][^*]*\*+)*\//, group: Lexer.SKIPPED, line_breaks: true });
 

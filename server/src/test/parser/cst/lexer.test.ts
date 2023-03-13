@@ -77,10 +77,26 @@ describe('CST lexer tests', () => {
     it('recognize macros with underscore', () => {
         checkTokens('  IF_EQ ', ['  ', 'IF_EQ', ' ']);
     });
+    it('recognize Windows line endings', () => {
+        checkNewLineSeparator('\r\n');
+    });
+    it('recognize MacOS line endings', () => {
+        checkNewLineSeparator('\r');
+    });
+    it('recognize Unix line endings', () => {
+        checkNewLineSeparator('\n');
+    });
 });
 
 function checkTokens(text: string, expectedTokens: string[]) {
     const tokens = DASM_LEXER.tokenize(text);
     assert.deepStrictEqual(tokens.errors, []);
     assert.deepStrictEqual(tokens.tokens.map(it => it.image), expectedTokens);
+}
+
+function checkNewLineSeparator(text: string) {
+    const tokens = DASM_LEXER.tokenize(text);
+    assert.deepStrictEqual(tokens.errors, []);
+    assert.deepStrictEqual(tokens.tokens.length, 1);
+    assert.deepStrictEqual(tokens.tokens[0].tokenType.name, 'newLineSeparator');
 }
