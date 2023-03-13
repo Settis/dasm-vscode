@@ -88,7 +88,7 @@ describe('Correct AST for multiline directives', () => {
                         type: NodeType.Identifier,
                         name: 'FOO'
                     },
-                    body: ' '
+                    body: '\r\n '
                 }
             },
             {
