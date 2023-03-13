@@ -170,7 +170,7 @@ export class Program {
         if (!fileName) return;
         const fileUri = this.findFileUri(fileName);
         if (fileUri) {
-            if (this.currentlyIncludedStack.has(fileUri)) {
+            if (this.uri === fileUri || this.currentlyIncludedStack.has(fileUri)) {
                 this.errors.push(constructError(MSG.CIRCULAR_INCLUDE, fileNameNode));
             } else {
                 this.usedFiles.add(fileUri);
@@ -197,7 +197,7 @@ export class Program {
         if (!dirName) return;
         this.includeFolders.add(dirName);
         if (!isDirExists(joinUri(this.folderUri, dirName)))
-            this.errors.push(constructWarning(MSG.FILE_NOT_RESOLVABLE, dirNameNode));
+            this.errors.push(constructWarning(MSG.DIR_NOT_RESOLVABLE, dirNameNode));
     }
 
     private extractFineName(expressionNode: ExpressionNode): string | undefined {

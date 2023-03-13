@@ -1,6 +1,9 @@
 text: |2
     INCLUDE {"../"|fileError}
     INCLUDE {""|empty}
+    INCBIN {""|empty}
+    INCDIR {"main.asm"|dirError}
+    INCLUDE {"main.asm"|circular}
 actions:
   fileError:
     type: Error
@@ -9,4 +12,12 @@ actions:
   empty:
     type: Error
     message: Empty string is not allowed here
+    severity: Error
+  dirError:
+    type: Error
+    message: The directory is not resolvable
+    severity: Warning
+  circular:
+    type: Error
+    message: You have circular include
     severity: Error
