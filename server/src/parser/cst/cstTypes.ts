@@ -7,7 +7,7 @@ export interface TextCstNode extends CstNode {
 
 export type TextCstChildren = {
   line?: LineCstNode[];
-  newLineSeprarator?: IToken[];
+  newLineSeparator?: IToken[];
 };
 
 export interface LineCstNode extends CstNode {
@@ -111,7 +111,7 @@ export interface MacroTextPartCstNode extends CstNode {
 }
 
 export type MacroTextPartCstChildren = {
-  newLineSeprarator?: IToken[];
+  newLineSeparator?: IToken[];
   space?: IToken[];
   nonSpace?: IToken[];
 };

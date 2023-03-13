@@ -74,6 +74,37 @@ describe('Correct AST for multiline directives', () => {
             }
         );
     });
+    it('macro with Windows line endings', () => {
+        checkAST(
+            ' MAC FOO\r\n' +
+            ' ENDM\r\n' +
+            ' FOO',
+            {
+                type: NodeType.Line,
+                label: null,
+                command: {
+                    type: NodeType.MacroDirective,
+                    name: {
+                        type: NodeType.Identifier,
+                        name: 'FOO'
+                    },
+                    body: '\r\n '
+                }
+            },
+            {
+                type: NodeType.Line,
+                label: null,
+                command: {
+                    type: NodeType.Command,
+                    name: {
+                        type: NodeType.Identifier,
+                        name: 'FOO'
+                    },
+                    args: []
+                }
+            }
+        );
+    });
 });
 
 function createIfDirectiveAst(withElse: boolean): TestLineNode {

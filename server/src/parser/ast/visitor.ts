@@ -94,8 +94,8 @@ export class Visitor {
 
     private convertMacroTextPart(macroTestPart: cst.MacroTextPartCstNode): string {
         const childern = macroTestPart.children;
-        if (childern.newLineSeprarator)
-            return childern.newLineSeprarator[0].image;
+        if (childern.newLineSeparator)
+            return childern.newLineSeparator[0].image;
         if (childern.nonSpace)
             return childern.nonSpace[0].image;
         if (childern.space)
