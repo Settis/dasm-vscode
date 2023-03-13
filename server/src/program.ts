@@ -1,5 +1,5 @@
 import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, REND, RORG, SEG, SET, SETSTR, SUBROUTINE } from "./dasm/directives";
-import { getFolder, isExists, joinUri, unifyUri } from "./localFiles";
+import { getFolder, isFileExists, isDirExists, joinUri, unifyUri } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
 import { AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "./parser/ast/nodes";
@@ -191,7 +191,7 @@ export class Program {
         const dirNameNode = commandNode.args[0].value;
         const dirName = this.extractFineName(dirNameNode);
         this.includeFolders.add(dirName);
-        if (!isExists(joinUri(this.folderUri, dirName)))
+        if (!isDirExists(joinUri(this.folderUri, dirName)))
             this.errors.push(constructWarning(MSG.FILE_NOT_RESOLVABLE, dirNameNode));
     }
 
@@ -253,10 +253,10 @@ export class Program {
 
     private findFileUri(name: string): string | undefined {
         let fileUri = joinUri(this.folderUri, name);
-        if (isExists(fileUri)) return fileUri;
+        if (isFileExists(fileUri)) return fileUri;
         for (const folder of this.includeFolders) {
             fileUri = joinUri(this.folderUri, folder, name);
-            if (isExists(fileUri)) return fileUri;
+            if (isFileExists(fileUri)) return fileUri;
         }
     }
 

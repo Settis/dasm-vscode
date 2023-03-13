@@ -2,10 +2,17 @@ import * as fs from 'fs';
 import { URI } from 'vscode-uri';
 import * as path from 'path';
 
-export function isExists(uri: string): boolean {
+export function isFileExists(uri: string): boolean {
     const parsedUri = URI.parse(uri);
     if (parsedUri.scheme === 'file')
-         return fs.existsSync(parsedUri.fsPath);
+        return fs.existsSync(parsedUri.fsPath) && fs.lstatSync(parsedUri.fsPath).isFile();
+    return false;
+}
+
+export function isDirExists(uri: string): boolean {
+    const parsedUri = URI.parse(uri);
+    if (parsedUri.scheme === 'file')
+        return fs.existsSync(parsedUri.fsPath) && fs.lstatSync(parsedUri.fsPath).isDirectory();
     return false;
 }
 

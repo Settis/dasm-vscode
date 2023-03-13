@@ -1,0 +1,7 @@
+text: |2
+    INCLUDE {""|fileError}
+actions:
+  fileError:
+    type: Error
+    message: The file is not resolvable
+    severity: Error
