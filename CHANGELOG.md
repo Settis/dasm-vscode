@@ -5,6 +5,7 @@
 ### Fixed
 
 - Windows line endings in macro definition are parsed correctly
+- include directive: more accurate check if file is exists
 
 ## [1.1.4] - 2023-03-04
 

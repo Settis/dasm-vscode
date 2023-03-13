@@ -1,5 +1,5 @@
 import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, REND, RORG, SEG, SET, SETSTR, SUBROUTINE } from "./dasm/directives";
-import { getFolder, isExists, joinUri, unifyUri } from "./localFiles";
+import { getFolder, isFileExists, isDirExists, joinUri, unifyUri } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
 import { AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "./parser/ast/nodes";
@@ -166,9 +166,11 @@ export class Program {
 
     private handleIncludeCommand(commandNode: CommandNode) {
         const fileNameNode = commandNode.args[0].value;
-        const fileUri = this.findFileUri(this.extractFineName(fileNameNode));
+        const fileName = this.extractFineName(fileNameNode);
+        if (!fileName) return;
+        const fileUri = this.findFileUri(fileName);
         if (fileUri) {
-            if (this.currentlyIncludedStack.has(fileUri)) {
+            if (this.uri === fileUri || this.currentlyIncludedStack.has(fileUri)) {
                 this.errors.push(constructError(MSG.CIRCULAR_INCLUDE, fileNameNode));
             } else {
                 this.usedFiles.add(fileUri);
@@ -182,7 +184,9 @@ export class Program {
 
     private handleIncludeBinCommand(commandNode: CommandNode) {
         const fileNameNode = commandNode.args[0].value;
-        const fileUri = this.findFileUri(this.extractFineName(fileNameNode));
+        const fileName = this.extractFineName(fileNameNode);
+        if (!fileName) return;
+        const fileUri = this.findFileUri(fileName);
         if (!fileUri)
             this.errors.push(constructError(MSG.FILE_NOT_RESOLVABLE, fileNameNode));
     }
@@ -190,17 +194,23 @@ export class Program {
     private handleIncludeDirCommand(commandNode: CommandNode) {
         const dirNameNode = commandNode.args[0].value;
         const dirName = this.extractFineName(dirNameNode);
+        if (!dirName) return;
         this.includeFolders.add(dirName);
-        if (!isExists(joinUri(this.folderUri, dirName)))
-            this.errors.push(constructWarning(MSG.FILE_NOT_RESOLVABLE, dirNameNode));
+        if (!isDirExists(joinUri(this.folderUri, dirName)))
+            this.errors.push(constructWarning(MSG.DIR_NOT_RESOLVABLE, dirNameNode));
     }
 
-    private extractFineName(expressionNode: ExpressionNode): string {
+    private extractFineName(expressionNode: ExpressionNode): string | undefined {
+        let name;
         if (expressionNode.type == NodeType.StringLiteral)
-            return expressionNode.text;
+            name = expressionNode.text;
         if (expressionNode.type == NodeType.Identifier)
-            return expressionNode.name;
-        throw new Error("Error in include parsing");
+            name = expressionNode.name;
+        if (name)
+            return name;
+        else {
+            this.errors.push(constructError(MSG.EMPTY_STRING, expressionNode));
+        }
     }
 
     private handleListCommand(commandNode: CommandNode) {
@@ -253,10 +263,10 @@ export class Program {
 
     private findFileUri(name: string): string | undefined {
         let fileUri = joinUri(this.folderUri, name);
-        if (isExists(fileUri)) return fileUri;
+        if (isFileExists(fileUri)) return fileUri;
         for (const folder of this.includeFolders) {
             fileUri = joinUri(this.folderUri, folder, name);
-            if (isExists(fileUri)) return fileUri;
+            if (isFileExists(fileUri)) return fileUri;
         }
     }
 
