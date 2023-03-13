@@ -1,0 +1,12 @@
+text: |2
+    INCLUDE {"../"|fileError}
+    INCLUDE {""|empty}
+actions:
+  fileError:
+    type: Error
+    message: The file is not resolvable
+    severity: Error
+  empty:
+    type: Error
+    message: Empty string is not allowed here
+    severity: Error
