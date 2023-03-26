@@ -152,6 +152,8 @@ suite('Test include', () => {
 
     test('Definitions are correct', async () => {
         const mainUri = getDocUri(path.resolve(includeFolder, 'simple.asm'));
+        console.log("main Uri: " + mainUri.toString());
+        console.log("main Uri as JSON: " + JSON.stringify(mainUri));
         await openUseCaseFile(mainUri);
         const theLinkDefinitions = await commands.executeCommand<Location[]>('vscode.executeDefinitionProvider', mainUri, {
             line: 1,
@@ -161,6 +163,8 @@ suite('Test include', () => {
         assert.strictEqual(theLinkDefinitions.length, 1, "theLink definitions size");
         const theLinkDefinition = theLinkDefinitions[0];
         assert.deepEqual(theLinkDefinition.uri, getDocUri(path.resolve(includeFolder, 'simpleInclude.asm')));
+        console.log("Link definition uri: " + theLinkDefinition.uri.toString());
+        console.log("Link definition uri as JSON: " + JSON.stringify(theLinkDefinition.uri));
         assert.deepEqual(theLinkDefinition.range, constructRange(0, 0, 7));
         const anotherDefinitions = await commands.executeCommand<Location[]>('vscode.executeDefinitionProvider', mainUri, {
             line: 4,
@@ -170,6 +174,8 @@ suite('Test include', () => {
         assert.strictEqual(anotherDefinitions.length, 1, 'another definitions size');
         const anotherDefinition = anotherDefinitions[0];
         assert.deepEqual(anotherDefinition.uri, getDocUri(path.resolve(includeFolder, 'some/another.asm')));
+        console.log("defition uri: " + anotherDefinition.uri.toString());
+        console.log("defition uri as JSON: " + JSON.stringify(anotherDefinition.uri));
         assert.deepEqual(anotherDefinition.range, constructRange(0, 0, 7));
     });
 
