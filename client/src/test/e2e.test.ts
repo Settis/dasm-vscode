@@ -2,6 +2,7 @@ import { CompletionAction, ErrorAction, fixturesFolder, GetDefinitionAction, Get
 import { constructRange, flushCodeCoverage, getDocUri, getErrors, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
+import * as vscode from 'vscode';
 import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList } from "vscode";
 
 const useCases = readUseCases();
@@ -177,6 +178,10 @@ suite('Test include', () => {
         console.log("defition uri: " + anotherDefinition.uri.toString());
         console.log("defition uri as JSON: " + JSON.stringify(anotherDefinition.uri));
         assert.deepEqual(anotherDefinition.range, constructRange(0, 0, 7));
+
+        // try to open that document
+        await openUseCaseFile(anotherDefinition.uri);
+        console.log("Opened file: " + vscode.window.activeTextEditor?.document.fileName);
     });
 
     test('Include working with non string literals',async () => {
