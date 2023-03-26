@@ -1,5 +1,5 @@
 import { CompletionAction, ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, HoveringAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
-import { constructRange, flushCodeCoverage, getDocUri, getErrors, openUseCaseFile } from './vscodeHelper';
+import { constructRange, flushCodeCoverage, getDocUri, getErrors, getOpendFileName, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
 import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList } from "vscode";
@@ -171,6 +171,11 @@ suite('Test include', () => {
         const anotherDefinition = anotherDefinitions[0];
         assert.deepEqual(anotherDefinition.uri, getDocUri(path.resolve(includeFolder, 'some/another.asm')));
         assert.deepEqual(anotherDefinition.range, constructRange(0, 0, 7));
+
+        // try to open that document
+        await openUseCaseFile(anotherDefinition.uri);
+        const openedFile = getOpendFileName() || "";
+        assert.ok(openedFile.endsWith('another.asm'), `Opened file is ${openedFile}`);
     });
 
     test('Include working with non string literals',async () => {

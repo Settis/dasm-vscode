@@ -58,3 +58,7 @@ export function constructRange(lineNumber: number, startChar: number, length: nu
 export async function flushCodeCoverage() {
     await vscode.commands.executeCommand('dasm.flashCodeCoverage');
 }
+
+export function getOpendFileName() {
+    return vscode.window.activeTextEditor?.document.fileName;
+}
