@@ -1,8 +1,7 @@
 import { CompletionAction, ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, HoveringAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
-import { constructRange, flushCodeCoverage, getDocUri, getErrors, openUseCaseFile } from './vscodeHelper';
+import { constructRange, flushCodeCoverage, getDocUri, getErrors, getOpendFileName, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
-import * as vscode from 'vscode';
 import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList } from "vscode";
 
 const useCases = readUseCases();
@@ -175,7 +174,7 @@ suite('Test include', () => {
 
         // try to open that document
         await openUseCaseFile(anotherDefinition.uri);
-        const openedFile = vscode.window.activeTextEditor?.document.fileName || "";
+        const openedFile = getOpendFileName() || "";
         assert.ok(openedFile.endsWith('another.asm'), `Opened file is ${openedFile}`);
     });
 
