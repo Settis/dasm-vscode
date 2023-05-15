@@ -1,20 +1,17 @@
 text: |2
-      processor 6502
-    org $200
+  ; Use a dynamic label inside a macro
+  N SET 0 ; instance number
 
-  FOO SET 1
+      MAC dynm ; {1}= base name
+  {1},"_",N ; define label using {1} and instance #
+  N SET N +1
+      ENDM
 
-    MACRO SOME_JMP
-    JMP SOME_</>FOO
-    ENDM
+      dynm fna
+      jmp fna_0 ; OK
+      dynm fna
+      jmp fna_1 ; OK
 
-    MACRO SOME_LABEL
-  SOME_,FOO
-    ENDM
-
-    SOME_JMP
-    SOME_LABEL
-
-  BAR SET 5
-    JMP ANOTHER_</>BAR
-  ANOTHER_,BAR
+  I = 1
+  TMP SET fna_,I
+      jmp TMP
