@@ -29,7 +29,7 @@ export class Program {
     public errors: DiagnosticWithURI[] = [];
     public usedFiles = new Set<string>();
     private currentlyIncludedStack = new Set<string>();
-    private macrosCalls: MacrosCalls;
+    public macrosCalls: MacrosCalls;
 
     public assemble() {
         this.visitFile(this.uri);
@@ -287,7 +287,7 @@ export class Program {
 class MacrosCalls {
     constructor(private parsedFiles: ParsedFiles, private uri: string) {}
 
-    private macrosDefinitions = new Map<UnifiedCommandName, string>();
+    public macrosDefinitions = new Map<UnifiedCommandName, string>();
     private macrosUsages: CommandNode[] = [];
 
     public addMacrosDefinition(name: UnifiedCommandName, text: string) {
@@ -320,11 +320,16 @@ class MacrosCalls {
                 errors: [constructError(MSG.BAD_MACRO_CALL, commandNode)]
             };
         const program = new Program(this.parsedFiles, this.uri);
+        program.macrosCalls.macrosDefinitions = this.macrosDefinitions;
         program.visitFileNode(fileRoot.ast);
         const result: MacroResult = {
             labels: program.globalLabels,
             errors: []
         };
+        const macroResult = program.macrosCalls.getMacroResult();
+        for (const [labelName, label] of macroResult.labels) {
+            result.labels.set(labelName, label);
+        }
         if (program.errors.length != 0)
             result.errors = [constructError(MSG.BAD_MACRO_CALL, commandNode)];
         for (const label of result.labels.values()) {
