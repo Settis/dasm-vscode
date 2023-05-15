@@ -27,6 +27,6 @@ jobs:
     - name: Test compile
       run: npm run test-compile
     - name: Run e2e tests
-      uses: coactions/setup-xvfb@v1
+      uses: coactions/setup-xvfb@v1.0.1
       with:
         run: npm test
