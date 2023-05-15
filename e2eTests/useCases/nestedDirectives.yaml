@@ -1,0 +1,12 @@
+text: |2
+      processor 6502
+      org $200
+      MAC CREATE_CONST
+      DEFINE_CONST {1}_CONST, {2}
+      ENDM
+      MAC DEFINE_CONST
+  {1} = {2}
+      ENDM
+
+      CREATE_CONST FOO, 50
+      LDA #FOO_CONST
