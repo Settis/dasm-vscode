@@ -57,7 +57,10 @@ class DasmParser extends CstParser {
         this.AT_LEAST_ONE_SEP({
             SEP: lexer.Comma,
             DEF: () => { 
-                this.CONSUME(lexer.Identifier);
+                this.OR([
+                    {ALT: () => this.CONSUME(lexer.Identifier)},
+                    {ALT: () => this.CONSUME(lexer.StringLiteral)}
+                ]);
             }
         });
     })
@@ -244,20 +247,11 @@ class DasmParser extends CstParser {
             {ALT: () => this.SUBRULE(this.unaryOperator)},
             {ALT: () => this.CONSUME(lexer.StringLiteral)},
             {ALT: () => this.SUBRULE(this.number)},
-            {ALT: () => this.SUBRULE(this.dynamicLabel)},
+            {ALT: () => this.CONSUME(lexer.Identifier)},
             {ALT: () => this.CONSUME(lexer.MultiplicationSign)},
             {ALT: () => this.SUBRULE(this.macroArgument)},
             {ALT: () => this.CONSUME(lexer.CharLiteral)},
         ]);
-    })
-
-    private dynamicLabel = this.RULE('dynamicLabel', () => {
-        this.AT_LEAST_ONE_SEP({
-            SEP: lexer.DynamicLabelSeparator,
-            DEF: () => { 
-                this.CONSUME(lexer.Identifier);
-            }
-        });
     })
 
     private roundBrackets = this.RULE('roundBrackets', () => {

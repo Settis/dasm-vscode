@@ -37,7 +37,8 @@ export interface DynamicLabelDefinitionCstNode extends CstNode {
 }
 
 export type DynamicLabelDefinitionCstChildren = {
-  identifier: IToken[];
+  identifier?: IToken[];
+  stringLiteral?: IToken[];
   comma?: IToken[];
 };
 
@@ -256,20 +257,10 @@ export type UnaryExpressionCstChildren = {
   unaryOperator?: UnaryOperatorCstNode[];
   stringLiteral?: IToken[];
   number?: NumberCstNode[];
-  dynamicLabel?: DynamicLabelCstNode[];
+  identifier?: IToken[];
   multiplicationSign?: IToken[];
   macroArgument?: MacroArgumentCstNode[];
   charLiteral?: IToken[];
-};
-
-export interface DynamicLabelCstNode extends CstNode {
-  name: "dynamicLabel";
-  children: DynamicLabelCstChildren;
-}
-
-export type DynamicLabelCstChildren = {
-  identifier: IToken[];
-  dynamicLabelSeparator?: IToken[];
 };
 
 export interface RoundBracketsCstNode extends CstNode {
@@ -370,7 +361,6 @@ export interface ICstNodeVisitor<IN, OUT> extends ICstVisitor<IN, OUT> {
   expression(children: ExpressionCstChildren, param?: IN): OUT;
   binarySign(children: BinarySignCstChildren, param?: IN): OUT;
   unaryExpression(children: UnaryExpressionCstChildren, param?: IN): OUT;
-  dynamicLabel(children: DynamicLabelCstChildren, param?: IN): OUT;
   roundBrackets(children: RoundBracketsCstChildren, param?: IN): OUT;
   squareBrackets(children: SquareBracketsCstChildren, param?: IN): OUT;
   unaryOperator(children: UnaryOperatorCstChildren, param?: IN): OUT;

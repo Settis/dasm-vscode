@@ -14,9 +14,9 @@ export function validateFile(fileNode: FileNode): DiagnosticWithURI[] {
 
 export function validateProgram(program: Program): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
-    result.push(...validateLabelsInContext(program.globalLabels));
+    result.push(...validateLabelsInContext(program.globalLabels, program.dynamicLabelsPrefixes));
     for (const context of program.localLabels)
-        result.push(...validateLabelsInContext(context));
+        result.push(...validateLabelsInContext(context, program.dynamicLabelsPrefixes));
     result.push(...validateMacros(program.macroses));
     result.push(...validateRelocatableDirectives(program.relocatableDirectives));
     return result;
@@ -55,14 +55,22 @@ function validateMacroCommand(command: MacroDirectiveNode): DiagnosticWithURI[] 
     return [];
 }
 
-function validateLabelsInContext(context: LabelsByName): DiagnosticWithURI[] {
+function validateLabelsInContext(context: LabelsByName, dynamicLabelsPrefixes: Set<string>): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
     for (const relatedLabel of context.values()) {
+        if (labelMayBeDynamic(relatedLabel, dynamicLabelsPrefixes)) continue;
         result.push(...getLabelNotDefinedErrors(relatedLabel));
         result.push(...getLabelAsVarAndConstantErrors(relatedLabel));
         result.push(...getLabelTooManyDefinitionsErrors(relatedLabel));
     }
     return result;
+}
+
+function labelMayBeDynamic(label: LabelObject, dynamicLabelsPrefixes: Set<string>): boolean {
+    const name = label.name;
+    for (const prefix of dynamicLabelsPrefixes)
+        if (name.startsWith(prefix)) return true;
+    return false;
 }
 
 function getLabelNotDefinedErrors(label: LabelObject): DiagnosticWithURI[] {

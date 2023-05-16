@@ -32,14 +32,20 @@ describe('Dynamic labels AST', () => {
         });
     });
     it('Label usage', () => {
-        checkAST('  CMD SOME_PREFIX_</>COUNTER', {
+        checkAST('TMP set fna_,I', {
             type: NodeType.Line,
-            label: null,
+            label: {
+                type: NodeType.Label,
+                name: {
+                    type: NodeType.Identifier,
+                    name: 'TMP'
+                }
+            },
             command: {
                 type: NodeType.Command,
                 name: {
                     type: NodeType.Identifier,
-                    name: 'CMD'
+                    name: 'set'
                 },
                 args: [{
                     type: NodeType.Argument,
@@ -49,11 +55,11 @@ describe('Dynamic labels AST', () => {
                         identifiers: [
                             {
                                 type: NodeType.Identifier,
-                                name: 'SOME_PREFIX_'
+                                name: 'fna_'
                             },
                             {
                                 type: NodeType.Identifier,
-                                name: 'COUNTER'
+                                name: 'I'
                             }
                         ]
                     }
