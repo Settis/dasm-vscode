@@ -38,9 +38,9 @@ export class Visitor {
         );
     }
 
-    private convertDynamicLabel(dynamicLabel: cst.DynamicLabelCstNode | cst.DynamicLabelDefinitionCstNode): ast.IdentifierNode | ast.DynamicLabelNode {
+    private convertDynamicLabel(dynamicLabel: cst.DynamicLabelDefinitionCstNode): ast.IdentifierNode | ast.DynamicLabelNode {
         const childern = dynamicLabel.children;
-        const identifiers = childern.identifier.map(it => this.convertIdentifier(it));
+        const identifiers = (childern.identifier||[]).map(it => this.convertIdentifier(it));
         if (identifiers.length == 1)
             return identifiers[0];
         return new ast.DynamicLabelNode(
@@ -133,16 +133,39 @@ export class Visitor {
     }
 
     private convertGeneralCommand(command: cst.GeneralCommandCstNode): ast.CommandNode | null {
-        const commandName = command.children.commandName; 
-        const argument = command.children.argument;
-        if (!commandName) return null;
-        let commandEnd: RangeSource = commandName[0];
-        if (argument) commandEnd = argument[argument.length-1];
+        const commandNameNode = command.children.commandName; 
+        const argumentNode = command.children.argument;
+        if (!commandNameNode) return null;
+        let commandEnd: RangeSource = commandNameNode[0];
+        if (argumentNode) commandEnd = argumentNode[argumentNode.length-1];
+        const commandName = this.convertCommandName(commandNameNode[0]);
+        let args = (argumentNode || []).map(it => this.convertArgument(it));
+        if (argumentNode && commandName.name.toLocaleLowerCase() === 'set')
+            args = this.convertArgsToDynamicLabel(argumentNode);
         return new ast.CommandNode(
-            this.createLocation(commandName[0], commandEnd),
-            this.convertCommandName(commandName[0]),
-            (argument || []).map(it => this.convertArgument(it))
+            this.createLocation(commandNameNode[0], commandEnd),
+            commandName,
+            args
         );
+    }
+
+    private convertArgsToDynamicLabel(args: cst.ArgumentCstNode[]): ast.ArgumentNode[] {
+        const location = this.createLocation(args[0], args[args.length-1]);
+        const identifiers: ast.IdentifierNode[] = []
+        for (const arg of args) {
+            const convertedArgument = this.convertArgument(arg);
+            if (convertedArgument.addressMode == ast.AddressMode.None && 
+                convertedArgument.value.type == ast.NodeType.Identifier)
+                identifiers.push(convertedArgument.value);
+        }
+        return [new ast.ArgumentNode(
+            location,
+            ast.AddressMode.None,
+            new ast.DynamicLabelNode(
+                location,
+                identifiers
+            )
+        )];
     }
 
     private convertCommandName(commandName: cst.CommandNameCstNode): ast.IdentifierNode {
@@ -214,7 +237,7 @@ export class Visitor {
 
     private convertUnaryExpression(expression: cst.UnaryExpressionCstNode): ast.ExpressionNode {
         const childern = expression.children;
-        if (childern.dynamicLabel) return this.convertDynamicLabel(childern.dynamicLabel[0]);
+        if (childern.identifier) return this.convertIdentifier(childern.identifier[0]);
         if (childern.multiplicationSign) return this.convertIdentifier(childern.multiplicationSign[0]);
         if (childern.number) return this.convertNumber(childern.number[0]);
         if (childern.roundBrackets) return this.convertBrackets(childern.roundBrackets[0]);

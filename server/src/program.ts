@@ -30,11 +30,13 @@ export class Program {
     public usedFiles = new Set<string>();
     private currentlyIncludedStack = new Set<string>();
     public macrosCalls: MacrosCalls;
+    public dynamicLabelsPrefixes = new Set<string>();
 
     public assemble() {
         this.visitFile(this.uri);
         const macroResult = this.macrosCalls.getMacroResult();
         this.globalLabels = mergeLabelsMap(this.globalLabels, macroResult.labels);
+        macroResult.dynamicLabelsPrefixes.forEach(it => this.dynamicLabelsPrefixes.add(it));
         this.errors.push(...macroResult.errors);
     }
 
@@ -55,7 +57,10 @@ export class Program {
     }
 
     private defineLabel(labelNode: LabelNode, asVariable: boolean) {
-        if (labelNode.name.type == NodeType.DynamicLabel) return; // ignore it
+        if (labelNode.name.type == NodeType.DynamicLabel) {
+            this.dynamicLabelsPrefixes.add(labelNode.name.identifiers[0].name);
+            return;
+        }
         const name = labelNode.name.name;
         if (ALIASES.has(name)) return;
         const lablelObject = this.getLabelObjectByName(name);
@@ -301,11 +306,13 @@ class MacrosCalls {
     public getMacroResult(): MacroResult {
         const result: MacroResult = {
             labels: new Map(),
+            dynamicLabelsPrefixes: new Set(),
             errors: []
         };
         for (const command of this.macrosUsages) {
             const macroResult = this.getGlobalVariablesFromCommand(command);
             result.labels = mergeLabelsMap(result.labels, macroResult.labels);
+            macroResult.dynamicLabelsPrefixes.forEach(it => result.dynamicLabelsPrefixes.add(it));
             result.errors.push(...macroResult.errors);
         }
         return result;
@@ -317,6 +324,7 @@ class MacrosCalls {
         if (fileRoot.errors.length != 0)
             return {
                 labels: new Map(),
+                dynamicLabelsPrefixes: new Set(),
                 errors: [constructError(MSG.BAD_MACRO_CALL, commandNode)]
             };
         const program = new Program(this.parsedFiles, this.uri);
@@ -324,12 +332,14 @@ class MacrosCalls {
         program.visitFileNode(fileRoot.ast);
         const result: MacroResult = {
             labels: program.globalLabels,
+            dynamicLabelsPrefixes: program.dynamicLabelsPrefixes,
             errors: []
         };
         const macroResult = program.macrosCalls.getMacroResult();
         for (const [labelName, label] of macroResult.labels) {
             result.labels.set(labelName, label);
         }
+        macroResult.dynamicLabelsPrefixes.forEach(it => result.dynamicLabelsPrefixes.add(it));
         if (program.errors.length != 0)
             result.errors = [constructError(MSG.BAD_MACRO_CALL, commandNode)];
         for (const label of result.labels.values()) {
@@ -367,5 +377,6 @@ class MacrosCalls {
 
 type MacroResult = {
     labels: LabelsByName,
+    dynamicLabelsPrefixes: Set<string>,
     errors: DiagnosticWithURI[]
 }
