@@ -151,7 +151,7 @@ export class Visitor {
 
     private convertArgsToDynamicLabel(args: cst.ArgumentCstNode[]): ast.ArgumentNode[] {
         const location = this.createLocation(args[0], args[args.length-1]);
-        const identifiers: ast.IdentifierNode[] = []
+        const identifiers: ast.IdentifierNode[] = [];
         for (const arg of args) {
             const convertedArgument = this.convertArgument(arg);
             if (convertedArgument.addressMode == ast.AddressMode.None && 
