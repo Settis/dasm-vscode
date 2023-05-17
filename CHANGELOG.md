@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- nested directives are parsed correctly
+- dynamic variables definition and usage do not show any error
+
 ## [1.1.5] - 2023-03-13
 
 ### Fixed
