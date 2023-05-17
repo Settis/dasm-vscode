@@ -23,6 +23,19 @@ export const LIST = 'LIST';
 export const RORG = 'RORG';
 export const REND = 'REND';
 
+// this is a part of grammar, but I need it for consistency
+export const IFCONST = 'IFCONST';
+export const IFNCONST = 'IFNCONST';
+export const IF = 'IF';
+export const ELSE = 'ELSE';
+export const EIF = 'EIF';
+export const ENDIF = 'ENDIF';
+export const REPEAT = 'REPEAT';
+export const REPEND = 'REPEND';
+export const MAC = 'MAC';
+export const MACRO = 'MACRO';
+export const ENDM = 'ENDM';
+
 export const NAMES = new Set([
     SUBROUTINE,
     INCLUDE,
@@ -48,4 +61,16 @@ export const NAMES = new Set([
     LIST,
     RORG,
     REND,
+
+    IFCONST,
+    IFNCONST,
+    IF,
+    ELSE,
+    EIF,
+    ENDIF,
+    REPEAT,
+    REPEND,
+    MAC,
+    MACRO,
+    ENDM,
 ]);
