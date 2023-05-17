@@ -23,6 +23,7 @@ export const parsedFiles = new ParsedFiles(documents);
 const openedDocuments = new Set<string>();
 let lastSendedDiagnostics = new Set<string>();
 let relatedObjects = new Map<AstNode, RelatedObject>();
+export let programs = new Map<string, Program>();
 
 connection.onInitialize((_: InitializeParams) => {
 	return {
@@ -85,8 +86,10 @@ connection.onCompletionResolve(onCompletionResolveImpl);
 function rescanDocuments() {
 	parsedFiles.clean();
 	relatedObjects = new Map();
-	const programs = Array.from(openedDocuments).map(uri => new Program(parsedFiles, uri));
-	programs.forEach(program => {
+	programs = new Map();
+	Array.from(openedDocuments).forEach(uri => programs.set(uri, new Program(parsedFiles, uri)));
+	const programList = Array.from(programs.values());
+	programList.forEach(program => {
 		program.assemble();
 		collectLabels(program.globalLabels);
 		program.localLabels.forEach(it => collectLabels(it));
@@ -94,10 +97,10 @@ function rescanDocuments() {
 	});
 	const usedFiles = new Set<string>();
 	const diagnostics: DiagnosticWithURI[] = [];
-	for (const program of programs) {
+	for (const program of programList) {
 		program.usedFiles.forEach(uri => usedFiles.add(uri));
 	}
-	for (const program of programs) {
+	for (const program of programList) {
 		if (usedFiles.has(program.uri)) continue;
 		diagnostics.push(...validateProgram(program));
 		diagnostics.push(...program.errors);

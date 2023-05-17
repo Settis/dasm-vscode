@@ -1,0 +1,11 @@
+text: |2
+    MAC SOME
+    NOP
+    ENDM
+
+    SO{|comp}ME
+  
+actions:
+  comp:
+    type: Completion
+    text: SOME
