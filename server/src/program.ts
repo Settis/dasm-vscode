@@ -16,7 +16,7 @@ export class Program {
     constructor(private parsedFiles: ParsedFiles, uri: string) {
         this.uri = unifyUri(uri);
         this.folderUri = getFolder(uri);
-        this.macrosCalls = new MacrosCalls(parsedFiles, uri);
+        this.macrosCalls = new MacrosCalls(parsedFiles, this.includeFolders, uri);
     }
 
     public uri: string;
@@ -25,7 +25,7 @@ export class Program {
     public macroses: MacrosByName = new Map();
     public relocatableDirectives: CommandNode[] = [];
     private folderUri: string;
-    private includeFolders = new Set<string>();
+    public includeFolders = new Set<string>();
     public errors: DiagnosticWithURI[] = [];
     public usedFiles = new Set<string>();
     private currentlyIncludedStack = new Set<string>();
@@ -290,7 +290,9 @@ export class Program {
 }
 
 class MacrosCalls {
-    constructor(private parsedFiles: ParsedFiles, private uri: string) {}
+    constructor(private parsedFiles: ParsedFiles, 
+        private includeFolders: Set<string>,
+        private uri: string) {}
 
     public macrosDefinitions = new Map<UnifiedCommandName, string>();
     private macrosUsages: CommandNode[] = [];
@@ -329,6 +331,7 @@ class MacrosCalls {
             };
         const program = new Program(this.parsedFiles, this.uri);
         program.macrosCalls.macrosDefinitions = this.macrosDefinitions;
+        program.includeFolders = this.includeFolders;
         program.visitFileNode(fileRoot.ast);
         const result: MacroResult = {
             labels: program.globalLabels,
