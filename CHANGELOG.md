@@ -5,6 +5,7 @@
 ### Added
 
 - completion for preprocessor keywords
+- completion for macros
 
 ### Fixed
 
