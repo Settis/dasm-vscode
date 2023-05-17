@@ -1,0 +1,9 @@
+text: |2
+  FOO:
+    REPEA{|comp}T 2
+    NOP
+    REPEND
+actions:
+  comp:
+    type: Completion
+    text: REPEAT

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- completion for preprocessor keywords
+
 ### Fixed
 
 - nested directives are parsed correctly
