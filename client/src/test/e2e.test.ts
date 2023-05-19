@@ -221,7 +221,7 @@ suite('Test include', () => {
         await openUseCaseFile(mainUri);
         const mainErrors = await getErrors(mainUri, 0);
         assert.equal(mainErrors.length, 0);
-    })
+    });
 });
 
 function printLineWithRange(useCase: UseCase, range: Range): string {
