@@ -6,6 +6,7 @@
 
 - completion for preprocessor keywords
 - completion for macros
+- completion for labels
 
 ### Fixed
 

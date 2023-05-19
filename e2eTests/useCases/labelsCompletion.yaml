@@ -1,0 +1,16 @@
+text: |2
+  FOO:
+    NOP
+  {|noFoo}{|tmp}TMP SET 3
+    LDA {|tmp}{|foo}FOO
+actions:
+  tmp:
+    type: Completion
+    text: TMP
+  foo:
+    type: Completion
+    text: FOO
+  noFoo:
+    type: Completion
+    text: FOO
+    not: True
