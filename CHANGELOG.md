@@ -12,6 +12,7 @@
 
 - nested directives are parsed correctly
 - dynamic variables definition and usage do not show any error
+- keep all INCDIR while resolving INCLUDE in macros
 
 ## [1.1.5] - 2023-03-13
 

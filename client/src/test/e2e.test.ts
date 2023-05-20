@@ -213,6 +213,15 @@ suite('Test include', () => {
         const usageErrors = await getErrors(usageUri, 0);
         assert.equal(usageErrors.length, 0);
     });
+
+    const incdirForMacroFolder = path.resolve(fixturesFolder, 'incdirForMacro');
+
+    test('Include directories for macros',async () => {
+        const mainUri = getDocUri(path.resolve(incdirForMacroFolder, 'main.asm'));
+        await openUseCaseFile(mainUri);
+        const mainErrors = await getErrors(mainUri, 0);
+        assert.equal(mainErrors.length, 0);
+    });
 });
 
 function printLineWithRange(useCase: UseCase, range: Range): string {
