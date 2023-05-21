@@ -10,11 +10,20 @@ Only 6502 is supported.
 ## Features
 - syntax highlighting
 - error checking
-- include & include dir support
+- include & incdir support
 - navigating by labels (like go to definition)
+- autocompletion
+
+## Known limitations
+The plugin does not assemble the code.
+It parses the source in order to extract variable definition and usage, but does not compute expressions.
+
+Directives are also partially supported: 
+- macros are not parsed at all, only global variables are extracted on each macro usage
+- for if - only, the `true` branch is evaluated
+- for repeat, it shows an error in case global constants are defined inside, assuming the section is repeated several times
 
 ## Plans
-- type-matching completion
 - outline view
 - show listing of applied macros
 - hovering
