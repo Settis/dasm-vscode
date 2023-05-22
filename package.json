@@ -41,7 +41,12 @@
         "scopeName": "source.dasm",
         "path": "./syntaxes/dasmGrammar.json"
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "[dasm]": {
+        "editor.wordBasedSuggestions": false
+      } 
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run esbuild-client-base -- --minify && npm run esbuild-server-base -- --minify",
