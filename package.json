@@ -47,15 +47,20 @@
       "properties": {
         "dasm.labels.hidePrefix": {
           "type": "array",
-          "default": null,
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
           "description": "Hide labels in autocompletion by this prefix"
         }
       }
     },
     "configurationDefaults": {
       "[dasm]": {
-        "editor.wordBasedSuggestions": false
-      } 
+        "editor.wordBasedSuggestions": false,
+        "editor.suggest.showWords": false
+      }
     }
   },
   "scripts": {
