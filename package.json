@@ -42,6 +42,16 @@
         "path": "./syntaxes/dasmGrammar.json"
       }
     ],
+    "configuration": {
+      "title": "DASM",
+      "properties": {
+        "dasm.labels.hidePrefix": {
+          "type": "array",
+          "default": null,
+          "description": "Hide labels in autocompletion by this prefix"
+        }
+      }
+    },
     "configurationDefaults": {
       "[dasm]": {
         "editor.wordBasedSuggestions": false

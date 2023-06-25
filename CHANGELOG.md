@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- configuration for hiding labels from autocompletion
+
 ### Fixed
 
 - disabled word based suggestions
