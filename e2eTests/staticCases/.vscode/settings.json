@@ -1,3 +1,5 @@
 {
-    "dasm.labels.hidePrefix" : ["_TEST_"]
+    "dasm.labels.hidePrefix" : ["_TEST_"],
+    "editor.suggest.showWords": false,
+    "editor.wordBasedSuggestions": false
 }
