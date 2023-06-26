@@ -13,7 +13,7 @@ export class Visitor {
     public constructAst(text: cst.TextCstNode): ast.FileNode {
         return new ast.FileNode(
             this.createLocation(text), 
-            (text.children.line||[])
+            (text.children.line ?? [])
                 .filter(it => it.location?.startColumn)
                 .map(it => this.convertLine(it))
                 .filter(it => !(it.label === null && it.command === null))
@@ -40,7 +40,7 @@ export class Visitor {
 
     private convertDynamicLabel(dynamicLabel: cst.DynamicLabelDefinitionCstNode): ast.IdentifierNode | ast.DynamicLabelNode {
         const childern = dynamicLabel.children;
-        const identifiers = (childern.identifier||[]).map(it => this.convertIdentifier(it));
+        const identifiers = (childern.identifier ?? []).map(it => this.convertIdentifier(it));
         if (identifiers.length == 1)
             return identifiers[0];
         return new ast.DynamicLabelNode(
@@ -89,7 +89,7 @@ export class Visitor {
     }
 
     private convertMacroText(macroText: cst.MacroTextCstNode): string {
-        return (macroText.children.macroTextPart || []).map(this.convertMacroTextPart).join('');
+        return (macroText.children.macroTextPart ?? []).map(this.convertMacroTextPart).join('');
     }
 
     private convertMacroTextPart(macroTestPart: cst.MacroTextPartCstNode): string {
@@ -139,7 +139,7 @@ export class Visitor {
         let commandEnd: RangeSource = commandNameNode[0];
         if (argumentNode) commandEnd = argumentNode[argumentNode.length-1];
         const commandName = this.convertCommandName(commandNameNode[0]);
-        let args = (argumentNode || []).map(it => this.convertArgument(it));
+        let args = (argumentNode ?? []).map(it => this.convertArgument(it));
         if (argumentNode && commandName.name.toLocaleLowerCase() === 'set')
             args = this.convertArgsToDynamicLabel(argumentNode);
         return new ast.CommandNode(

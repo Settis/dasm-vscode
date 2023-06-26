@@ -255,7 +255,7 @@ function aLine(labelName?:string, commandName?: string, ...args: TestArgumentNod
 function anArg(name: string, addressMode?: AddressMode): TestArgumentNode {
     return {
         type: NodeType.Argument,
-        addressMode: addressMode || AddressMode.None,
+        addressMode: addressMode ?? AddressMode.None,
         value: {
             type: NodeType.Identifier,
             name: name

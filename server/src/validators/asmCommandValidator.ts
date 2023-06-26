@@ -69,7 +69,7 @@ const TYPE_TO_MODE: {
 
 function validateCommandAddressMode(operation: OperationDescription, arg: ArgumentNode): DiagnosticWithURI[] {
     const result: DiagnosticWithURI[] = [];
-    let mode = TYPE_TO_MODE[arg.addressMode] || OpMode.Address;
+    let mode = TYPE_TO_MODE[arg.addressMode] ?? OpMode.Address;
     if (arg.value.type === NodeType.Number) {
         if (mode in MODE_CONVERSOIN) {
             if (arg.value.value > 0xFF)

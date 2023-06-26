@@ -31,7 +31,7 @@ function getEmptyResult(uri: string, errors?: DiagnosticWithURI[]): ParsingResul
     const location = Location.create(uri, Range.create(0,0,0,0));
     const ast = new FileNode(location, []);
     return {
-        errors: errors || [],
+        errors: errors ?? [],
         ast
     };
 }
@@ -61,7 +61,7 @@ export type RangeSource = AstNode | CstNode | IToken | ILexingError;
 export function createRange(start: RangeSource, end?: RangeSource): Range {
     return Range.create(
         createStartPosition(start),
-        createEndPosition(end || start)
+        createEndPosition(end ?? start)
     );
 }
 
