@@ -17,9 +17,28 @@ text: |2
 
       STA CONST_BAR
 
+  {SOME_1|defSome1} = 1
+  {SOME_2|defSome2} = 2
+      MAC dummy
+  _TMP set {1}
+  _TMP set {2}
+      ENDM
+
+      dummy SO{|getDefSome1}ME_1, SOM{|getDefSome2}E_2
+
 actions:
   def:
     type: DefinitionResult
   getDef:
     type: GetDefinition
     result: def
+  defSome1:
+    type: DefinitionResult
+  defSome2:
+    type: DefinitionResult
+  getDefSome1:
+    type: GetDefinition
+    result: defSome1
+  getDefSome2:
+    type: GetDefinition
+    result: defSome2

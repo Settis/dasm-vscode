@@ -20,7 +20,7 @@ export async function onCompletionImpl(positionParams: TextDocumentPositionParam
   if (splitResult == 2)
     return onCommandCompletion(program);
   // 3 - after the command
-  if (splitResult == 3)
+  if (splitResult >= 3)
     return await onLabelCompletion(program, true);
   return [];
 }

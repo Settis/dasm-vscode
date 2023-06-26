@@ -9,6 +9,8 @@
 ### Fixed
 
 - disabled word based suggestions
+- label navigation for macros args
+- label autocompletion for second and other macros args
 
 ## [1.2.0] - 2023-05-21
 
