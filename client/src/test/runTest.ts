@@ -20,8 +20,6 @@ async function main() {
 
 		const launchArgs = [path.resolve(__dirname, '../../../e2eTests/testFixture')];
 
-		console.log('Launch args: ' + launchArgs);
-
 		// Download VS Code, unzip it and run the integration test
 		await runTests({ extensionDevelopmentPath, extensionTestsPath, extensionTestsEnv, launchArgs });
 	} catch (err) {

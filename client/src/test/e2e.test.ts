@@ -2,7 +2,7 @@ import { CompletionAction, ErrorAction, fixturesFolder, GetDefinitionAction, Get
 import { constructRange, flushCodeCoverage, getDocUri, getErrors, getOpendFileName, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
-import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList, workspace } from "vscode";
+import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList } from "vscode";
 
 const useCases = readUseCases();
 
@@ -125,12 +125,6 @@ for (const useCase of useCases) {
         });
 
         test("check completion",async () => {
-            const hidePrefixConf = workspace.getConfiguration('dasm.labels').get('hidePrefix');
-            console.log("Hide prefix: " + hidePrefixConf);
-            const wordSuggestConf = workspace.getConfiguration('editor').get('wordBasedSuggestions');
-            console.log("Word based suggestion: " + wordSuggestConf);
-            const showWordsConf = workspace.getConfiguration('editor.suggest').get('showWords');
-            console.log("Show words confg: " + showWordsConf);
             for (const getCompletionAnnotation of annotations.filter(it => it.action.type === 'Completion')) {
                 const text = (getCompletionAnnotation.action as CompletionAction).text;
                 const notMatch = (getCompletionAnnotation.action as CompletionAction).not || false;
