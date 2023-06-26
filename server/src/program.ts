@@ -237,33 +237,43 @@ export class Program {
                 this.visitExpression(arg.value);
         else {
             this.getMacrosByName(name).usages.push(commandNode.name);
+            for (const arg of commandNode.args)
+                this.visitExpression(arg.value, true);
             this.macrosCalls.addMacrosUsage(commandNode);
         }
     }
 
-    private visitExpression(node: ExpressionNode) {
+    private visitExpression(node: ExpressionNode, optinalIdentifiers = false) {
         switch (node.type) {
             case NodeType.Identifier:
-                this.visitIdentifier(node);
+                this.visitIdentifier(node, optinalIdentifiers);
                 break;
             case NodeType.UnaryOperator:
-                this.visitExpression(node.operand);
+                this.visitExpression(node.operand, optinalIdentifiers);
                 break;
             case NodeType.BinaryOperator:
-                this.visitExpression(node.left);
-                this.visitExpression(node.right);
+                this.visitExpression(node.left, optinalIdentifiers);
+                this.visitExpression(node.right, optinalIdentifiers);
                 break;
             case NodeType.Brackets:
-                this.visitExpression(node.value);
+                this.visitExpression(node.value, optinalIdentifiers);
                 break;
         }
     }
 
-    private visitIdentifier(node: IdentifierNode) {
+    private visitIdentifier(node: IdentifierNode, optinalIdentifiers = false) {
         const name = node.name;
         if (ALIASES.has(name)) return;
-        const lableObject = this.getLabelObjectByName(name);
-        lableObject.usages.push(node);
+        if (optinalIdentifiers) {
+            let labelObject = this.globalLabels.get(name);
+            if (labelObject === undefined)
+                labelObject = this.localLabels[this.localLabels.length - 1].get(name);
+            if (labelObject)
+                labelObject.usages.push(node);
+        } else {
+            const lableObject = this.getLabelObjectByName(name);
+            lableObject.usages.push(node);
+        }
     }
 
     private findFileUri(name: string): string | undefined {

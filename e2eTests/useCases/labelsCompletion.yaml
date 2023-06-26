@@ -6,6 +6,13 @@ text: |2
   _TESTING:
   _TEST_HIDING:
     LDA _TES{|noHide}{|testing}TING
+
+    MAC dummy
+  _TMP set {1}
+  _TMP set {2}
+    ENDM
+
+    dummy {|foo}TMP, TM{|tmp}P
 actions:
   tmp:
     type: Completion
