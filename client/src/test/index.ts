@@ -17,7 +17,7 @@ export function run(): Promise<void> {
 	const testsRoot = __dirname;
 
 	return new Promise((resolve, reject) => {
-		glob('e2e.test.js', { cwd: testsRoot }, async (err, files) => {
+		glob('e2e.test.js', { cwd: testsRoot }, (err, files) => {
 			if (err) {
 				return reject(err);
 			}

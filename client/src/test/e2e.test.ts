@@ -108,7 +108,7 @@ for (const useCase of useCases) {
         test("check hovering", async () => {
             for (const getHoveringAnnotation of annotations.filter(it => it.action.type === 'Hovering')) {
                 const text = (getHoveringAnnotation.action as HoveringAction).text;
-                const notMatch = (getHoveringAnnotation.action as HoveringAction).not || false;
+                const notMatch = (getHoveringAnnotation.action as HoveringAction).not ?? false;
                 const hover = await commands.executeCommand<Hover[]>('vscode.executeHoverProvider', mainUri, {
                     line: getHoveringAnnotation.range.line,
                     character: getHoveringAnnotation.range.startChar,
@@ -127,7 +127,7 @@ for (const useCase of useCases) {
         test("check completion",async () => {
             for (const getCompletionAnnotation of annotations.filter(it => it.action.type === 'Completion')) {
                 const text = (getCompletionAnnotation.action as CompletionAction).text;
-                const notMatch = (getCompletionAnnotation.action as CompletionAction).not || false;
+                const notMatch = (getCompletionAnnotation.action as CompletionAction).not ?? false;
                 const completionList = await commands.executeCommand<CompletionList>('vscode.executeCompletionItemProvider', mainUri, {
                     line: getCompletionAnnotation.range.line,
                     character: getCompletionAnnotation.range.startChar,
@@ -174,7 +174,7 @@ suite('Test include', () => {
 
         // try to open that document
         await openUseCaseFile(anotherDefinition.uri);
-        const openedFile = getOpendFileName() || "";
+        const openedFile = getOpendFileName() ?? "";
         assert.ok(openedFile.endsWith('another.asm'), `Opened file is ${openedFile}`);
     });
 

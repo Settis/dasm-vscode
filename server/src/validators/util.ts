@@ -19,7 +19,7 @@ function constructDiagnostic(msg:MSG, severity: DiagnosticSeverity, fromNode: As
         uri: fromNode.location.uri,
         range: {
             start: fromNode.location.range.start,
-            end: (toNode || fromNode).location.range.end
+            end: (toNode ?? fromNode).location.range.end
         },
         message: getMessage(msg),
         severity: severity
