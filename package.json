@@ -58,8 +58,7 @@
     },
     "configurationDefaults": {
       "[dasm]": {
-        "editor.wordBasedSuggestions": false,
-        "editor.suggest.showWords": false
+        "editor.wordBasedSuggestions": false
       }
     }
   },
