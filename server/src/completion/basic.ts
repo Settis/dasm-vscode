@@ -3,24 +3,25 @@ import { documents, programs } from "../server";
 import { onCommandCompletion } from "./command";
 import { onLabelCompletion } from "./label";
 
-export function onCompletionImpl(positionParams: TextDocumentPositionParams): CompletionItem[] {
-  const document = documents.get(positionParams.textDocument.uri);
+export async function onCompletionImpl(positionParams: TextDocumentPositionParams): Promise<CompletionItem[]> {
+  const documentUri = positionParams.textDocument.uri;
+  const document = documents.get(documentUri);
   if (document === undefined) return [];
   const line = document.getText(
     Range.create(
       Position.create(positionParams.position.line, 0), 
       Position.create(positionParams.position.line, positionParams.position.character)));
   const splitResult = line.split(/\s+/).length;
-  const program = programs.get(positionParams.textDocument.uri);
+  const program = programs.get(documentUri);
   // 1 - label
   if (splitResult == 1)
-    return onLabelCompletion(program);
+    return await onLabelCompletion(program);
   // 2 - command
   if (splitResult == 2)
     return onCommandCompletion(program);
   // 3 - after the command
   if (splitResult == 3)
-    return onLabelCompletion(program, true);
+    return await onLabelCompletion(program, true);
   return [];
 }
 

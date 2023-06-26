@@ -18,8 +18,10 @@ async function main() {
 
 		const extensionTestsEnv = {'COLLECT_COVERAGE': 'true' };
 
+		const launchArgs = [path.resolve(__dirname, '../../../e2eTests/testFixture')];
+
 		// Download VS Code, unzip it and run the integration test
-		await runTests({ extensionDevelopmentPath, extensionTestsPath, extensionTestsEnv });
+		await runTests({ extensionDevelopmentPath, extensionTestsPath, extensionTestsEnv, launchArgs });
 	} catch (err) {
 		console.error('Failed to run tests');
 		console.error((err as Error).stack);

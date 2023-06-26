@@ -11,6 +11,7 @@ import { getNodeByPosition } from './parser/ast/utils';
 import { Program } from './program';
 import { validateProgram } from './validators/general';
 import { DiagnosticWithURI } from './validators/util';
+import { DEFAULT_SETTINGS, Settings } from './settings';
 
 type RelatedObject = {
     definitions: AstNode[],
@@ -20,6 +21,7 @@ type RelatedObject = {
 export const connection = createConnection();
 export const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 export const parsedFiles = new ParsedFiles(documents);
+export const documentSettings: Map<string, Settings> = new Map();
 const openedDocuments = new Set<string>();
 let lastSendedDiagnostics = new Set<string>();
 let relatedObjects = new Map<AstNode, RelatedObject>();
@@ -71,6 +73,7 @@ documents.onDidChangeContent(_ => {
 
 documents.onDidClose(change => {
 	openedDocuments.delete(change.document.uri);
+	documentSettings.delete(change.document.uri);
 	rescanDocuments();
 });
 
@@ -82,6 +85,23 @@ connection.onHover((params: HoverParams) => {
 
 connection.onCompletion(onCompletionImpl);
 connection.onCompletionResolve(onCompletionResolveImpl);
+
+connection.onDidChangeConfiguration(_ => {
+	documentSettings.clear();
+});
+
+export async function getDocumentSettings(resource: string): Promise<Settings> {
+	let result = documentSettings.get(resource);
+	if (!result) {
+		result = await connection.workspace.getConfiguration({
+			scopeUri: resource,
+			section: 'dasm'
+		});
+		if (!result) result = DEFAULT_SETTINGS;
+		documentSettings.set(resource, result);
+	}
+	return result;
+}
 
 function rescanDocuments() {
 	parsedFiles.clean();
