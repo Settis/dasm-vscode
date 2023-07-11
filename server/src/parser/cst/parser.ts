@@ -27,7 +27,8 @@ const SET_OF_BINARY_SIGNS = new Set([
 class DasmParser extends CstParser {
     constructor() {
         super(lexer.LEXER_DEFINITION, {
-            nodeLocationTracking: "full"
+            nodeLocationTracking: "full",
+            recoveryEnabled: true
         });
         this.performSelfAnalysis();
     }

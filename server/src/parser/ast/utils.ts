@@ -14,7 +14,6 @@ export function parseText(uri: string, text: string): ParsingResult {
     DASM_PARSER.input = lexerResult.tokens;
     const cst = DASM_PARSER.text();
     errors.push(...DASM_PARSER.errors.map(it => convertParserError(it, uri)));
-    if (errors.length !== 0) return getEmptyResult(uri, errors);
     const visitor = new Visitor(uri);
     return {
         errors,
