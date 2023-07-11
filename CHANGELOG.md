@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- do not stop processing the source after the first syntax error
+
 ## [1.3.0] - 2023-06-27
 
 ### Added
