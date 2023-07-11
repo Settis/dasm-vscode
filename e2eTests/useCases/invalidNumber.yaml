@@ -5,5 +5,5 @@ text: |2
 actions:
   invalid:
     type: Error
-    message: "Redundant input, expecting EOF but found: 56"
+    message: Expecting token of type --> EOF <-- but found --> '56' <--
     severity: Error

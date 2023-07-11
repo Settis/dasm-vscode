@@ -1,0 +1,16 @@
+text: |2
+    MAC FOO
+    ENDM
+
+    FOO {,|tokenError} sdf
+    
+    CLC {3|syntError}
+actions:
+  syntError:
+    type: Error
+    message: Wrong address mode
+    severity: Error
+  tokenError:
+    type: Error
+    message: Expecting token of type --> EOF <-- but found --> ',' <--
+    severity: Error
