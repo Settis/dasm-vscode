@@ -1,0 +1,17 @@
+text: |2
+  NEG_NRs = 123
+    MACRO IF_BIT
+    ENDM
+
+    IF_{|IF}BIT
+
+    LDA NEG_{|NEG}NRs
+
+actions:
+  IF:
+    type: Completion
+    text: IF_BIT
+  NEG:
+    type: Completion
+    text: NEG_NRs
+  
