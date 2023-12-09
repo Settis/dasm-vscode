@@ -2,6 +2,7 @@ import { CompletionItem, Position, Range, TextDocumentPositionParams } from "vsc
 import { documents, programs } from "../server";
 import { onCommandCompletion } from "./command";
 import { onLabelCompletion } from "./label";
+import { filterStrucMacLabels, getStrucMacSnippets, isStrucMacEnabled } from "./strucMac";
 
 export async function onCompletionImpl(positionParams: TextDocumentPositionParams): Promise<CompletionItem[]> {
   const documentUri = positionParams.textDocument.uri;
@@ -13,16 +14,21 @@ export async function onCompletionImpl(positionParams: TextDocumentPositionParam
       Position.create(positionParams.position.line, positionParams.position.character)));
   const splitResult = line.split(/\s+/).length;
   const program = programs.get(documentUri);
+  let result: CompletionItem[] = [];
   // 1 - label
   if (splitResult == 1)
-    return await onLabelCompletion(program);
+    result = await onLabelCompletion(program);
   // 2 - command
-  if (splitResult == 2)
-    return onCommandCompletion(program);
+  else if (splitResult == 2)
+    result = onCommandCompletion(program);
   // 3 - after the command
-  if (splitResult >= 3)
-    return await onLabelCompletion(program, true);
-  return [];
+  else if (splitResult >= 3)
+    result = await onLabelCompletion(program, true);
+  if (isStrucMacEnabled(program)) {
+    result = result.filter(filterStrucMacLabels);
+    result = result.concat(getStrucMacSnippets());
+  }
+  return result;
 }
 
 export function onCompletionResolveImpl(item: CompletionItem): CompletionItem {

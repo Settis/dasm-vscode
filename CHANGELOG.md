@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added 
+
+- Structure macros support
+
 ## [1.3.1] - 2023-07-11
 
 ### Fixed

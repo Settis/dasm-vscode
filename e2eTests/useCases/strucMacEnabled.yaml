@@ -1,6 +1,7 @@
 text: |2
   NEG_NRs = 123
-    INCLUDE {"STRUCMAC.ASM"|fileError}
+    INCDIR "../"
+    INCLUDE "STRUCMAC.ASM"
     MACRO IF_BIT
     ENDM
 
@@ -16,8 +17,4 @@ actions:
     type: Completion
     text: NEG_NRs
     not: True
-  fileError:
-    type: Error
-    message: The file is not resolvable
-    severity: Error
   
