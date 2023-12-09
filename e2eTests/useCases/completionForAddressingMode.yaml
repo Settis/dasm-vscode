@@ -1,0 +1,8 @@
+text: |2
+  XMP = 1
+    CMP XMP,X{|nothing}
+actions:
+  nothing:
+    type: Completion
+    text: XMP
+    not: True
