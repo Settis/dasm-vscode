@@ -9,6 +9,7 @@
 ### Fixed
 
 - disable autocompletion for addressing mode
+- disable autocompletion for hex digits
 
 ## [1.3.1] - 2023-07-11
 
