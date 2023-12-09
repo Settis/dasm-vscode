@@ -3,6 +3,7 @@ import { documents, programs } from "../server";
 import { onCommandCompletion } from "./command";
 import { onLabelCompletion } from "./label";
 import { filterStrucMacLabels, getStrucMacSnippets, isStrucMacEnabled } from "./strucMac";
+import { Program } from "../program";
 
 export async function onCompletionImpl(positionParams: TextDocumentPositionParams): Promise<CompletionItem[]> {
   const documentUri = positionParams.textDocument.uri;
@@ -24,19 +25,27 @@ export async function onCompletionImpl(positionParams: TextDocumentPositionParam
     result = onCommandCompletion(program);
   // 3 - after the command
   else if (splitLength >= 3) {
-    if (splitResult[splitLength-1].indexOf(',') == -1) // and this not contain "," so it's not an addressing scecifaction
-      result = await onLabelCompletion(program, true);
-    else
-      result = [
-        {label: 'X', kind: CompletionItemKind.Keyword}, 
-        {label: 'Y', kind: CompletionItemKind.Keyword}
-      ];
+    result = await afterCommandCompletion(program, splitResult[splitLength-1]);
+    
   }
   if (isStrucMacEnabled(program)) {
     result = result.filter(filterStrucMacLabels);
     result = result.concat(getStrucMacSnippets());
   }
   return result;
+}
+
+async function afterCommandCompletion(program: Program | undefined, word: string): Promise<CompletionItem[]> {
+  if (word.indexOf(',') != -1) // and this xcontain "," so it's an addressing scecifaction
+    return [
+      {label: 'X', kind: CompletionItemKind.Keyword}, 
+      {label: 'Y', kind: CompletionItemKind.Keyword}
+    ];
+  if (word.indexOf('$') != -1) // it's probably a hex number
+    // VSCode will show everything possible on the empty array
+    // So I must return something
+    return [{label: '$', kind: CompletionItemKind.Keyword}]; 
+  return await onLabelCompletion(program, true);
 }
 
 export function onCompletionResolveImpl(item: CompletionItem): CompletionItem {

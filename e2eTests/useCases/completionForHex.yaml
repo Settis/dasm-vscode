@@ -1,0 +1,8 @@
+text: |2
+  FOO = 1
+    ADC #$F{|nofoo}F
+actions:
+  nofoo:
+    type: Completion
+    text: FOO
+    not: True
