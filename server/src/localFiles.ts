@@ -38,5 +38,8 @@ export function getFolder(uri: string): string {
 }
 
 export function unifyUri(uri: string): string {
-    return URI.file(URI.parse(uri).fsPath).toString(false);
+    const parsedUri = URI.parse(uri);
+    if (parsedUri.scheme === 'file') 
+        return URI.file(parsedUri.fsPath).toString(false);
+    return uri;
 }
