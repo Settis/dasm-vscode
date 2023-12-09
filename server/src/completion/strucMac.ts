@@ -1,6 +1,6 @@
 import { CompletionItem, CompletionItemKind, InsertTextFormat } from "vscode-languageserver";
 import { Program } from "../program";
-import strucMacSnippetsJson from "./structureMacros.json";
+import { DATA } from "./structureMacros";
 
 const STRUC_MAC_LABELS = new Set<string>([
 	'IS_SET',
@@ -41,12 +41,13 @@ export function getStrucMacSnippets(): CompletionItem[] {
 }
 
 function readStrucMacSnippets(): CompletionItem[] {
-    return Object.values(strucMacSnippetsJson).map(item => {
+    return Object.values(DATA).map(item => {
         return {
             label: item.prefix,
             kind: CompletionItemKind.Snippet,
             insertTextFormat: InsertTextFormat.Snippet,
-            insertText: item.body.join('\n')
+            insertText: item.body.join('\n'),
+            documentation: item.description
         };
     });
 }

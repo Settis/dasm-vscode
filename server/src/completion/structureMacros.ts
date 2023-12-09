@@ -1,4 +1,12 @@
-{
+type SnippetData = {[key: string]: SnippetItem};
+type SnippetItem = {
+    scope: string,
+    prefix: string,
+    body: string[],
+    description?: string
+}
+
+export const DATA: SnippetData = {
 	"IF EQUALS": {
 		"scope": "dasm",
 		"prefix": "IF_EQ",
