@@ -6,6 +6,10 @@
 
 - Structure macros support
 
+### Fixed
+
+- disable autocompletion for addressing mode
+
 ## [1.3.1] - 2023-07-11
 
 ### Fixed

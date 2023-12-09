@@ -1,4 +1,4 @@
-import { CompletionItem, Position, Range, TextDocumentPositionParams } from "vscode-languageserver";
+import { CompletionItem, CompletionItemKind, Position, Range, TextDocumentPositionParams } from "vscode-languageserver";
 import { documents, programs } from "../server";
 import { onCommandCompletion } from "./command";
 import { onLabelCompletion } from "./label";
@@ -12,18 +12,26 @@ export async function onCompletionImpl(positionParams: TextDocumentPositionParam
     Range.create(
       Position.create(positionParams.position.line, 0), 
       Position.create(positionParams.position.line, positionParams.position.character)));
-  const splitResult = line.split(/\s+/).length;
+  const splitResult = line.split(/\s+/);
+  const splitLength = splitResult.length;
   const program = programs.get(documentUri);
   let result: CompletionItem[] = [];
   // 1 - label
-  if (splitResult == 1)
+  if (splitLength == 1)
     result = await onLabelCompletion(program);
   // 2 - command
-  else if (splitResult == 2)
+  else if (splitLength == 2)
     result = onCommandCompletion(program);
   // 3 - after the command
-  else if (splitResult >= 3)
-    result = await onLabelCompletion(program, true);
+  else if (splitLength >= 3) {
+    if (splitResult[splitLength-1].indexOf(',') == -1) // and this not contain "," so it's not an addressing scecifaction
+      result = await onLabelCompletion(program, true);
+    else
+      result = [
+        {label: 'X', kind: CompletionItemKind.Keyword}, 
+        {label: 'Y', kind: CompletionItemKind.Keyword}
+      ];
+  }
   if (isStrucMacEnabled(program)) {
     result = result.filter(filterStrucMacLabels);
     result = result.concat(getStrucMacSnippets());
