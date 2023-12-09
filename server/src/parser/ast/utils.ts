@@ -8,17 +8,22 @@ import { AstNode, FileNode } from "./nodes";
 import { Visitor } from "./visitor";
 
 export function parseText(uri: string, text: string): ParsingResult {
-    if (text === '') return getEmptyResult(uri);        
-    const lexerResult = DASM_LEXER.tokenize(text);
-    const errors = lexerResult.errors.map(it => convertLexingError(it, uri));
-    DASM_PARSER.input = lexerResult.tokens;
-    const cst = DASM_PARSER.text();
-    errors.push(...DASM_PARSER.errors.map(it => convertParserError(it, uri)));
-    const visitor = new Visitor(uri);
-    return {
-        errors,
-        ast: visitor.constructAst(cst)
-    };
+    if (text === '') return getEmptyResult(uri);
+    try {
+        const lexerResult = DASM_LEXER.tokenize(text);
+        const errors = lexerResult.errors.map(it => convertLexingError(it, uri));
+        DASM_PARSER.input = lexerResult.tokens;
+        const cst = DASM_PARSER.text();
+        errors.push(...DASM_PARSER.errors.map(it => convertParserError(it, uri)));
+        const visitor = new Visitor(uri);
+        return {
+            errors,
+            ast: visitor.constructAst(cst)
+        };
+    } catch (error) {
+        console.error(error);
+        return getEmptyResult(uri);
+    }
 }
 
 export type ParsingResult = {

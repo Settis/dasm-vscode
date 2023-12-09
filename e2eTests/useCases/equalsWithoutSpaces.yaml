@@ -1,0 +1,12 @@
+text: |2
+    PROCESSOR 6502
+  {SOME|someDef} = 2
+    IF SOM{|someGetDef}E=3
+        
+    ENDIF
+actions:
+  someDef:
+    type: DefinitionResult
+  someGetDef:
+    type: GetDefinition
+    result: someDef
