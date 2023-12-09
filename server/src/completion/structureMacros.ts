@@ -577,4 +577,4 @@ export const DATA: SnippetData = {
 			"$0"
 		]
 	}
-}
+};
