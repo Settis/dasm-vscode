@@ -10,6 +10,8 @@
 
 - disable autocompletion for addressing mode
 - disable autocompletion for hex digits
+- no more crashes on recovered parse result
+- correct handling of using '=' sign in expressions
 
 ## [1.3.1] - 2023-07-11
 
