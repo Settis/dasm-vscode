@@ -1,12 +1,12 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
-	createConnection, DefinitionParams, HoverParams, InitializeParams, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
+	createConnection, DefinitionParams, HoverParams, InitializeParams, Location, Range, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
 import { onCompletionImpl, onCompletionResolveImpl } from './completion/basic';
 import { getHover } from './hovering/basic';
 import { ParsedFiles } from './parsedFiles';
 import { LabelsByName } from './parser/ast/labels';
 import { MacrosByName } from './parser/ast/macros';
-import { AstNode } from './parser/ast/nodes';
+import { AstNode, FileNode } from './parser/ast/nodes';
 import { getNodeByPosition } from './parser/ast/utils';
 import { Program } from './program';
 import { validateProgram } from './validators/general';
@@ -114,6 +114,7 @@ function rescanDocuments() {
 		collectLabels(program.globalLabels);
 		program.localLabels.forEach(it => collectLabels(it));
 		collectMacros(program.macroses);
+		collectIncludes(program.includedFiles);
 	});
 	const usedFiles = new Set<string>();
 	const diagnostics: DiagnosticWithURI[] = [];
@@ -164,6 +165,17 @@ function collectMacros(macrosMap: MacrosByName) {
 			relatedObjects.set(definition, macro);
 		for (const usage of macro.usages)
 			relatedObjects.set(usage, macro);
+	}
+}
+
+function collectIncludes(includes: Map<AstNode, string>) {
+	for (const [node, uri] of includes.entries()) {
+		const fileNode = new FileNode(Location.create(uri, Range.create(0, 0, 0, 0)), []);
+		const relatedObject: RelatedObject = {
+			definitions: [fileNode],
+			usages: []
+		}
+		relatedObjects.set(node, relatedObject);
 	}
 }
 

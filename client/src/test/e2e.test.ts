@@ -153,6 +153,7 @@ suite('Test include', () => {
     test('Definitions are correct', async () => {
         const mainUri = getDocUri(path.resolve(includeFolder, 'simple.asm'));
         await openUseCaseFile(mainUri);
+
         const theLinkDefinitions = await commands.executeCommand<Location[]>('vscode.executeDefinitionProvider', mainUri, {
             line: 1,
             character: 12,
@@ -162,6 +163,17 @@ suite('Test include', () => {
         const theLinkDefinition = theLinkDefinitions[0];
         assert.deepEqual(theLinkDefinition.uri, getDocUri(path.resolve(includeFolder, 'simpleInclude.asm')));
         assert.deepEqual(theLinkDefinition.range, constructRange(0, 0, 7));
+
+        const includeFileDefinitions = await commands.executeCommand<Location[]>('vscode.executeDefinitionProvider', mainUri, {
+            line: 0,
+            character: 20,
+        });
+        assert.ok(includeFileDefinitions, 'No include file definitions');
+        assert.strictEqual(includeFileDefinitions.length, 1, "include file definitions size");
+        const includeFileDefinition = includeFileDefinitions[0];
+        assert.deepEqual(includeFileDefinition.uri, getDocUri(path.resolve(includeFolder, 'simpleInclude.asm')));
+        assert.deepEqual(includeFileDefinition.range, constructRange(0, 0, 0));
+
         const anotherDefinitions = await commands.executeCommand<Location[]>('vscode.executeDefinitionProvider', mainUri, {
             line: 4,
             character: 12,
