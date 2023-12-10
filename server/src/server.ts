@@ -1,6 +1,6 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
-	createConnection, DefinitionParams, HoverParams, InitializeParams, Location, Range, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
+	createConnection, DefinitionParams, DocumentSymbolParams, HoverParams, InitializeParams, Location, Range, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
 import { onCompletionImpl, onCompletionResolveImpl } from './completion/basic';
 import { getHover } from './hovering/basic';
 import { ParsedFiles } from './parsedFiles';
@@ -12,6 +12,7 @@ import { Program } from './program';
 import { validateProgram } from './validators/general';
 import { DiagnosticWithURI } from './validators/util';
 import { DEFAULT_SETTINGS, Settings } from './settings';
+import { getSymbols } from './symbol/basic';
 
 type RelatedObject = {
     definitions: AstNode[],
@@ -34,7 +35,8 @@ connection.onInitialize((_: InitializeParams) => {
 			definitionProvider: true,
 			referencesProvider: true,
 			hoverProvider: true,
-			completionProvider: { resolveProvider: true }
+			completionProvider: { resolveProvider: true },
+			documentSymbolProvider: true,
 		}
 	};
 });
@@ -81,6 +83,12 @@ connection.onHover((params: HoverParams) => {
 	const nodes = getNodeByDocumentPosition(params);
 	if (nodes) return getHover(nodes);
 	return null;
+});
+
+connection.onDocumentSymbol((params: DocumentSymbolParams) => {
+	const program = programs.get(params.textDocument.uri);
+	if (program) return getSymbols(program);
+	return [];
 });
 
 connection.onCompletion(onCompletionImpl);

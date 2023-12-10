@@ -6,6 +6,7 @@
 
 - Structure macros support
 - Open file from include directive
+- Outline view & document symbols
 
 ### Fixed
 
