@@ -5,6 +5,7 @@
 ### Added 
 
 - Structure macros support
+- Open file from include directive
 
 ### Fixed
 

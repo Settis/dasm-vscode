@@ -2,7 +2,7 @@ import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, REND, RORG, SEG, SET, SETSTR, SUB
 import { getFolder, isFileExists, isDirExists, joinUri, unifyUri } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
-import { AllComandNode, ArgumentNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "./parser/ast/nodes";
+import { AllComandNode, ArgumentNode, AstNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "./parser/ast/nodes";
 import { LabelsByName, LabelObject, ALIASES, mergeLabelsMap } from "./parser/ast/labels";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
 import { operations } from "./dasm/operations";
@@ -28,6 +28,7 @@ export class Program {
     public includeFolders = new Set<string>();
     public errors: DiagnosticWithURI[] = [];
     public usedFiles = new Set<string>();
+    public includedFiles = new Map<AstNode, string>();
     private currentlyIncludedStack = new Set<string>();
     public macrosCalls: MacrosCalls;
     public dynamicLabelsPrefixes = new Set<string>();
@@ -175,6 +176,7 @@ export class Program {
         if (!fileName) return;
         const fileUri = this.findFileUri(fileName);
         if (fileUri) {
+            this.includedFiles.set(fileNameNode, fileUri);
             if (this.uri === fileUri || this.currentlyIncludedStack.has(fileUri)) {
                 this.errors.push(constructError(MSG.CIRCULAR_INCLUDE, fileNameNode));
             } else {
