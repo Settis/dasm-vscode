@@ -174,7 +174,7 @@ function collectIncludes(includes: Map<AstNode, string>) {
 		const relatedObject: RelatedObject = {
 			definitions: [fileNode],
 			usages: []
-		}
+		};
 		relatedObjects.set(node, relatedObject);
 	}
 }
