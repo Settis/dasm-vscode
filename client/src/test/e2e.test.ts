@@ -2,7 +2,7 @@ import { CompletionAction, ErrorAction, fixturesFolder, GetDefinitionAction, Get
 import { constructRange, flushCodeCoverage, getDocUri, getErrors, getOpendFileName, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
-import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList } from "vscode";
+import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList, DocumentSymbol } from "vscode";
 
 const useCases = readUseCases();
 
@@ -188,6 +188,22 @@ suite('Test include', () => {
         await openUseCaseFile(anotherDefinition.uri);
         const openedFile = getOpendFileName() ?? "";
         assert.ok(openedFile.endsWith('another.asm'), `Opened file is ${openedFile}`);
+    });
+
+    test('Document symbols',async () => {
+        const mainUri = getDocUri(path.resolve(includeFolder, 'simple.asm'));
+        await openUseCaseFile(mainUri);
+
+        const simpleSymbols = await commands.executeCommand<DocumentSymbol[]>('vscode.executeDocumentSymbolProvider', mainUri);
+        assert.equal(simpleSymbols, undefined, 'No symbols for "simple" is expected');
+        
+        const anotherUri = getDocUri(path.resolve(includeFolder, 'some/another.asm'));
+        await openUseCaseFile(anotherUri);
+
+        const anotherSymbols = await commands.executeCommand<DocumentSymbol[]>('vscode.executeDocumentSymbolProvider', anotherUri);
+        assert.ok(anotherSymbols, 'No symbols for "another" file');
+        assert.equal(anotherSymbols.length, 1, 'One symbol in "another"');
+        assert.equal(anotherSymbols[0].name, 'ANOTHER', 'Check symble name');
     });
 
     test('Include working with non string literals',async () => {
