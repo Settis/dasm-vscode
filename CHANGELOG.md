@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Excluding structure macros names from suggestion
+
 ## [1.4.0] - 2023-12-10
 
 ### Added 
