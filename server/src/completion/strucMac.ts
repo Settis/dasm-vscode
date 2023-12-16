@@ -2,7 +2,8 @@ import { CompletionItem, CompletionItemKind, InsertTextFormat } from "vscode-lan
 import { Program } from "../program";
 import { DATA } from "./structureMacros";
 
-const STRUC_MAC_LABELS = new Set<string>([
+const STRUC_MAC_NAMES = new Set<string>([
+    // Constants
 	'IS_SET',
 	'IS_CLEAR',
 	'IS_HIGH',
@@ -18,6 +19,74 @@ const STRUC_MAC_LABELS = new Set<string>([
 	'ACCUM',
 	'X_REG',
 	'Y_REG',
+    // Macroses
+    'IF_EQ',
+    'ELSE_',
+    'END_IF',
+    'IF_ZERO',
+    'IF_NEQ',
+    'IF_NOT_ZERO',
+    'IF_PLUS',
+    'IF_MINUS',
+    'IF_NEG',
+    'IF_C_SET',
+    'IF_C_CLR',
+    'IF_GE',
+    'IF_LT',
+    'IF_V_SET',
+    'IF_V_CLR',
+    'IF_FLAG_VAR',
+    'IF_BIT',
+    'IF_MEM_BYTE_NEG',
+    'IF_MEM_BYTE_POS',
+    'BEGIN',
+    'AGAIN',
+    'WHILE_EQ',
+    'REPEAT_',
+    'WHILE_NEQ',
+    'WHILE_ZERO',
+    'WHILE_NOT_ZERO',
+    'WHILE_PLUS',
+    'WHILE_MINUS',
+    'WHILE_NEG',
+    'WHILE_C_CLR',
+    'WHILE_C_SET',
+    'WHILE_GE',
+    'WHILE_LT',
+    'WHILE_V_CLR',
+    'WHILE_V_SET',
+    'WHILE_BIT',
+    'UNTIL_EQ',
+    'UNTIL_ZERO',
+    'UNTIL_NEQ',
+    'UNTIL_NOT_ZERO',
+    'UNTIL_PLUS',
+    'UNTIL_MINUS',
+    'UNTIL_NEG',
+    'UNTIL_C_CLR',
+    'UNTIL_C_SET',
+    'UNTIL_GE',
+    'UNTIL_LT',
+    'UNTIL_V_CLR',
+    'UNTIL_V_SET',
+    'UNTIL_BIT',
+    'CASE',
+    'CASE_OF',
+    'END_OF',
+    'END_CASE',
+    'FOR',
+    'NEXT',
+    'FOR_X',
+    'NEXT_X',
+    'FOR_Y',
+    'NEXT_Y',
+    'RTS_IF_EQ',
+    'RTS_IF_NE',
+    'RTS_IF_PLUS',
+    'RTS_IF_MINUS',
+    'RTS_IF_FLAG_VAR',
+    'RTS_IF_BIT',
+    'RTS_IF_MEM_LOC',
 ]);
 
 const STRUCMAC_FILE = 'STRUCMAC.ASM';
@@ -29,7 +98,7 @@ export function isStrucMacEnabled(program: Program | undefined): boolean {
 }
 
 export function filterStrucMacLabels(completionItem: CompletionItem): boolean {
-    return !STRUC_MAC_LABELS.has(completionItem.label);
+    return !STRUC_MAC_NAMES.has(completionItem.label);
 }
 
 let strucMacSnippets: CompletionItem[] | null = null;
