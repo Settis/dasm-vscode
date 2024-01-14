@@ -30,4 +30,3 @@ actions:
   noHide:
     type: Completion
     text: _TEST_HIDING
-    not: True

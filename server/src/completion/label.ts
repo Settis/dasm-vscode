@@ -1,13 +1,16 @@
 import { CompletionItem, CompletionItemKind } from "vscode-languageserver";
 import { Program } from "../program";
 import { getDocumentSettings } from "../server";
+import { LabelObject } from "../parser/ast/labels";
+import { AstNode } from "../parser/ast/nodes";
 
 export async function onLabelCompletion(program: Program | undefined, includeConstant = false): Promise<CompletionItem[]> {
     if (program === undefined) return [];
     const result: CompletionItem[] = [];
-    const hidePrefixes = (await getDocumentSettings(program.uri)).labels.hidePrefix ?? [];
+    const localPrefixes = (await getDocumentSettings(program.uri)).labels.localPrefix ?? [];
+    const localLabelsChecker = new LocalLabelsChecker(program.uri, localPrefixes);
     for (const label of program.globalLabels.values()) {
-        if ((includeConstant || label.definedAsVariable) && canShow(label.name, hidePrefixes)) {
+        if ((includeConstant || label.definedAsVariable) && localLabelsChecker.canShow(label)) {
             result.push({
                 label: label.name,
                 kind: label.definedAsVariable ? CompletionItemKind.Variable : CompletionItemKind.Constant
@@ -17,8 +20,24 @@ export async function onLabelCompletion(program: Program | undefined, includeCon
     return result;
 }
 
-function canShow(labenName: string, hidePrefixes: string[]): boolean {
-    for (const prefix of hidePrefixes)
-        if (labenName.startsWith(prefix)) return false;
-    return true;
+class LocalLabelsChecker {
+    public constructor(private uri: string, private localPrefixes: string[]) {}
+
+    public canShow(label: LabelObject): boolean {
+        if (this.hasLocalPrefix(label.name))
+            return this.theSameDocument(label.definitions);
+        return true;
+    }
+
+    private hasLocalPrefix(labelName: string): boolean {
+        for (const prefix of this.localPrefixes)
+            if (labelName.startsWith(prefix)) return true;
+        return false;
+    }
+
+    private theSameDocument(definitions: AstNode[]): boolean {
+        for (const definition of definitions)
+            if (definition.location.uri === this.uri) return true;
+        return false;
+    }
 }

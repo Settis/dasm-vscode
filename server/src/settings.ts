@@ -3,11 +3,11 @@ export type Settings = {
 }
 
 export type LabelsSettings = {
-    hidePrefix: string[] | null | undefined
+    localPrefix: string[] | null | undefined
 }
 
 export const DEFAULT_SETTINGS: Settings = {
     labels: {
-        hidePrefix: []
+        localPrefix: []
     }
 };
