@@ -1,4 +1,12 @@
 # Changelog
+## [Unreleased]
+### Braking change
+
+- deleted configuration for completely hiding labels from autocompletion
+
+### Added
+
+- Added configuration for the current file only label autocompletion
 
 ## [1.4.1] - 2023-12-16
 

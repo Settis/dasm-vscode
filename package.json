@@ -21,9 +21,6 @@
   "engines": {
     "vscode": "^1.52.0"
   },
-  "activationEvents": [
-    "onLanguage:dasm"
-  ],
   "main": "./out/client",
   "contributes": {
     "languages": [
@@ -45,20 +42,20 @@
     "configuration": {
       "title": "DASM",
       "properties": {
-        "dasm.labels.hidePrefix": {
+        "dasm.labels.localPrefix": {
           "type": "array",
           "default": [],
           "items": {
             "type": "string"
           },
           "uniqueItems": true,
-          "description": "Hide labels in autocompletion by this prefix"
+          "description": "Hide labels in autocompletion in other files by this prefix"
         }
       }
     },
     "configurationDefaults": {
       "[dasm]": {
-        "editor.wordBasedSuggestions": false
+        "editor.wordBasedSuggestions": "off"
       }
     }
   },

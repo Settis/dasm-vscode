@@ -3,9 +3,6 @@ text: |2
     NOP
   {|noFoo}{|tmp}TMP SET 3
     LDA {|tmp}{|foo}FOO
-  _TESTING:
-  _TEST_HIDING:
-    LDA _TES{|noHide}{|testing}TING
 
     MAC dummy
   _TMP set {1}
@@ -23,11 +20,4 @@ actions:
   noFoo:
     type: Completion
     text: FOO
-    not: True
-  testing:
-    type: Completion
-    text: _TESTING
-  noHide:
-    type: Completion
-    text: _TEST_HIDING
     not: True
