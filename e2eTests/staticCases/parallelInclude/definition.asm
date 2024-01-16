@@ -1,1 +1,2 @@
 THE_VAR = 1
+INDIRECT_VAR set 2
