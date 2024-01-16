@@ -91,10 +91,12 @@ const STRUC_MAC_NAMES = new Set<string>([
 
 const STRUCMAC_FILE = 'STRUCMAC.ASM';
 
-export function isStrucMacEnabled(program: Program | undefined): boolean {
-    const usedFiles = program?.usedFiles;
-    if (usedFiles == undefined) return false;
-    return [...usedFiles].findIndex(item => item.endsWith(STRUCMAC_FILE)) != -1;
+export function isStrucMacEnabled(program: Program | undefined, parentPrograms: Program[]): boolean {
+    if (!program) return false;
+    const totalUsedFiles = new Set<string>(program.usedFiles);
+    for (const parentProgram of parentPrograms)
+        parentProgram.usedFiles.forEach(it => totalUsedFiles.add(it));
+    return [...totalUsedFiles].findIndex(item => item.endsWith(STRUCMAC_FILE)) != -1;
 }
 
 export function filterStrucMacLabels(completionItem: CompletionItem): boolean {

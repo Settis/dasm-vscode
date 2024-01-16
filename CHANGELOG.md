@@ -7,6 +7,7 @@
 ### Added
 
 - Added configuration for the current file only label autocompletion
+- Autocompletion from indirect including files
 
 ## [1.4.1] - 2023-12-16
 

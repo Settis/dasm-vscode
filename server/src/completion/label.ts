@@ -4,12 +4,15 @@ import { getDocumentSettings } from "../server";
 import { LabelObject } from "../parser/ast/labels";
 import { AstNode } from "../parser/ast/nodes";
 
-export async function onLabelCompletion(program: Program | undefined, includeConstant = false): Promise<CompletionItem[]> {
+export async function onLabelCompletion(program: Program | undefined, parentPrograms: Program[], includeConstant = false): Promise<CompletionItem[]> {
     if (program === undefined) return [];
     const result: CompletionItem[] = [];
     const localPrefixes = (await getDocumentSettings(program.uri)).labels.localPrefix ?? [];
     const localLabelsChecker = new LocalLabelsChecker(program.uri, localPrefixes);
-    for (const label of program.globalLabels.values()) {
+    const lables: LabelObject[] = [...program.globalLabels.values()];
+    for (const parentProgram of parentPrograms)
+        lables.push(...parentProgram.globalLabels.values());
+    for (const label of lables) {
         if ((includeConstant || label.definedAsVariable) && localLabelsChecker.canShow(label)) {
             result.push({
                 label: label.name,

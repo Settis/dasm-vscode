@@ -240,6 +240,13 @@ suite('Test include', () => {
         await openUseCaseFile(usageUri);
         const usageErrors = await getErrors(usageUri, 0);
         assert.equal(usageErrors.length, 0);
+        // the INDIRECT_VAR is available for autocompletion
+        const completionList = await commands.executeCommand<CompletionList>('vscode.executeCompletionItemProvider', mainUri, {
+            line: 2,
+            character: 0,
+        });
+        const indirectVarItems = completionList.items.filter(it => it.label === 'INDIRECT_VAR');
+        assert.ok(indirectVarItems.length > 0);
     });
 
     const incdirForMacroFolder = path.resolve(fixturesFolder, 'incdirForMacro');
