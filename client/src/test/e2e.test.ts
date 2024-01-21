@@ -161,7 +161,7 @@ for (const useCase of useCases) {
             }
         });
 
-        test.only("check renaming", async () => {
+        test("check renaming", async () => {
             for (const renameAction of annotations.filter(it => it.action.type === 'Rename')) {
                 const workspaceEdit = await commands.executeCommand<WorkspaceEdit>('vscode.executeDocumentRenameProvider', mainUri, {
                     line: renameAction.range.line,
