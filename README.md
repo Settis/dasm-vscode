@@ -24,9 +24,7 @@ Directives are also partially supported:
 - for repeat, it shows an error in case global constants are defined inside, assuming the section is repeated several times
 
 ## Plans
-- outline view
 - show listing of applied macros
-- hovering
 - docstring support
 - assembling
 - 65c816 support

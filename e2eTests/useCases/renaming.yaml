@@ -1,0 +1,44 @@
+text: |2
+  {FIRST|firstTextEdit} SET 0
+    L{|renameLda}DA #{FIRST|firstTextEdit}
+  {FIR{|renameFirst}ST|firstTextEdit} SET 10
+    LDA #{FIRST|firstTextEdit}
+  
+  ANOTHER_FIRST = 0
+
+    MAC{|renameMacro}RO {FOO|fooTextEdit}
+      STA #{1}
+    ENDM
+
+    {F{|renameFoo}OO|fooTextEdit} $4000
+
+  LOOPER:
+  {LOOP|loopTextEdit}:
+    JMP {LOO{|renameLoop}P|loopTextEdit}
+
+actions:
+  renameLda:
+    type: CantRename
+  renameMacro:
+    type: CantRename
+  renameFirst:
+    type: Rename
+    newName: THE_FIRST
+    result: firstTextEdit
+  firstTextEdit:
+    type: TextEdit
+    text: THE_FIRST
+  renameFoo:
+    type: Rename
+    newName: BAR
+    result: fooTextEdit
+  fooTextEdit:
+    type: TextEdit
+    text: BAR
+  renameLoop:
+    type: Rename
+    newName: wait
+    result: loopTextEdit
+  loopTextEdit:
+    type: TextEdit
+    text: wait

@@ -8,6 +8,7 @@
 
 - Added configuration for the current file only label autocompletion
 - Autocompletion from indirect including files
+- Renaming
 
 ## [1.4.1] - 2023-12-16
 

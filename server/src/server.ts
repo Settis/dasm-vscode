@@ -1,6 +1,6 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
-	createConnection, DefinitionParams, DocumentSymbolParams, HoverParams, InitializeParams, Location, Range, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind} from 'vscode-languageserver/node';
+	createConnection, DefinitionParams, DocumentSymbolParams, HoverParams, InitializeParams, Location, Range, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind, WorkspaceEdit} from 'vscode-languageserver/node';
 import { onCompletionImpl, onCompletionResolveImpl } from './completion/basic';
 import { getHover } from './hovering/basic';
 import { ParsedFiles } from './parsedFiles';
@@ -37,6 +37,7 @@ connection.onInitialize((_: InitializeParams) => {
 			hoverProvider: true,
 			completionProvider: { resolveProvider: true },
 			documentSymbolProvider: true,
+			renameProvider: {prepareProvider: true},
 		}
 	};
 });
@@ -96,6 +97,34 @@ connection.onCompletionResolve(onCompletionResolveImpl);
 
 connection.onDidChangeConfiguration(_ => {
 	documentSettings.clear();
+});
+
+connection.onRenameRequest(params => {
+	const relatedObject = getRelatedObject(params);
+	if (!relatedObject) return null;
+	const workspaceEdit: WorkspaceEdit = {
+		changes: {},
+	};
+	const nodesForRename = [...relatedObject.definitions];
+	nodesForRename.push(...relatedObject.usages);
+	for (const nodeForRename of nodesForRename) {
+		if (!workspaceEdit.changes![nodeForRename.location.uri]) workspaceEdit.changes![nodeForRename.location.uri] = [];
+		workspaceEdit.changes![nodeForRename.location.uri].push({
+			range: nodeForRename.location.range,
+			newText: params.newName
+		});
+	}
+	return workspaceEdit;
+});
+
+connection.onPrepareRename(params => {
+	const nodeByPosition = getNodeByDocumentPosition(params);
+	if (nodeByPosition) {
+		const selectedNode = nodeByPosition[0];
+		if (!relatedObjects.has(selectedNode)) return null;
+		return selectedNode.location.range;
+	}
+	return null;
 });
 
 export async function getDocumentSettings(resource: string): Promise<Settings> {

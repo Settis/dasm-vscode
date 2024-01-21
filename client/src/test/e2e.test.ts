@@ -1,8 +1,8 @@
-import { CompletionAction, ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, HoveringAction, readUseCases, UseCase, UseCaseAnnotation } from "./useCasesHelper";
+import { CompletionAction, ErrorAction, fixturesFolder, GetDefinitionAction, GetUsagesAction, HoveringAction, readUseCases, RenameAction, UseCase, UseCaseAnnotation } from "./useCasesHelper";
 import { constructRange, flushCodeCoverage, getDocUri, getErrors, getOpendFileName, openUseCaseFile } from './vscodeHelper';
 import * as assert from 'assert';
 import * as path from 'path';
-import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList, DocumentSymbol } from "vscode";
+import { Range, DiagnosticSeverity, commands, Location, Hover, MarkdownString, CompletionList, DocumentSymbol, Position, WorkspaceEdit } from "vscode";
 
 const useCases = readUseCases();
 
@@ -30,13 +30,17 @@ suite('Description is valid for:', () => {
                         break;
                     case "DefinitionResult":
                     case "UsagesResult":
+                    case 'CantRename':
                         // Nothing to check here
                         break;
                     case 'Hovering':
+                    case 'Completion':
+                    case 'TextEdit':
                         assert.ok('text' in action, `Action ${annotation.name} has no text`);
                         break;
-                    case 'Completion':
-                        assert.ok('text' in action, `Action ${annotation.name} has no text`);
+                    case "Rename":
+                        assert.ok('newName' in action, `Action ${annotation.name} has no new name`);
+                        assert.ok('result' in action, `Action ${annotation.name} has no result`);
                         break;
                     default:
                         assert.fail(`Unknown action ${JSON.stringify(action)}`);
@@ -124,7 +128,7 @@ for (const useCase of useCases) {
             }
         });
 
-        test("check completion",async () => {
+        test("check completion", async () => {
             for (const getCompletionAnnotation of annotations.filter(it => it.action.type === 'Completion')) {
                 const text = (getCompletionAnnotation.action as CompletionAction).text;
                 const notMatch = (getCompletionAnnotation.action as CompletionAction).not ?? false;
@@ -140,6 +144,38 @@ for (const useCase of useCases) {
                 const matched = completions.filter(item => item.label === text).length > 0;
                 if (matched == notMatch)
                     assert.fail(`Completion has something not expected.\n ${printLineWithRange(useCase, getRange(getCompletionAnnotation))}\n Expected: ${text}, but was: ${completions.map(it => it.label)}`);
+            }
+        });
+
+        test("check renamePrepare errors", async () => {
+            for (const cantRenameAction of annotations.filter(it => it.action.type === 'CantRename')) {
+                try {
+                    await commands.executeCommand<Position>('vscode.prepareRename', mainUri, {
+                        line: cantRenameAction.range.line,
+                        character: cantRenameAction.range.startChar,
+                    });
+                } catch {
+                    continue;
+                }
+                assert.fail(`It was expected that I can't rename an object here:\n ${printLineWithRange(useCase, getRange(cantRenameAction))}`);
+            }
+        });
+
+        test("check renaming", async () => {
+            for (const renameAction of annotations.filter(it => it.action.type === 'Rename')) {
+                const workspaceEdit = await commands.executeCommand<WorkspaceEdit>('vscode.executeDocumentRenameProvider', mainUri, {
+                    line: renameAction.range.line,
+                    character: renameAction.range.startChar,
+                }, (renameAction.action as RenameAction).newName);
+                const edits = workspaceEdit.get(mainUri);
+                assert.ok(edits, `No edits for the file uri for rename.\n${printLineWithRange(useCase, getRange(renameAction))}`);
+                const expectedEdits = annotations.filter(it => it.name === (renameAction.action as RenameAction).result);
+                assert.equal(edits.length, expectedEdits.length, `For case:\n${printLineWithRange(useCase, getRange(renameAction))}`);
+                for (const expectedEdit of expectedEdits) {
+                    const expectedRange = getRange(expectedEdit);
+                    assert.equal(edits.filter(it => it.range.isEqual(expectedRange)).length, 1, 
+                    `Can't find rename for:\n${printLineWithRange(useCase, expectedRange)}`);
+                }
             }
         });
 
@@ -262,9 +298,16 @@ suite('Test include', () => {
 function printLineWithRange(useCase: UseCase, range: Range): string {
     const linePrefix = ' ' + (range.start.line + 1) + ' : ';
     const sourceLine = useCase.getFixtureContent().split('\n')[range.start.line];
-    const spaces = ' '.repeat(linePrefix.length + range.start.character);
-    const underscore = '~'.repeat(range.end.character - range.start.character);
-    return "Source position: \n" + linePrefix + sourceLine + "\n" + spaces + underscore;
+    const spaces = ' '.repeat(linePrefix.length);
+    return "Source position: \n" + linePrefix + sourceLine + "\n" + spaces + markPosition(range);
+}
+
+function markPosition(range: Range): string {
+    if (range.end.character == range.start.character) {
+        return ' '.repeat(range.start.character-1) + '><';
+    } else {
+        return ' '.repeat(range.start.character) + '~'.repeat(range.end.character - range.start.character);
+    }
 }
 
 function getRange(useCaseAnnotation: UseCaseAnnotation) {
