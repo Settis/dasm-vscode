@@ -1,6 +1,6 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import {
-	createConnection, DefinitionParams, DocumentSymbolParams, HoverParams, InitializeParams, Location, Range, ReferenceParams, TextDocumentEdit, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind, WorkspaceEdit} from 'vscode-languageserver/node';
+	createConnection, DefinitionParams, DocumentSymbolParams, HoverParams, InitializeParams, Location, Range, ReferenceParams, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind, WorkspaceEdit} from 'vscode-languageserver/node';
 import { onCompletionImpl, onCompletionResolveImpl } from './completion/basic';
 import { getHover } from './hovering/basic';
 import { ParsedFiles } from './parsedFiles';
