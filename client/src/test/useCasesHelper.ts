@@ -135,7 +135,7 @@ type UseCaseDescription = {
 }
 
 type UseCaseAction = ErrorAction | GetDefinitionAction | DefinitionResultAction | GetUsagesAction | UsagesResultAction 
-    | HoveringAction | CompletionAction
+    | HoveringAction | CompletionAction | CantRenameAction | RenameAction | TextEdit
 
 export type ErrorAction = {
     type: 'Error',
@@ -171,4 +171,19 @@ export type CompletionAction = {
     type: 'Completion',
     text: string,
     not?: boolean
+}
+
+export type CantRenameAction = {
+    type: 'CantRename'
+}
+
+export type RenameAction = {
+    type: 'Rename',
+    newName: string,
+    result: string
+}
+
+export type TextEdit = {
+    type: 'TextEdit',
+    text: string
 }
