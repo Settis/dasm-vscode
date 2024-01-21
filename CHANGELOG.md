@@ -1,5 +1,5 @@
 # Changelog
-## [Unreleased]
+## [2.0.0] - 2024-01-21
 ### Braking change
 
 - deleted configuration for completely hiding labels from autocompletion

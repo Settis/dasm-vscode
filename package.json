@@ -3,7 +3,7 @@
   "description": "Language support for DASM 6502",
   "author": "Anton",
   "license": "MIT",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "icon": "logo.png",
   "repository": {
     "type": "git",
