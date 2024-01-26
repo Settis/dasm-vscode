@@ -6,11 +6,15 @@ text: |2
   
   ANOTHER_FIRST = 0
 
+    SEG {ANOTH{|renameSegment}ER_FIRST|segmentEdit}
+
     MAC{|renameMacro}RO {FOO|fooTextEdit}
       STA #{1}
     ENDM
 
     {F{|renameFoo}OO|fooTextEdit} $4000
+
+    SEG {ANOTHER_FIRST|segmentEdit}
 
   LOOPER:
   {LOOP|loopTextEdit}:
@@ -42,3 +46,10 @@ actions:
   loopTextEdit:
     type: TextEdit
     text: wait
+  renameSegment:
+    type: Rename
+    newName: SOME
+    result: segmentEdit
+  segmentEdit:
+    type: TextEdit
+    text: SOME

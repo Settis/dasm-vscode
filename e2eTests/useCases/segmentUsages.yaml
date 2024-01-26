@@ -1,0 +1,18 @@
+text: |2
+  NAM{|constUsages}E = 4
+    SEG {NA{|segmentUsages}ME|segmentUsagesResult}
+    LDA {NAME|constUsagesResult}
+
+    SEG {NAME|segmentUsagesResult}
+    STA {NAME|constUsagesResult}
+actions:
+  constUsages:
+    type: GetUsages
+    result: constUsagesResult
+  constUsagesResult:
+    type: UsagesResult
+  segmentUsages:
+    type: GetUsages
+    result: segmentUsagesResult
+  segmentUsagesResult:
+    type: UsagesResult

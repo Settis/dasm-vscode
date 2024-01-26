@@ -9,6 +9,7 @@ import { operations } from "./dasm/operations";
 import { MacrosByName, MacrosObject } from "./parser/ast/macros";
 import { UnifiedCommandName, unifyCommandName } from "./validators/asmCommandValidator";
 import { parseText } from "./parser/ast/utils";
+import { SegmentsByName } from "./parser/ast/segments";
 
 const LOCAL_LABEL_PREFIX = '.';
 
@@ -24,6 +25,7 @@ export class Program {
     public localLabels: LabelsByName[] = [new Map()];
     public macroses: MacrosByName = new Map();
     public relocatableDirectives: CommandNode[] = [];
+    public segments: SegmentsByName = new Map();
     private folderUri: string;
     public includeFolders = new Set<string>();
     public errors: DiagnosticWithURI[] = [];
@@ -153,6 +155,8 @@ export class Program {
                 this.handleListCommand(commandNode);
                 break;
             case SEG:
+                this.handleSegmentCommand(commandNode);
+                break;
             case SETSTR:
                 // Just ignore it
                 break;
@@ -230,6 +234,17 @@ export class Program {
         const arg = args[0].value;
         if (arg.type != NodeType.Identifier) return false;
         return ! new Set<string>(['ON', 'OFF']).has(arg.name.toUpperCase());
+    }
+
+    private handleSegmentCommand(commandNode: CommandNode) {
+        if (commandNode.args.length == 0) return;
+        const arg = commandNode.args[0].value;
+        if (arg.type != NodeType.Identifier) return;
+        const knownSegment = this.segments.get(arg.name);
+        if (knownSegment)
+            knownSegment.usages.push(arg);
+        else 
+            this.segments.set(arg.name, {name: arg.name, definitions: [], usages: [arg]});
     }
 
     private handleOtherCommand(commandNode: CommandNode) {
