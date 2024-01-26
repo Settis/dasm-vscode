@@ -4,6 +4,7 @@ import { onCommandCompletion } from "./command";
 import { onLabelCompletion } from "./label";
 import { filterStrucMacLabels, getStrucMacSnippets, isStrucMacEnabled } from "./strucMac";
 import { Program } from "../program";
+import { onSegmentCompletion } from "./segment";
 
 export async function onCompletionImpl(positionParams: TextDocumentPositionParams): Promise<CompletionItem[]> {
   const documentUri = positionParams.textDocument.uri;
@@ -26,8 +27,12 @@ export async function onCompletionImpl(positionParams: TextDocumentPositionParam
     result = onCommandCompletion(program, parentPrograms);
   // 3 - after the command
   else if (splitLength >= 3) {
-    result = await afterCommandCompletion(program, parentPrograms, splitResult[splitLength-1]);
-    
+    const upperCaseComand = splitResult[1].toUpperCase();
+    if (upperCaseComand === "SEG" || upperCaseComand === "SEG.U") {
+      result = onSegmentCompletion(program, parentPrograms);
+    } else {
+      result = await afterCommandCompletion(program, parentPrograms, splitResult[splitLength-1]);
+    }
   }
   if (isStrucMacEnabled(program, parentPrograms)) {
     result = result.filter(filterStrucMacLabels);

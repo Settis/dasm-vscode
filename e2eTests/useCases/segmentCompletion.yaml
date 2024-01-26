@@ -1,0 +1,13 @@
+text: |2
+  SOME_NAME = 4
+    SEG SOME_SEGMENT_NAME
+
+    SEG SOME_{|segmentName}{|noName}
+actions:
+  segmentName:
+    type: Completion
+    text: SOME_SEGMENT_NAME
+  noName:
+    type: Completion
+    text: SOME_NAME
+    not: True

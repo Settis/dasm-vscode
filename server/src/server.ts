@@ -13,6 +13,7 @@ import { validateProgram } from './validators/general';
 import { DiagnosticWithURI } from './validators/util';
 import { DEFAULT_SETTINGS, Settings } from './settings';
 import { getSymbols } from './symbol/basic';
+import { SegmentsByName } from './parser/ast/segments';
 
 type RelatedObject = {
     definitions: AstNode[],
@@ -150,6 +151,7 @@ function rescanDocuments() {
 		program.assemble();
 		collectLabels(program.globalLabels);
 		program.localLabels.forEach(it => collectLabels(it));
+		collectSegments(program.segments);
 		collectMacros(program.macroses);
 		collectIncludes(program.includedFiles);
 	});
@@ -194,6 +196,12 @@ function collectLabels(labelsMap: LabelsByName) {
 		for (const usage of label.usages)
 			relatedObjects.set(usage, label);
 	}
+}
+
+function collectSegments(sermentMap: SegmentsByName) {
+	for (const segment of sermentMap.values())
+		for (const usage of segment.usages)
+			relatedObjects.set(usage, segment);
 }
 
 function collectMacros(macrosMap: MacrosByName) {
