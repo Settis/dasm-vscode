@@ -1,0 +1,11 @@
+text: |2
+      MACRO DO_ONCE
+      IFNCONST {1}
+  {1} set 1
+  FOO:
+      JMP FOO
+      ENDIF
+      ENDM
+
+      DO_ONCE FIRST
+      DO_ONCE FIRST

@@ -2,7 +2,7 @@ import { INCBIN, INCDIR, INCLUDE, LIST, NAMES, REND, RORG, SEG, SET, SETSTR, SUB
 import { getFolder, isFileExists, isDirExists, joinUri, unifyUri } from "./localFiles";
 import { MSG } from "./messages";
 import { ParsedFiles } from "./parsedFiles";
-import { AllComandNode, ArgumentNode, AstNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "./parser/ast/nodes";
+import { AllComandNode, ArgumentNode, AstNode, CommandNode, ExpressionNode, FileNode, IdentifierNode, IfDirectiveNode, IfDirectiveType, LabelNode, LineNode, MacroDirectiveNode, NodeType, RepeatDirectiveNode } from "./parser/ast/nodes";
 import { LabelsByName, LabelObject, ALIASES, mergeLabelsMap } from "./parser/ast/labels";
 import { constructError, constructWarning, DiagnosticWithURI } from "./validators/util";
 import { operations } from "./dasm/operations";
@@ -17,11 +17,12 @@ export class Program {
     constructor(private parsedFiles: ParsedFiles, uri: string) {
         this.uri = unifyUri(uri);
         this.folderUri = getFolder(uri);
-        this.macrosCalls = new MacrosCalls(parsedFiles, this.includeFolders, uri);
+        this.macrosCalls = new MacrosCalls(parsedFiles, this.includeFolders, this.definedLabels, uri);
     }
 
     public uri: string;
     public globalLabels: LabelsByName = new Map();
+    public definedLabels = new Set<string>();
     public localLabels: LabelsByName[] = [new Map()];
     public macroses: MacrosByName = new Map();
     public relocatableDirectives: CommandNode[] = [];
@@ -68,6 +69,7 @@ export class Program {
         if (ALIASES.has(name)) return;
         const lablelObject = this.getLabelObjectByName(name);
         lablelObject.definitions.push(labelNode.name);
+        this.definedLabels.add(labelNode.name.name);
         if (asVariable)
             lablelObject.definedAsVariable = true;
         else
@@ -116,6 +118,19 @@ export class Program {
 
     private visitIfDirectiveNode(commandNode: IfDirectiveNode) {
         this.visitExpression(commandNode.condition);
+        const expr = commandNode.condition;
+        switch (commandNode.ifType) {
+            case IfDirectiveType.IfConst:
+                if (expr.type != NodeType.Identifier) return;
+                if (!this.definedLabels.has(expr.name)) return;
+                break;
+            case IfDirectiveType.IfNConst:
+                if (expr.type != NodeType.Identifier) return;
+                if (this.definedLabels.has(expr.name)) return;
+                break;
+            case IfDirectiveType.If:
+                break;
+        }
         commandNode.thenBody.forEach(line => this.visitLineNode(line));
         // In case when the label is defined in else branch too.
         const tmpGlobalLabels = this.globalLabels;
@@ -319,6 +334,7 @@ export class Program {
 class MacrosCalls {
     constructor(private parsedFiles: ParsedFiles, 
         private includeFolders: Set<string>,
+        private definedLabels: Set<string>,
         private uri: string) {}
 
     public macrosDefinitions = new Map<UnifiedCommandName, string>();
@@ -359,6 +375,7 @@ class MacrosCalls {
         const program = new Program(this.parsedFiles, this.uri);
         program.macrosCalls.macrosDefinitions = this.macrosDefinitions;
         program.includeFolders = this.includeFolders;
+        program.definedLabels = this.definedLabels;
         program.visitFileNode(fileRoot.ast);
         const result: MacroResult = {
             labels: program.globalLabels,

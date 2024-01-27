@@ -4,6 +4,7 @@
 ### Added 
 
 - Work with segment names: autocompletion, usage, renaming
+- Evaluate ifconst and ifnconst and process them accordingly
 
 ## [2.0.0] - 2024-01-21
 ### Braking change
