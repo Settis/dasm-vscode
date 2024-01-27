@@ -1,5 +1,5 @@
 # Changelog
-## [Unreleased]
+## [2.2.1] - 2024-01-27
 
 ### Fixed
 
