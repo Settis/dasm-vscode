@@ -38,6 +38,16 @@ export async function onCompletionImpl(positionParams: TextDocumentPositionParam
     result = result.filter(filterStrucMacLabels);
     result = result.concat(getStrucMacSnippets());
   }
+  // deduplicatoin
+  const fullResult = result;
+  result = [];
+  const usedNames = new Set<string>();
+  for (const element of fullResult) {
+    if (!usedNames.has(element.label)) {
+      result.push(element);
+      usedNames.add(element.label);
+    }
+  }
   return result;
 }
 

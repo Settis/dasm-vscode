@@ -1,4 +1,10 @@
 # Changelog
+## [Unreleased]
+
+### Fixed
+
+- Remove elements duplication in autocompletion
+
 ## [2.2.0] - 2024-01-27
 
 ### Added 
