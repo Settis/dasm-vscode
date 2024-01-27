@@ -1,7 +1,6 @@
 {
   "github": {
-    "release": true,
-    "assets": ["*.vsix"]
+    "release": true
   },
   "npm": {
     "publish": false
@@ -18,11 +17,13 @@
       "npm run test"
     ],
     "after:bump": [
-      "rm -f *.vsix",
-      "npm run package",
       "sed -i 's/sonar.projectVersion=.*/sonar.projectVersion=${version}/' sonar-project.properties"
     ],
-    "after:release": "npx vsce publish"
+    "after:release": [
+      "rm -f *.vsix",
+      "npm run package",
+      "npx vsce publish"
+    ]
   },
   "plugins": {
     "@release-it/keep-a-changelog": {
