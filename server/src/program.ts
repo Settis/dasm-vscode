@@ -40,6 +40,8 @@ export class Program {
         this.visitFile(this.uri);
         const macroResult = this.macrosCalls.getMacroResult();
         this.globalLabels = mergeLabelsMap(this.globalLabels, macroResult.labels);
+        mergeCodeObjectMaps(this.macroses, macroResult.macroses);
+        mergeCodeObjectMaps(this.segments, macroResult.segments);
         macroResult.dynamicLabelsPrefixes.forEach(it => this.dynamicLabelsPrefixes.add(it));
         this.errors.push(...macroResult.errors);
     }
@@ -352,6 +354,8 @@ class MacrosCalls {
         const result: MacroResult = {
             labels: new Map(),
             dynamicLabelsPrefixes: new Set(),
+            macroses: new Map(),
+            segments: new Map(),
             errors: []
         };
         for (const command of this.macrosUsages) {
@@ -359,6 +363,8 @@ class MacrosCalls {
             result.labels = mergeLabelsMap(result.labels, macroResult.labels);
             macroResult.dynamicLabelsPrefixes.forEach(it => result.dynamicLabelsPrefixes.add(it));
             result.errors.push(...macroResult.errors);
+            mergeCodeObjectMaps(result.segments, macroResult.segments);
+            mergeCodeObjectMaps(result.macroses, macroResult.macroses);
         }
         return result;
     }
@@ -370,6 +376,8 @@ class MacrosCalls {
             return {
                 labels: new Map(),
                 dynamicLabelsPrefixes: new Set(),
+                macroses: new Map(),
+                segments: new Map(),
                 errors: [constructError(MSG.BAD_MACRO_CALL, commandNode)]
             };
         const program = new Program(this.parsedFiles, this.uri);
@@ -380,6 +388,8 @@ class MacrosCalls {
         const result: MacroResult = {
             labels: program.globalLabels,
             dynamicLabelsPrefixes: program.dynamicLabelsPrefixes,
+            macroses: program.macroses,
+            segments: program.segments,
             errors: []
         };
         const macroResult = program.macrosCalls.getMacroResult();
@@ -389,15 +399,11 @@ class MacrosCalls {
         macroResult.dynamicLabelsPrefixes.forEach(it => result.dynamicLabelsPrefixes.add(it));
         if (program.errors.length != 0)
             result.errors = [constructError(MSG.BAD_MACRO_CALL, commandNode)];
-        for (const label of result.labels.values()) {
-            if (label.definitions.length != 0)
-                label.definitions = [commandNode];
-            if (label.usages.length != 0)
-                label.usages = [commandNode];
-        }
+        updateDefinitionAndUsages(result.labels, commandNode);
+        updateDefinitionAndUsages(result.macroses, commandNode);
+        updateDefinitionAndUsages(result.segments, commandNode);
         return result;
     }
-
     
     private preprocMacroCall(commandNode: CommandNode): string {
         let result = this.macrosDefinitions.get(unifyCommandName(commandNode.name.name));
@@ -425,5 +431,36 @@ class MacrosCalls {
 type MacroResult = {
     labels: LabelsByName,
     dynamicLabelsPrefixes: Set<string>,
+    macroses: MacrosByName,
+    segments: SegmentsByName,
     errors: DiagnosticWithURI[]
+}
+
+type MapWithCodeObjects = Map<string, CodeObject>;
+
+type CodeObject = {
+    name: string,
+    definitions: AstNode[],
+    usages: AstNode[]
+}
+
+function updateDefinitionAndUsages(map: MapWithCodeObjects, commandNode: CommandNode) {
+    for (const object of map.values()) {
+        if (object.definitions.length != 0)
+            object.definitions = [commandNode];
+        if (object.usages.length != 0)
+            object.usages = [commandNode];
+    }
+}
+
+function mergeCodeObjectMaps(first: MapWithCodeObjects, second: MapWithCodeObjects) {
+    for (const secondObject of second.values()) {
+        const firstObject = first.get(secondObject.name);
+        if (!firstObject) {
+            first.set(secondObject.name, secondObject);
+            continue;
+        }
+        firstObject.definitions.push(...secondObject.definitions);
+        firstObject.usages.push(...secondObject.usages);
+    }
 }

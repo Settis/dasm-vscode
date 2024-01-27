@@ -229,9 +229,6 @@ suite('Test include', () => {
     test('Document symbols',async () => {
         const mainUri = getDocUri(path.resolve(includeFolder, 'simple.asm'));
         await openUseCaseFile(mainUri);
-
-        const simpleSymbols = await commands.executeCommand<DocumentSymbol[]>('vscode.executeDocumentSymbolProvider', mainUri);
-        assert.equal(simpleSymbols, undefined, 'No symbols for "simple" is expected');
         
         const anotherUri = getDocUri(path.resolve(includeFolder, 'some/another.asm'));
         await openUseCaseFile(anotherUri);

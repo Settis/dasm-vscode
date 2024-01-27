@@ -1,4 +1,10 @@
 # Changelog
+## [Unreleased]
+
+### Added 
+
+- Better propogation macroses and segmens from macroses
+
 ## [2.1.0] - 2024-01-27
 
 ### Added 
