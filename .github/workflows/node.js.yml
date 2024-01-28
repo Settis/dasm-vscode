@@ -13,11 +13,11 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
     - name: Setup node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         cache: 'npm'
     - name: Install dependencies
@@ -35,7 +35,7 @@ jobs:
       run: npm run test
       working-directory: client
     - name: Run e2e tests
-      uses: coactions/setup-xvfb@v1
+      uses: coactions/setup-xvfb@v1.0.1
       with:
         run: npm test
     - name: Report code coverage
