@@ -10,17 +10,17 @@
         "type": "git",
         "url": "https://github.com/Settis/dasm-vscode"
     },
-	"scripts": {
-		"test": "mocha --enable-source-maps out/test/useCasesHelper.test.js"
-	},
+    "scripts": {
+        "test": "mocha --enable-source-maps out/test/useCasesHelper.test.js"
+    },
     "dependencies": {
-        "@types/node": "^16.9.1",
+        "@types/node": "^16.18.101",
         "vscode-languageclient": "^7.0.0"
     },
     "devDependencies": {
-        "@types/js-yaml": "^4.0.3",
-        "@types/vscode": "^1.52.0",
-        "@vscode/test-electron": "^2.3.2",
+        "@types/js-yaml": "^4.0.9",
+        "@types/vscode": "^1.91.0",
+        "@vscode/test-electron": "^2.4.0",
         "js-yaml": "4.1.0"
     }
 }
