@@ -1,0 +1,16 @@
+text: |2
+  .FOO{|fooGetUsages}:
+        LDA {.FOO|fooUse}
+        STA {.FOO|fooUse},Y
+        
+        SUBROUTINE
+
+  .FOO:
+        LDA .FOO
+        STA .FOO,Y
+actions:
+  fooUse:
+    type: UsagesResult
+  fooGetUsages:
+    type: GetUsages
+    result: fooUse

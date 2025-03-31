@@ -1,0 +1,10 @@
+text: |2
+  FOO{|fooGetUsages}:
+        LDA {FOO|fooUse}
+        STA {FOO|fooUse},Y
+actions:
+  fooUse:
+    type: UsagesResult
+  fooGetUsages:
+    type: GetUsages
+    result: fooUse
