@@ -81,7 +81,7 @@
     "release": "release-it"
   },
   "devDependencies": {
-    "@release-it/keep-a-changelog": "^5.0.0",
+    "@release-it/keep-a-changelog": "^7.0.0",
     "@types/glob": "^7.1.4",
     "@types/mocha": "^8.2.2",
     "@types/node": "^12.12.0",
@@ -90,7 +90,7 @@
     "esbuild": "^0.25.0",
     "eslint": "^7.26.0",
     "mocha": "^10.8.2",
-    "release-it": "^17.0.1",
+    "release-it": "^19.0.6",
     "typescript": "^4.3.5"
   }
 }
