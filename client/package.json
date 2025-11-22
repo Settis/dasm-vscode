@@ -21,6 +21,6 @@
         "@types/js-yaml": "^4.0.3",
         "@types/vscode": "^1.52.0",
         "@vscode/test-electron": "^2.3.2",
-        "js-yaml": "4.1.0"
+        "js-yaml": "4.1.1"
     }
 }
